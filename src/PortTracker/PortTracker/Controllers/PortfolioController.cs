@@ -14,7 +14,6 @@ namespace PortTracker.Controllers
     [RoutePrefix("portfolios")]
     public class PortfoliosController : ApiController
     {
-        private List<Instrument> _instruments;
         private ApplicationUserManager _userManager;
         private readonly IServiceRepository _repository;
 
