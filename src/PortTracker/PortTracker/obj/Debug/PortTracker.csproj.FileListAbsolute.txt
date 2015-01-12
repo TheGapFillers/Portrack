@@ -76,6 +76,7 @@ C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\EntityFramework.S
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.AspNet.Identity.Core.dll
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.AspNet.Identity.EntityFramework.dll
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.AspNet.Identity.Owin.dll
+C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.Owin.Cors.dll
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.Owin.dll
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.Owin.Host.SystemWeb.dll
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.Owin.Security.Cookies.dll
@@ -89,6 +90,7 @@ C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.Web.Inf
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Newtonsoft.Json.dll
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Owin.dll
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\System.Net.Http.Formatting.dll
+C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\System.Web.Cors.dll
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\System.Web.Helpers.dll
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\System.Web.Http.dll
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\System.Web.Http.Owin.dll
@@ -109,6 +111,7 @@ C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.AspNet.
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.AspNet.Identity.EntityFramework.xml
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.AspNet.Identity.Owin.xml
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.Owin.xml
+C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.Owin.Cors.xml
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.Owin.Host.SystemWeb.xml
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.Owin.Security.xml
 C:\Users\Ambroise\Dev\portrack\src\PortTracker\PortTracker\bin\Microsoft.Owin.Security.Cookies.xml
