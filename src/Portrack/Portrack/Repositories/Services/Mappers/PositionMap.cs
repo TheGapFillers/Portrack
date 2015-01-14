@@ -14,13 +14,15 @@ namespace Portrack.Repositories.Services.Mappers
 
             Property(p => p.ShareAmount).IsRequired();
 
+            HasRequired(t => t.Portfolio);
+
             HasRequired(i => i.PositionData)
-                .WithRequiredPrincipal()
-                .WillCascadeOnDelete(true);
+            .WithRequiredPrincipal()
+            .WillCascadeOnDelete(true);
 
             HasRequired(p => p.Instrument)
             .WithMany()
-            .HasForeignKey(p => p.InstrumentId)
+            .Map(p => p.MapKey("InstrumentId"))
             .WillCascadeOnDelete(true);
         }
     }

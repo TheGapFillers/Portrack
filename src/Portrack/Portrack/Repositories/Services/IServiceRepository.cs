@@ -26,7 +26,7 @@ namespace Portrack.Repositories.Services
         Task<Position> GetPositionAsync(string userName, string portfolioName, string ticker);
 
         Position AddPosition(Position position);
-        Task<Position> DeletePositionAsync(string username, string portfolioName, string ticker);
+        Position DeletePositionAsync(Position position);
 
 
 

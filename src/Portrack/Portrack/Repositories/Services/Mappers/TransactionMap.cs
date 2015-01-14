@@ -12,14 +12,11 @@ namespace Portrack.Repositories.Services.Mappers
             HasKey(t => t.TransactionId);
             Property(t => t.TransactionId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
+            HasRequired(t => t.Portfolio);
+
             Property(i => i.Ticker).IsRequired();
             Property(i => i.Date).IsRequired();
             Property(i => i.ShareAmount).IsRequired();
-
-            HasRequired(i => i.Portfolio)
-            .WithMany(p => p.Transactions)
-            .HasForeignKey(t => t.PortfolioId)
-            .WillCascadeOnDelete(false);
         }
     }
 }
