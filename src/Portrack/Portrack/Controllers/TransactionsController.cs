@@ -17,6 +17,11 @@ namespace Portrack.Controllers
         private AspAuthUserManager _userManager;
         private readonly IServicesRepository _repository;
 
+        public TransactionsController(IServicesRepository repository)
+        {
+            _repository = repository;
+        }
+
         public AspAuthUserManager UserManager
         {
             get
@@ -29,35 +34,26 @@ namespace Portrack.Controllers
             }
         }
 
-        public TransactionsController(IServicesRepository repository)
-        {
-            _repository = repository;
-        }
-
-
         [Route("{portfolioName?}/{tickers?}")]
         [HttpGet]
         public async Task<IHttpActionResult> Get(string portfolioName = null, string tickers = null)
         {
+            ICollection<Transaction> transactions;
             if (string.IsNullOrWhiteSpace(portfolioName))
             {
-                ICollection<Transaction> transactions = await _repository.GetTransactionsAsync(User.Identity.Name);
+                transactions = await _repository.GetTransactionsAsync(User.Identity.Name);
                 return Ok(transactions);
             }
-            else
+
+            if (string.IsNullOrWhiteSpace(tickers))
             {
-                if (string.IsNullOrWhiteSpace(tickers))
-                {
-                    ICollection<Transaction> transactions = await _repository.GetTransactionsAsync(User.Identity.Name, portfolioName);
-                    return Ok(transactions);
-                }
-                else
-                {
-                    IEnumerable<string> tickerEnum = tickers.Split(',').Select(s => s.Trim());
-                    ICollection<Transaction> transactions = await _repository.GetTransactionsAsync(User.Identity.Name, portfolioName, tickerEnum);
-                    return Ok(transactions);
-                }
+                transactions = await _repository.GetTransactionsAsync(User.Identity.Name, portfolioName);
+                return Ok(transactions);
             }
+
+            IEnumerable<string> tickerEnum = tickers.Split(',').Select(s => s.Trim());
+            transactions = await _repository.GetTransactionsAsync(User.Identity.Name, portfolioName, tickerEnum);
+            return Ok(transactions);
         }
 
 
@@ -65,68 +61,27 @@ namespace Portrack.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Post([FromBody]Transaction transaction)
         {
+            if (transaction.ShareAmount == 0) ModelState.AddModelError("InvalidShareAmount", "The share amount cannot be 0");
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (transaction == null) return BadRequest("Error while deserializing the transaction");
 
             Portfolio portfolio = await _repository.GetPortfolioAsync(User.Identity.Name, transaction.PortfolioName);
             if (portfolio == null)
+                return Ok(TransactionResult.Failed(null, null, transaction, 
+                    "The portfolio designated by this transaction doesn't exist."));
+
+            Instrument instrument = await _repository.GetInstrumentAsync(transaction.Ticker);
+            if (instrument == null)
+                return Ok(TransactionResult.Failed(portfolio, null, transaction, "This ticker doens't exist."));
+
+            Position position = await _repository.GetPositionAsync(portfolio.UserName, portfolio.PortfolioName, instrument.Ticker);
+            TransactionResult result = portfolio.AddTransaction(transaction, position, instrument);
+            if (result.IsSuccess && result.Position.ShareAmount == 0)
             {
-                Ok(TransactionResult.Failed("The portfolio designated by this transaction doesn't exist."));
+                _repository.DeletePositionAsync(result.Position);
             }
 
-            Position position = await _repository.GetPositionAsync(User.Identity.Name, transaction.PortfolioName, transaction.Ticker);
-            if (position == null)
-            {
-                if (transaction.ShareAmount <= 0)
-                {
-                    return Ok(TransactionResult.Failed("Cannot add a null or negative transaction to a non-existing position."));
-                }
-                else
-                {
-                    Instrument instrument = await _repository.GetInstrumentAsync(transaction.Ticker);
-                    if (instrument == null)
-                    {
-                        return Ok(TransactionResult.Failed("This ticker doens't exist."));
-                    }
-                    else
-                    {
-                        position = _repository.AddPosition(new Position(portfolio, instrument, transaction.ShareAmount));
-                        Transaction createdTransaction = _repository.AddTransaction(transaction);
-
-                        if (await _repository.SaveAsync() > 0)
-                            return Ok(TransactionResult.Success);
-                        else
-                            return Ok();
-                    }
-                }
-            }
-            else
-            {
-                if (position.ShareAmount + transaction.ShareAmount < 0)
-                {
-                    return Ok(TransactionResult.Failed("Not enough shares for this ticker."));
-                }
-                else if (position.ShareAmount + transaction.ShareAmount == 0)
-                {
-                    await _repository.DeletePositionAsync(User.Identity.Name, transaction.PortfolioName, transaction.Ticker);                  
-                    Transaction createdTransaction = _repository.AddTransaction(transaction);
-
-                    if (await _repository.SaveAsync() > 0)
-                        return Ok(TransactionResult.Success);
-                    else
-                        return Ok();
-                }
-                else
-                {
-                    position.ShareAmount += transaction.ShareAmount;                   
-                    Transaction createdTransaction = _repository.AddTransaction(transaction);
-
-                    if (await _repository.SaveAsync() > 0)
-                        return Ok(TransactionResult.Success);
-                    else
-                        return Ok();
-                }
-            }
+            await _repository.SaveAsync();
+            return Ok(result);
         }
     }
 }

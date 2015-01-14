@@ -1,5 +1,6 @@
 using Portrack.Models.Application;
 using Portrack.Repositories.Services.Mappers;
+using System.Collections.Generic;
 using System.Data.Entity;
 
 namespace Portrack.Repositories.Services
@@ -16,7 +17,7 @@ namespace Portrack.Repositories.Services
             : base("ServicesConnection")
         {
             Configuration.LazyLoadingEnabled = false;                                                           // Disable lazy loading for all db sets.
-            Database.SetInitializer<ServicesDbContext>(new DropCreateDatabaseIfModelChanges<ServicesDbContext>());    // No code first initialisation.
+            Database.SetInitializer<ServicesDbContext>(new ServicesDbContextInitializer());    // No code first initialisation.
         }
 
         // Add a DbSet for each entity type that you want to include in your model. For more information 
@@ -39,6 +40,25 @@ namespace Portrack.Repositories.Services
             modelBuilder.Configurations.Add(new PositionDataMap());
             modelBuilder.Configurations.Add(new TransactionMap());
             modelBuilder.Configurations.Add(new InstrumentMap());
+        }
+    }
+
+    public class ServicesDbContextInitializer : DropCreateDatabaseIfModelChanges<ServicesDbContext>
+    {
+        protected override void Seed(ServicesDbContext context)
+        {
+            var instruments = new List<Instrument>
+            {
+                new Instrument { Ticker="GOOG", Name = "Google"   },
+                new Instrument { Ticker="YHOO", Name = "Yahoo"    },
+                new Instrument { Ticker="MSFT", Name = "Microsoft"},
+                new Instrument { Ticker="APPL", Name = "Apple"    },
+            };
+
+            context.Instruments.AddRange(instruments);
+            context.SaveChanges();
+
+            base.Seed(context);          
         }
     }
 }

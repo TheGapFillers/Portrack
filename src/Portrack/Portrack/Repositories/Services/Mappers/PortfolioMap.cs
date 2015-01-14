@@ -12,8 +12,9 @@ namespace Portrack.Repositories.Services.Mappers
             HasKey(p => p.PortfolioId);
             Property(p => p.PortfolioId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             Property(p => p.PortfolioName).IsRequired();
-            HasMany(p => p.Positions).WithRequired(pos => pos.Portfolio);
-            HasMany(p => p.Transactions).WithRequired(t => t.Portfolio);
+
+            HasMany(p => p.Positions).WithRequired(pos => pos.Portfolio).Map(m => m.MapKey("PortfolioId")).WillCascadeOnDelete(true);
+            HasMany(p => p.Transactions).WithRequired(t => t.Portfolio).Map(m => m.MapKey("PortfolioId"));
 
             HasRequired(i => i.PortfolioData)
                 .WithRequiredPrincipal()

@@ -16,14 +16,12 @@ namespace Portrack.Models.Application
             ShareAmount = shareAmount;
         }
 
+        [JsonIgnore]
         public int PositionId { get; set; }
-        public int InstrumentId { get; set; }
         [JsonIgnore]
         public Portfolio Portfolio { get; set; }
-        public string PortfolioName { get { return Portfolio.PortfolioName; } }
         [JsonIgnore]
         public Instrument Instrument { get; private set; }
-        public string Ticker { get { return Instrument.Ticker; } }
         public int ShareAmount { get; set; }
 
 
@@ -33,7 +31,6 @@ namespace Portrack.Models.Application
     public class PositionData
     {
         public int PositionId { get; set; }
-        [JsonIgnore]
-        public Position Position { get; private set; }
+        public double return1Y { get; set; }
     }
 }
