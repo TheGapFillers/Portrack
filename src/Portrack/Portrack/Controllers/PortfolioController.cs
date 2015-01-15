@@ -2,6 +2,7 @@
 using Portrack.Models.Application;
 using Portrack.Repositories.AspAuth;
 using Portrack.Repositories.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,7 +62,17 @@ namespace Portrack.Controllers
             if (portfolio == null) return BadRequest("Error while deserializing the portfolio");
 
             if (portfolio.UserName == null) portfolio.UserName = User.Identity.Name;
-            Portfolio createdPortfolio = _repository.AddPortfolio(portfolio);
+
+            Portfolio createdPortfolio;
+            try
+            {
+                createdPortfolio = _repository.AddPortfolio(portfolio);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("PortfolioAddError", ex);
+                return BadRequest(ModelState);
+            }
 
             if (await _repository.SaveAsync() > 0)
                 return Ok(createdPortfolio);
