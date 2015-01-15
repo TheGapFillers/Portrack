@@ -6,10 +6,6 @@ namespace Portrack.Models.Application
 {
     public class Portfolio
     {
-        public Portfolio()
-        {
-        }
-
         [JsonIgnore]
         public int PortfolioId { get; set; }
         public string PortfolioName { get; set; }

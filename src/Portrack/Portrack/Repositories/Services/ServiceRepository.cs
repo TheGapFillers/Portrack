@@ -22,7 +22,7 @@ namespace Portrack.Repositories.Services
         public async Task<int> SaveAsync()
         {
             int count = await _context.SaveChangesAsync();
-            
+
             disposing = true;
             return count;
         }
@@ -71,7 +71,10 @@ namespace Portrack.Repositories.Services
 
         public Portfolio AddPortfolio(Portfolio portfolio)
         {
-            if (portfolio.PortfolioData == null) 
+            if (GetPortfolioAsync(portfolio.UserName, portfolio.PortfolioName) != null)
+                throw new Exception("This portfolio name is already taken for this user.");
+
+            if (portfolio.PortfolioData == null)
                 portfolio.PortfolioData = new PortfolioData();
 
             return _context.Portfolios.Add(portfolio);
@@ -101,7 +104,7 @@ namespace Portrack.Repositories.Services
 
         public async Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName, IEnumerable<string> tickers)
         {
-            var query = _context.Positions.Include(p => p.Portfolio).Include(p=>p.Instrument)
+            var query = _context.Positions.Include(p => p.Portfolio).Include(p => p.Instrument)
                 .Where(p => p.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
                 && p.Portfolio.PortfolioName.Equals(portfolioName, StringComparison.InvariantCultureIgnoreCase)
                 && tickers.Contains(p.Instrument.Ticker, StringComparer.InvariantCultureIgnoreCase));

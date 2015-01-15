@@ -36,8 +36,6 @@ namespace Portrack.Models.Application
 
     public class TransactionResult
     {
-        //private static readonly TransactionResult _success = new TransactionResult(portfolio, position, transaction, true);
-
         public Portfolio Portfolio { get; private set; }
         public Position Position { get; private set; }
         public Transaction Transaction { get; private set; }
