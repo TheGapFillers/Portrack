@@ -24,13 +24,25 @@ namespace Portrack.Models.Application
         [JsonIgnore]
         public Portfolio Portfolio { get; set; }
         [Required]
+        public TransactionType Type { get; set; }
+        [Required]
         public string PortfolioName { get; set; }
         [Required]
         public string Ticker { get; set; }
         [Required]
-        public int ShareAmount { get; set; }
-        [Required]
         public DateTime Date { get; set; }
+        [Required]
+        [Range(1, 99999, ErrorMessage = "The shares amount has to be a stricly positive integer.")]
+        public int Shares { get; set; }
+        public decimal Price { get; set; }
+        public decimal Commision { get; set; }
+        
+    }
+
+    public enum TransactionType
+    {
+        Buy,
+        Sell
     }
 
 

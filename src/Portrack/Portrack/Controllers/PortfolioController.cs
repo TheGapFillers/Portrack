@@ -59,16 +59,16 @@ namespace Portrack.Controllers
         public async Task<IHttpActionResult> Post([FromBody]Portfolio portfolio)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (portfolio == null) return BadRequest("Error while deserializing the portfolio");
 
-            if (portfolio.UserName == null) portfolio.UserName = User.Identity.Name;
+            //if (portfolio.UserName == null) 
+            portfolio.UserName = User.Identity.Name;
 
             Portfolio createdPortfolio;
             try
             {
-                createdPortfolio = _repository.AddPortfolio(portfolio);
+                createdPortfolio = await _repository.AddPortfolio(portfolio);
             }
-            catch (Exception ex)
+            catch (PortfolioException ex)
             {
                 ModelState.AddModelError("PortfolioAddError", ex);
                 return BadRequest(ModelState);

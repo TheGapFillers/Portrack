@@ -16,7 +16,7 @@ namespace Portrack.Repositories.Services.Mappers
 
             Property(i => i.Ticker).IsRequired();
             Property(i => i.Date).IsRequired();
-            Property(i => i.ShareAmount).IsRequired();
+            Property(i => i.Shares).IsRequired();
         }
     }
 }

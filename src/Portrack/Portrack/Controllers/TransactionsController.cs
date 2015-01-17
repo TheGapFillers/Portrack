@@ -61,21 +61,21 @@ namespace Portrack.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Post([FromBody]Transaction transaction)
         {
-            if (transaction.ShareAmount == 0) ModelState.AddModelError("InvalidShareAmount", "The share amount cannot be 0");
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             Portfolio portfolio = await _repository.GetPortfolioAsync(User.Identity.Name, transaction.PortfolioName);
             if (portfolio == null)
                 return Ok(TransactionResult.Failed(null, null, transaction, 
-                    "The portfolio designated by this transaction doesn't exist."));
+                    string.Format("Portfolio '{0}' | '{1}' not found.", User.Identity.Name, transaction.PortfolioName)));
 
             Instrument instrument = await _repository.GetInstrumentAsync(transaction.Ticker);
             if (instrument == null)
-                return Ok(TransactionResult.Failed(portfolio, null, transaction, "This ticker doens't exist."));
+                return Ok(TransactionResult.Failed(portfolio, null, transaction, 
+                    string.Format("Instrument '{0}' doens't exist.", transaction.Ticker)));
 
             Position position = await _repository.GetPositionAsync(portfolio.UserName, portfolio.PortfolioName, instrument.Ticker);
             TransactionResult result = portfolio.AddTransaction(transaction, position, instrument);
-            if (result.IsSuccess && result.Position.ShareAmount == 0)
+            if (result.IsSuccess && result.Position.Shares == 0)
             {
                 _repository.DeletePositionAsync(result.Position);
             }

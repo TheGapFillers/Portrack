@@ -16,18 +16,19 @@ namespace Portrack.Repositories.Services.Mappers
             HasMany(p => p.Positions).WithRequired(pos => pos.Portfolio).Map(m => m.MapKey("PortfolioId")).WillCascadeOnDelete(true);
             HasMany(p => p.Transactions).WithRequired(t => t.Portfolio).Map(m => m.MapKey("PortfolioId"));
 
-            HasRequired(i => i.PortfolioData)
-                .WithRequiredPrincipal()
-                .WillCascadeOnDelete(true);
+            Ignore(t => t.PortfolioData);
+            //HasRequired(i => i.PortfolioData)
+            //    .WithRequiredPrincipal()
+            //    .WillCascadeOnDelete(true);
         }
     }
 
-    public class PortfolioDataMap : EntityTypeConfiguration<PortfolioData>
-    {
-        public PortfolioDataMap()
-        {
-            ToTable("Portfolios", "Portrack");
-            HasKey(pd => pd.PortfolioId);  
-        }
-    }
+    //public class PortfolioDataMap : EntityTypeConfiguration<PortfolioData>
+    //{
+    //    public PortfolioDataMap()
+    //    {
+    //        ToTable("Portfolios", "Portrack");
+    //        HasKey(pd => pd.PortfolioId);  
+    //    }
+    //}
 }
