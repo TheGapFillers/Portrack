@@ -35,9 +35,9 @@ namespace Portrack.Repositories.Services
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Configurations.Add(new PortfolioMap());
-            modelBuilder.Configurations.Add(new PortfolioDataMap());
+            //modelBuilder.Configurations.Add(new PortfolioDataMap());
             modelBuilder.Configurations.Add(new PositionMap());
-            modelBuilder.Configurations.Add(new PositionDataMap());
+            //modelBuilder.Configurations.Add(new PositionDataMap());
             modelBuilder.Configurations.Add(new TransactionMap());
             modelBuilder.Configurations.Add(new InstrumentMap());
         }

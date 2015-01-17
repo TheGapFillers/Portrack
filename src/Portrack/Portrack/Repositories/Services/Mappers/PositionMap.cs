@@ -12,13 +12,14 @@ namespace Portrack.Repositories.Services.Mappers
             HasKey(p => p.PositionId);
             Property(p => p.PositionId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
-            Property(p => p.ShareAmount).IsRequired();
+            Property(p => p.Shares).IsRequired();
 
             HasRequired(t => t.Portfolio);
 
-            HasRequired(i => i.PositionData)
-            .WithRequiredPrincipal()
-            .WillCascadeOnDelete(true);
+            Ignore(t => t.PositionData);
+            //HasRequired(i => i.PositionData)
+            //.WithRequiredPrincipal()
+            //.WillCascadeOnDelete(true);
 
             HasRequired(p => p.Instrument)
             .WithMany()
@@ -27,12 +28,12 @@ namespace Portrack.Repositories.Services.Mappers
         }
     }
 
-    public class PositionDataMap : EntityTypeConfiguration<PositionData>
-    {
-        public PositionDataMap()
-        {
-            ToTable("Positions", "Portrack");
-            HasKey(pd => pd.PositionId);  
-        }
-    }
+    //public class PositionDataMap : EntityTypeConfiguration<PositionData>
+    //{
+    //    public PositionDataMap()
+    //    {
+    //        ToTable("Positions", "Portrack");
+    //        HasKey(pd => pd.PositionId);  
+    //    }
+    //}
 }

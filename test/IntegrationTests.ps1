@@ -12,17 +12,18 @@ Invoke-RestMethod -Method Get -Uri http://localhost:24717/portfolios/ -Headers @
 $portfolio ='
 {
   "UserName": "ambroise.couissin@gmail.com",
-  "PortfolioName": "BambiPortfolio4",
+  "PortfolioName": "BambiPortfolio1",
 }
 '
 Invoke-RestMethod -Method Post -Uri http://localhost:24717/portfolios -Body $portfolio -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 $transaction ='
 {
-  "portfolioName":"BambiPortfolio",
+  "portfolioName":"BambiPortfolio1",
   "ticker": "goog",
-  "shareAmount": -2,
+  "shares": 2,
   "date":"2014-03-04",
+  "type":"Buy"
 }
 '
 Invoke-RestMethod -Method Post -Uri http://localhost:24717/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}

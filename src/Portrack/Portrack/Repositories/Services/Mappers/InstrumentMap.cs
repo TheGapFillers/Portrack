@@ -8,11 +8,13 @@ namespace Portrack.Repositories.Services.Mappers
     {
         public InstrumentMap()
         {
-            this.ToTable("Instruments", "Portrack");
-            this.HasKey(i => i.InstrumentId);
-            this.Property(i => i.InstrumentId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            ToTable("Instruments", "Portrack");
+            HasKey(i => i.InstrumentId);
+            Property(i => i.InstrumentId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
-            this.Property(i => i.Ticker).IsRequired();
+            Ignore(t => t.InstrumentData);
+
+            Property(i => i.Ticker).IsRequired();
         }
     }
 }

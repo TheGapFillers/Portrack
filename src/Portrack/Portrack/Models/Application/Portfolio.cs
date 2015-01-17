@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,41 +19,45 @@ namespace Portrack.Models.Application
         [JsonIgnore]
         public ICollection<Transaction> Transactions { get; set; }
 
-        public PortfolioData PortfolioData { get; set; }    
+        public PortfolioData PortfolioData { get; set; }
 
 
         public TransactionResult AddTransaction(Transaction transaction, Position position, Instrument instrument)
-        {                       
-            if (position == null)
+        {
+            if (transaction.Type == TransactionType.Sell)
             {
-                if (transaction.ShareAmount <= 0)
-                    return TransactionResult.Failed(this, position, transaction, 
-                        "Cannot add a negative transaction to a non-existing position.");
+                if (position == null)
+                {
+                    if (transaction.Type == TransactionType.Sell)
+                        return TransactionResult.Failed(this, position, transaction,
+                            "Cannot sell on a non-existing position.");
+                }
 
-                position = new Position(this, instrument);
+                if (transaction.Shares > position.Shares)
+                    return TransactionResult.Failed(this, position, transaction,
+                        "Not enough shares for this position. Cannot sell.");
+
+                position.Shares -= transaction.Shares;
             }
 
-            if (position.ShareAmount + transaction.ShareAmount < 0)
-                return TransactionResult.Failed(this, position, transaction, 
-                    "Not enough shares for this ticker.");
-
-            if (position.ShareAmount + transaction.ShareAmount > 0)
+            if (transaction.Type == TransactionType.Buy)
             {
-                if (Positions == null) 
+                if (position == null)
+                    position = new Position(this, instrument);
+
+                if (Positions == null)
                     Positions = new List<Position>();
 
-                if (position.PositionData == null)
-                    position.PositionData = new PositionData();
+                Positions.Add(position);
 
-                Positions.Add(position);       
+                position.Shares += transaction.Shares;            
             }
 
-            position.ShareAmount += transaction.ShareAmount;
-            transaction.Ticker = transaction.Ticker.ToUpperInvariant();
 
             if (Transactions == null)
                 Transactions = new List<Transaction>();
 
+            transaction.Ticker = transaction.Ticker.ToUpperInvariant();
             Transactions.Add(transaction);
 
             return TransactionResult.Succeeded(this, position, transaction);
@@ -61,7 +66,32 @@ namespace Portrack.Models.Application
 
     public class PortfolioData
     {
-        public int PortfolioId { get; set; }
-        public double return1y { get; set; }
+        //public int PortfolioId { get; set; }
+        public decimal CostBasis { get; set; }
+        public decimal MarketValue { get; set; }
+        public decimal Gain { get { return MarketValue - CostBasis; } }
+        public double GainPercentage { get { return CostBasis != 0 ? (double)(MarketValue / CostBasis) : 0; } }
+        public double OverallReturn { get; set; }
+    }
+
+
+
+
+
+    public class PortfolioException : Exception
+    {
+        public PortfolioException()
+        {
+        }
+
+        public PortfolioException(string message)
+            : base(message)
+        {
+        }
+
+        public PortfolioException(string message, Exception inner)
+            : base(message, inner)
+        {
+        }
     }
 }

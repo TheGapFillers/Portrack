@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,7 +10,7 @@ namespace Portrack.Repositories.Services
     public class ServicesRepository : IServicesRepository
     {
         private ServicesDbContext _context;
-        private bool disposing = false;
+
 
         public ServicesRepository(ServicesDbContext context)
         {
@@ -22,25 +20,28 @@ namespace Portrack.Repositories.Services
         public async Task<int> SaveAsync()
         {
             int count = await _context.SaveChangesAsync();
-
-            disposing = true;
             return count;
         }
 
         public void Dispose()
         {
-            if (_context != null && disposing == true)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                _context.Dispose();
-                _context = null;
-                disposing = false;
+                if (_context != null)
+                    _context.Dispose();
             }
         }
 
 
         public async Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName)
         {
-            var query = _context.Portfolios.Include(p => p.PortfolioData)
+            var query = _context.Portfolios//.Include(p => p.PortfolioData)
                 .Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
 
             return await query.ToListAsync<Portfolio>();
@@ -48,7 +49,7 @@ namespace Portrack.Repositories.Services
 
         public async Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, IEnumerable<string> portfolioNames)
         {
-            var query = _context.Portfolios.Include(p => p.PortfolioData)
+            var query = _context.Portfolios//.Include(p => p.PortfolioData)
                 .Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
                 && portfolioNames.Contains(p.PortfolioName, StringComparer.InvariantCultureIgnoreCase));
 
@@ -62,17 +63,18 @@ namespace Portrack.Repositories.Services
 
         public async Task<Portfolio> GetPortfolioAsync(string userName, string portfolioName)
         {
-            var query = _context.Portfolios.Include(p => p.PortfolioData).Include(p => p.Positions)
+            var query = _context.Portfolios.Include(p => p.Positions)//.Include(p => p.PortfolioData)
                 .Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
                 && p.PortfolioName.Equals(portfolioName, StringComparison.InvariantCultureIgnoreCase));
 
             return await query.SingleOrDefaultAsync();
         }
 
-        public Portfolio AddPortfolio(Portfolio portfolio)
+        public async Task<Portfolio> AddPortfolio(Portfolio portfolio)
         {
-            if (GetPortfolioAsync(portfolio.UserName, portfolio.PortfolioName) != null)
-                throw new Exception("This portfolio name is already taken for this user.");
+            if (await GetPortfolioAsync(portfolio.UserName, portfolio.PortfolioName) != null)
+                throw new PortfolioException(
+                    string.Format("Portfolio '{0}' | '{1}' exists already.", portfolio.UserName, portfolio.PortfolioName));
 
             if (portfolio.PortfolioData == null)
                 portfolio.PortfolioData = new PortfolioData();
@@ -119,7 +121,8 @@ namespace Portrack.Repositories.Services
 
         public async Task<Position> GetPositionAsync(string userName, string portfolioName, string ticker)
         {
-            var query = _context.Positions.Include(p => p.PositionData).Where(p => p.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
+            var query = _context.Positions//.Include(p => p.PositionData)
+                .Where(p => p.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
                 && p.Portfolio.PortfolioName.Equals(portfolioName, StringComparison.InvariantCultureIgnoreCase)
                 && p.Instrument.Ticker.Equals(ticker, StringComparison.InvariantCultureIgnoreCase));
 
@@ -128,17 +131,12 @@ namespace Portrack.Repositories.Services
 
         public Position AddPosition(Position position)
         {
-            if (position.PositionData == null)
-                position.PositionData = new PositionData();
-
             return _context.Positions.Add(position);
         }
 
         public Position DeletePositionAsync(Position position)
         {
             Position deletedPosition = _context.Positions.Remove(position);
-            position = null;
-            //(_context as IObjectContextAdapter).ObjectContext.DeleteObject(position.PositionData);
 
             return deletedPosition;
         }

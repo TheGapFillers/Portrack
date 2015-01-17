@@ -15,7 +15,7 @@ namespace Portrack.Repositories.Services
         Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, params string[] portfolioNames);
         Task<Portfolio> GetPortfolioAsync(string userName, string portfolioName);
 
-        Portfolio AddPortfolio(Portfolio portfolio);
+        Task<Portfolio> AddPortfolio(Portfolio portfolio);
         Task<Portfolio> DeletePortfolioAsync(string userName, string portfolioName);
 
 
