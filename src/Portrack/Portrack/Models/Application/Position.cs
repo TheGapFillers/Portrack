@@ -20,7 +20,6 @@ namespace Portrack.Models.Application
         public int PositionId { get; set; }
         [JsonIgnore]
         public Portfolio Portfolio { get; set; }
-        [JsonIgnore]
         public Instrument Instrument { get; private set; }
         public string Ticker { get { return Instrument != null ? Instrument.Ticker : string.Empty; } }
         public int Shares { get; set; }

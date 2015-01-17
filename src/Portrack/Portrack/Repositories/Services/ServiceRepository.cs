@@ -1,4 +1,5 @@
 ﻿using Portrack.Models.Application;
+using Portrack.Providers;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -75,9 +76,6 @@ namespace Portrack.Repositories.Services
             if (await GetPortfolioAsync(portfolio.UserName, portfolio.PortfolioName) != null)
                 throw new PortfolioException(
                     string.Format("Portfolio '{0}' | '{1}' exists already.", portfolio.UserName, portfolio.PortfolioName));
-
-            if (portfolio.PortfolioData == null)
-                portfolio.PortfolioData = new PortfolioData();
 
             return _context.Portfolios.Add(portfolio);
         }
@@ -212,9 +210,16 @@ namespace Portrack.Repositories.Services
 
         public async Task<ICollection<Instrument>> GetInstrumentsAsync(IEnumerable<string> tickers)
         {
-            var query = _context.Instruments.Where(i => tickers.Contains(i.Ticker, StringComparer.InvariantCultureIgnoreCase));
+            var query = _context.Instruments.Where(i => tickers.Contains(i.Ticker, StringComparer.InvariantCultureIgnoreCase));        
 
-            return await query.ToListAsync<Instrument>();
+            ICollection<Instrument> instruments = await query.ToListAsync<Instrument>();
+
+            var marketDataProvider = new YahooMarketDataProvider();
+            List<Quote> quotes = await marketDataProvider.GetQuotesAsync(instruments.Select(i => i.Ticker));
+            foreach(Instrument instrument in instruments)
+                instrument.InstrumentData.Quote = quotes.SingleOrDefault(q => q.Ticker == instrument.Ticker);
+
+            return instruments;
         }
 
         public Task<ICollection<Instrument>> GetInstrumentsAsync(params string[] tickers)
@@ -226,7 +231,15 @@ namespace Portrack.Repositories.Services
         {
             var query = _context.Instruments.Where(i => i.Ticker.Equals(ticker, StringComparison.InvariantCultureIgnoreCase));
 
-            return await query.SingleOrDefaultAsync<Instrument>();
+            Instrument instrument = await query.SingleOrDefaultAsync<Instrument>();
+            if (instrument != null)
+            {
+                var marketDataProvider = new YahooMarketDataProvider();
+                List<Quote> quotes = await marketDataProvider.GetQuotesAsync(new[] { ticker });
+                instrument.InstrumentData.Quote = quotes.SingleOrDefault(q => q.Ticker == instrument.Ticker);
+            }
+
+            return instrument;
         }
 
         public Instrument AddInstrument(Instrument instrument)

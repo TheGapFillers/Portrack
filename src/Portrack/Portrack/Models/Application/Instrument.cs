@@ -4,6 +4,11 @@ namespace Portrack.Models.Application
 {
     public class Instrument
     {
+        public Instrument()
+        {
+            InstrumentData = new InstrumentData();
+        }
+
         public int InstrumentId { get; set; }
         public string Ticker { get; set; }
         public string Name { get; set; }
@@ -23,11 +28,28 @@ namespace Portrack.Models.Application
 
     public class Quote
     {
-
+        public string Ticker { get; set; }
+        public decimal PreviousClose { get; set; }
     }
 
     public class Price
     {
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
