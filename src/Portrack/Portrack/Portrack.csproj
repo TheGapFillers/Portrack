@@ -186,6 +186,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Models\Application\YahooQuote.cs" />
     <Compile Include="Providers\YahooMarketDataProvider.cs" />
     <Compile Include="Repositories\AspAuth\AspAuthUserManager.cs" />

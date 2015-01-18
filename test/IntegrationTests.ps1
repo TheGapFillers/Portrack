@@ -6,7 +6,9 @@ $authToken = invoke-restmethod -Method Post -uri http://localhost:24717/Token -C
 ${token_type} = $authToken.token_type
 ${access_token} = $authToken.access_token
 
-Invoke-RestMethod -Method Get -Uri http://localhost:24717/portfolios/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
+$authToken.access_token | Out-File "C:\Users\Ambroise\Dev\aaa.txt"
+
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 
 $portfolio ='
@@ -15,7 +17,7 @@ $portfolio ='
   "PortfolioName": "BambiPortfolio1",
 }
 '
-Invoke-RestMethod -Method Post -Uri http://localhost:24717/portfolios -Body $portfolio -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/portfolios -Body $portfolio -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 $transaction ='
 {
@@ -26,6 +28,6 @@ $transaction ='
   "type":"Buy"
 }
 '
-Invoke-RestMethod -Method Post -Uri http://localhost:24717/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 

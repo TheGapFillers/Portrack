@@ -22,6 +22,13 @@ namespace Portrack.Models.Application
         public PortfolioData PortfolioData { get; set; }
 
 
+        /// <summary>
+        /// Method of the portfolio class to add a transaction.
+        /// </summary>
+        /// <param name="transaction">The transaction to execute.</param>
+        /// <param name="position">The current position against which the transaction will be executed.</param>
+        /// <param name="instrument">The instrument represented by the transaction.</param>
+        /// <returns>The transaction results.</returns>
         public TransactionResult AddTransaction(Transaction transaction, Position position, Instrument instrument)
         {
             if (transaction.Type == TransactionType.Sell)
@@ -42,22 +49,19 @@ namespace Portrack.Models.Application
 
             if (transaction.Type == TransactionType.Buy)
             {
-                if (position == null)
+                if (position == null) // if position doesn't exist when buying, created a new one.
+                {
                     position = new Position(this, instrument);
-
-                if (Positions == null)
-                    Positions = new List<Position>();
-
-                Positions.Add(position);
-
+                    Positions.Add(position);
+                }
+              
                 position.Shares += transaction.Shares;            
             }
 
 
-            if (Transactions == null)
-                Transactions = new List<Transaction>();
-
             transaction.Ticker = transaction.Ticker.ToUpperInvariant();
+
+            Transactions = Transactions ?? new List<Transaction>();
             Transactions.Add(transaction);
 
             return TransactionResult.Succeeded(this, position, transaction);
@@ -66,7 +70,6 @@ namespace Portrack.Models.Application
 
     public class PortfolioData
     {
-        //public int PortfolioId { get; set; }
         public decimal CostBasis { get; set; }
         public decimal MarketValue { get; set; }
         public decimal Gain { get { return MarketValue - CostBasis; } }

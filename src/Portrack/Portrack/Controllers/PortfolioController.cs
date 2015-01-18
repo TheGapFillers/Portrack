@@ -2,7 +2,6 @@
 using Portrack.Models.Application;
 using Portrack.Repositories.AspAuth;
 using Portrack.Repositories.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,31 +10,28 @@ using System.Web.Http;
 
 namespace Portrack.Controllers
 {
-    [Authorize]
-    [RoutePrefix("portfolios")]
-    public class PortfoliosController : ApiController
+    /// <summary>
+    /// API class class against which all the portfolios call are made.
+    /// All the calls in this class need authorization.
+    /// </summary>
+    [RoutePrefix("api/portfolios")]
+    public class PortfoliosController : BaseController
     {
-        private AspAuthUserManager _userManager;
-        private readonly IServicesRepository _repository;
-
-        public PortfoliosController(IServicesRepository repository)
+        /// <summary>
+        /// Class constructor which injected 'IServicesRepository' dependency.
+        /// </summary>
+        /// <param name="repository">Injected 'IServicesRepository' dependency.</param>
+        public PortfoliosController(IServicesRepository repository) 
+            : base (repository)
         {
-            _repository = repository;
-        }
-
-        public AspAuthUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? HttpContext.Current.GetOwinContext().GetUserManager<AspAuthUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
         }
 
 
+        /// <summary>
+        /// Get method to get the portfolios of the current authenticated user.
+        /// </summary>
+        /// <param name="portfolioNames">Comma-separated string of the portfolio names.</param>
+        /// <returns>Ok status with a portfolio or a list of portfolios.</returns>
         [Route("{portfolioNames?}")]
         [HttpGet]
         public async Task<IHttpActionResult> Get(string portfolioNames = null)
@@ -54,13 +50,21 @@ namespace Portrack.Controllers
             return Ok(await _repository.GetPortfoliosAsync(User.Identity.Name, porfolioNameEnum));
         }
 
+
+        /// <summary>
+        /// Post method to upload a new portfolio for the current authenticated user.
+        /// </summary>
+        /// <param name="portfolio">The embodied portfolio to upload.</param>
+        /// <returns>
+        ///     Ok(createdPortfolio) if datalayer accepted portfolio.
+        ///     BadRequest(ModelState) if modelstate is invalid.
+        /// </returns>
         [Route("")]
         [HttpPost]
         public async Task<IHttpActionResult> Post([FromBody]Portfolio portfolio)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            //if (portfolio.UserName == null) 
             portfolio.UserName = User.Identity.Name;
 
             Portfolio createdPortfolio;
