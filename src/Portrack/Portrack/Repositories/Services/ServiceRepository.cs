@@ -42,7 +42,7 @@ namespace Portrack.Repositories.Services
 
         public async Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName)
         {
-            var query = _context.Portfolios//.Include(p => p.PortfolioData)
+            var query = _context.Portfolios
                 .Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
 
             return await query.ToListAsync<Portfolio>();
@@ -50,7 +50,7 @@ namespace Portrack.Repositories.Services
 
         public async Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, IEnumerable<string> portfolioNames)
         {
-            var query = _context.Portfolios//.Include(p => p.PortfolioData)
+            var query = _context.Portfolios
                 .Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
                 && portfolioNames.Contains(p.PortfolioName, StringComparer.InvariantCultureIgnoreCase));
 
@@ -62,10 +62,15 @@ namespace Portrack.Repositories.Services
             return GetPortfoliosAsync(userName, (IEnumerable<string>)portfolioNames);
         }
 
-        public async Task<Portfolio> GetPortfolioAsync(string userName, string portfolioName)
+        public async Task<Portfolio> GetPortfolioAsync(string userName, string portfolioName,
+            bool includePositions = false, bool includeTransactions = false)
         {
-            var query = _context.Portfolios.Include(p => p.Positions)//.Include(p => p.PortfolioData)
-                .Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
+            IQueryable<Portfolio> query = _context.Portfolios;
+
+            if (includePositions) query = query.Include(p => p.Positions);
+            if (includeTransactions) query = query.Include(p => p.Transactions);
+
+            query = query.Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
                 && p.PortfolioName.Equals(portfolioName, StringComparison.InvariantCultureIgnoreCase));
 
             return await query.SingleOrDefaultAsync();
@@ -210,14 +215,14 @@ namespace Portrack.Repositories.Services
 
         public async Task<ICollection<Instrument>> GetInstrumentsAsync(IEnumerable<string> tickers)
         {
-            var query = _context.Instruments.Where(i => tickers.Contains(i.Ticker, StringComparer.InvariantCultureIgnoreCase));        
+            var query = _context.Instruments.Where(i => tickers.Contains(i.Ticker, StringComparer.InvariantCultureIgnoreCase));
 
             ICollection<Instrument> instruments = await query.ToListAsync<Instrument>();
 
-            var marketDataProvider = new YahooMarketDataProvider();
-            List<Quote> quotes = await marketDataProvider.GetQuotesAsync(instruments.Select(i => i.Ticker));
-            foreach(Instrument instrument in instruments)
-                instrument.InstrumentData.Quote = quotes.SingleOrDefault(q => q.Ticker == instrument.Ticker);
+            //var marketDataProvider = new YahooMarketDataProvider();
+            //List<Price> quotes = await marketDataProvider.GetQuotesAsync(instruments.Select(i => i.Ticker));
+            //foreach(Instrument instrument in instruments)
+            //    instrument.InstrumentData.Quote = quotes.SingleOrDefault(q => q.Ticker == instrument.Ticker);
 
             return instruments;
         }
@@ -232,12 +237,12 @@ namespace Portrack.Repositories.Services
             var query = _context.Instruments.Where(i => i.Ticker.Equals(ticker, StringComparison.InvariantCultureIgnoreCase));
 
             Instrument instrument = await query.SingleOrDefaultAsync<Instrument>();
-            if (instrument != null)
-            {
-                var marketDataProvider = new YahooMarketDataProvider();
-                List<Quote> quotes = await marketDataProvider.GetQuotesAsync(new[] { ticker });
-                instrument.InstrumentData.Quote = quotes.SingleOrDefault(q => q.Ticker == instrument.Ticker);
-            }
+            //if (instrument != null)
+            //{
+            //    var marketDataProvider = new YahooMarketDataProvider();
+            //    List<Price> quotes = await marketDataProvider.GetQuotesAsync(new[] { ticker });
+            //    instrument.InstrumentData.Quote = quotes.SingleOrDefault(q => q.Ticker == instrument.Ticker);
+            //}
 
             return instrument;
         }

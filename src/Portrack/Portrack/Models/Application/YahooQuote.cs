@@ -7,38 +7,38 @@ using System.Web;
 namespace Portrack.Models.Application
 {
 
-    public class YahooRootObject1
+    public class YahooRootQuotes
     {
-        public YahooQuery1 query { get; set; }
+        public YahooQueryQuotes query { get; set; }
     }
 
-    public class YahooQuery1
+    public class YahooQueryQuotes
     {
         public int count { get; set; }
         public DateTime created { get; set; }
         public string lang { get; set; }
-        public YahooResults1 results { get; set; }
+        public YahooResultsQuotes results { get; set; }
     }
 
-    public class YahooResults1
+    public class YahooResultsQuotes
     {
         public YahooQuote[] quote { get; set; }
     }
 
-    public class YahooRootObject2
+    public class YahooRootQuote
     {
-        public YahooQuery2 query { get; set; }
+        public YahooQueryQuote query { get; set; }
     }
 
-    public class YahooQuery2
+    public class YahooQueryQuote
     {
         public int count { get; set; }
         public DateTime created { get; set; }
         public string lang { get; set; }
-        public YahooResults2 results { get; set; }
+        public YahooResultsQuote results { get; set; }
     }
 
-    public class YahooResults2
+    public class YahooResultsQuote
     {
         public YahooQuote quote { get; set; }
     }
@@ -129,6 +129,60 @@ namespace Portrack.Models.Application
         public string DividendYield { get; set; }
         public string PercentChange { get; set; }
     }
+
+
+
+
+
+    public class YahooRootHistoricalPrices
+    {
+        public QueryHistoricalPrices query { get; set; }
+    }
+
+    public class QueryHistoricalPrices
+    {
+        public int count { get; set; }
+        public DateTime created { get; set; }
+        public string lang { get; set; }
+        public ResultsHistoricalPrices results { get; set; }
+    }
+
+    public class ResultsHistoricalPrices
+    {
+        public HistoricalPrice[] quote { get; set; }
+    }
+
+
+    public class YahooRootHistoricalPrice
+    {
+        public QueryHistoricalPrice query { get; set; }
+    }
+
+    public class QueryHistoricalPrice
+    {
+        public int count { get; set; }
+        public DateTime created { get; set; }
+        public string lang { get; set; }
+        public ResultsHistoricalPrice results { get; set; }
+    }
+
+    public class ResultsHistoricalPrice
+    {
+        public HistoricalPrice quote { get; set; }
+    }
+
+    public class HistoricalPrice
+    {
+        public string Symbol { get; set; }
+        public string Date { get; set; }
+        public string Open { get; set; }
+        public string High { get; set; }
+        public string Low { get; set; }
+        public string Close { get; set; }
+        public string Volume { get; set; }
+        public string Adj_Close { get; set; }
+    }
+
 }
 
 

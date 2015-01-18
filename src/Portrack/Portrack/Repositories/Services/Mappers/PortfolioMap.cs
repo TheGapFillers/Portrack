@@ -14,7 +14,7 @@ namespace Portrack.Repositories.Services.Mappers
             Property(p => p.PortfolioName).IsRequired();
 
             HasMany(p => p.Positions).WithRequired(pos => pos.Portfolio).Map(m => m.MapKey("PortfolioId")).WillCascadeOnDelete(true);
-            HasMany(p => p.Transactions).WithRequired(t => t.Portfolio).Map(m => m.MapKey("PortfolioId"));
+            HasMany(p => p.Transactions).WithRequired(t => t.Portfolio).Map(m => m.MapKey("PortfolioId")).WillCascadeOnDelete(true);
 
             Ignore(t => t.PortfolioData);
             //HasRequired(i => i.PortfolioData)
