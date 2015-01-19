@@ -125,8 +125,9 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
-    <Reference Include="System.Web.Cors">
-      <HintPath>..\..\..\packages\Microsoft.AspNet.Cors.5.0.0\lib\net45\System.Web.Cors.dll</HintPath>
+    <Reference Include="System.Web.Cors, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Cors.5.2.2\lib\net45\System.Web.Cors.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -189,7 +190,8 @@
     <Compile Include="Controllers\Application\BaseController.cs" />
     <Compile Include="Controllers\Application\InstrumentsController.cs" />
     <Compile Include="Models\Application\YahooQuote.cs" />
-    <Compile Include="Providers\YahooMarketDataProvider.cs" />
+    <Compile Include="Providers\MarketData\IMarketDataProvider.cs" />
+    <Compile Include="Providers\MarketData\YahooMarketDataProvider.cs" />
     <Compile Include="Repositories\Identity\PortrackUserManager.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Identity\AccountController.cs" />
@@ -209,7 +211,7 @@
     <Compile Include="Models\Application\Portfolio.cs" />
     <Compile Include="Models\Application\Transaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Providers\ApplicationOAuthProvider.cs" />
+    <Compile Include="Providers\Identity\ApplicationOAuthProvider.cs" />
     <Compile Include="Repositories\Identity\IdentityDbContext.cs" />
     <Compile Include="Repositories\Application\IApplicationRepository.cs" />
     <Compile Include="Repositories\Application\Mappers\InstrumentMap.cs" />

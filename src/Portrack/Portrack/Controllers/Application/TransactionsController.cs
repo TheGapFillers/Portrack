@@ -1,4 +1,5 @@
 ﻿using Portrack.Models.Application;
+using Portrack.Providers.MarketData;
 using Portrack.Repositories.Application;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,9 @@ namespace Portrack.Controllers.Application
         /// Class constructor which injected 'IApplicationRepository' dependency.
         /// </summary>
         /// <param name="repository">Injected 'IApplicationRepository' dependency.</param>
-        public TransactionsController(IApplicationRepository repository)
-            : base(repository)
+        /// <param name="provider">Injected 'IMarketDataProvider' dependency.</param>
+        public TransactionsController(IApplicationRepository repository, IMarketDataProvider provider)
+            : base(repository, provider)
         {
         }
 

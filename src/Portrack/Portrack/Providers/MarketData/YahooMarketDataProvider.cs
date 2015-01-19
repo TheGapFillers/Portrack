@@ -6,14 +6,14 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Portrack.Providers
+namespace Portrack.Providers.MarketData 
 {
-    public class YahooMarketDataProvider
+    public class YahooMarketDataProvider : IMarketDataProvider
     {
         private string YQLUri { get { return "https://query.yahooapis.com/v1/public/yql?"; } }
         private string YQLQuery { get; set; }
 
-        public async Task<List<Price>> GetQuotesAsync(IEnumerable<string> tickers)
+        public async Task<List<Quote>> GetQuotesAsync(IEnumerable<string> tickers)
         {
             string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
 
@@ -26,12 +26,12 @@ namespace Portrack.Providers
                 response = await httpClient.GetAsync(uri);
             }
 
-            var quotes = new List<Price>();
+            var quotes = new List<Quote>();
             if (tickers.Count() == 1)
             {
                 YahooRootQuote rootObject = await response.Content.ReadAsAsync<YahooRootQuote>();
 
-                quotes.Add(new Price
+                quotes.Add(new Quote
                 {
                     Ticker = rootObject.query.results.quote.Symbol,
                     Last = Convert.ToDecimal(rootObject.query.results.quote.LastTradePriceOnly)
@@ -43,21 +43,21 @@ namespace Portrack.Providers
 
                 foreach (YahooQuote yahooQuote in rootObject.query.results.quote)
                 {
-                    quotes.Add(new Price
+                    quotes.Add(new Quote
                     {
                         Ticker = yahooQuote.Symbol,
                         Last = Convert.ToDecimal(yahooQuote.LastTradePriceOnly)
                     });
                 }
             }
-            
+
 
             return quotes;
         }
 
 
 
-        public async Task<List<Price>> GetHistoricalPricesAsync(IEnumerable<string> tickers, DateTime startDate, DateTime endDate)
+        public async Task<List<Quote>> GetHistoricalPricesAsync(IEnumerable<string> tickers, DateTime startDate, DateTime endDate)
         {
             string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
 
@@ -71,12 +71,12 @@ namespace Portrack.Providers
                 response = await httpClient.GetAsync(uri);
             }
 
-            var quotes = new List<Price>();
+            var quotes = new List<Quote>();
             if (tickers.Count() == 1)
             {
                 YahooRootQuote rootObject = await response.Content.ReadAsAsync<YahooRootQuote>();
 
-                quotes.Add(new Price
+                quotes.Add(new Quote
                 {
                     Ticker = rootObject.query.results.quote.Symbol,
                     Last = Convert.ToDecimal(rootObject.query.results.quote.LastTradePriceOnly)
@@ -88,7 +88,7 @@ namespace Portrack.Providers
 
                 foreach (YahooQuote yahooQuote in rootObject.query.results.quote)
                 {
-                    quotes.Add(new Price
+                    quotes.Add(new Quote
                     {
                         Ticker = yahooQuote.Symbol,
                         Last = Convert.ToDecimal(yahooQuote.LastTradePriceOnly)

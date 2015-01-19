@@ -1,4 +1,5 @@
 ﻿using Portrack.Models.Application;
+using Portrack.Providers.MarketData;
 using Portrack.Repositories.Application;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +19,9 @@ namespace Portrack.Controllers.Application
         /// Class constructor which injected 'IApplicationRepository' dependency.
         /// </summary>
         /// <param name="repository">Injected 'IApplicationRepository' dependency.</param>
-        public PortfoliosController(IApplicationRepository repository) 
-            : base (repository)
+        /// <param name="provider">Injected 'IMarketDataProvider' dependency.</param>
+        public PortfoliosController(IApplicationRepository repository, IMarketDataProvider provider) 
+            : base (repository, provider)
         {
         }
 
@@ -56,7 +58,11 @@ namespace Portrack.Controllers.Application
         [HttpGet]
         public async Task<IHttpActionResult> GetInstruments(string portfolioName)
         {
-            return Ok(await _repository.GetPortfolioInstrumentsAsync(User.Identity.Name, portfolioName));
+            List<Instrument> instruments = (await _repository.GetPortfolioInstrumentsAsync(User.Identity.Name, portfolioName)).ToList();
+            ICollection<Quote> quotes = await _provider.GetQuotesAsync(instruments.Select(i => i.Ticker));
+            instruments.ForEach(i => i.Quote = quotes.SingleOrDefault(q => q.Ticker == i.Ticker));
+
+            return Ok(instruments);
         }
 
 

@@ -13,16 +13,17 @@ namespace Portrack.Models.Application
         public string Ticker { get; set; }
         public string Name { get; set; }
         public InstrumentData InstrumentData { get; set; }
+        public Quote Quote { get; set; }
     }
 
 
     public class InstrumentData
     {
-        public Price Quote { get; set; }
+        
     }
 
 
-    public class Price
+    public class Quote
     {
         public string Ticker { get; set; }
         public decimal Last { get; set; }
