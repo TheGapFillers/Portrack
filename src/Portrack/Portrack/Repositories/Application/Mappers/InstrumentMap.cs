@@ -13,6 +13,7 @@ namespace Portrack.Repositories.Application.Mappers
             Property(i => i.InstrumentId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
             Ignore(t => t.InstrumentData);
+            Ignore(t => t.Quote);
 
             Property(i => i.Ticker).IsRequired();
         }

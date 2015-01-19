@@ -5,7 +5,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
 using Portrack.Identity.Models;
-using Portrack.Providers;
+using Portrack.Providers.Identity;
 using Portrack.Repositories.Identity;
 using System;
 

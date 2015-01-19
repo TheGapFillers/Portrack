@@ -3,6 +3,7 @@ using Portrack.Repositories.Identity;
 using Portrack.Repositories.Application;
 using System.Web;
 using System.Web.Http;
+using Portrack.Providers.MarketData;
 
 namespace Portrack.Controllers.Application
 {
@@ -13,6 +14,7 @@ namespace Portrack.Controllers.Application
     {
         protected PortrackUserManager _userManager;
         protected readonly IApplicationRepository _repository;
+        protected readonly IMarketDataProvider _provider;
 
 
         /// <summary>
@@ -35,9 +37,11 @@ namespace Portrack.Controllers.Application
         /// Class constructor which injected 'IApplicationRepository' dependency.
         /// </summary>
         /// <param name="repository">Injected 'IApplicationRepository' dependency.</param>
-        public BaseController(IApplicationRepository repository)
+        /// <param name="provider">Injected 'IMarketDataProvider' dependency.</param>
+        public BaseController(IApplicationRepository repository, IMarketDataProvider provider)
         {
             _repository = repository;
+            _provider = provider;
         }
     }
 }

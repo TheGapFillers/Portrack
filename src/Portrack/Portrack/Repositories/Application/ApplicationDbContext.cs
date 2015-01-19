@@ -52,7 +52,7 @@ namespace Portrack.Repositories.Application
                 new Instrument { Ticker="GOOG", Name = "Google"   },
                 new Instrument { Ticker="YHOO", Name = "Yahoo"    },
                 new Instrument { Ticker="MSFT", Name = "Microsoft"},
-                new Instrument { Ticker="APPL", Name = "Apple"    },
+                new Instrument { Ticker="AAPL", Name = "Apple"    },
             };
 
             context.Instruments.AddRange(instruments);

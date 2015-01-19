@@ -2,6 +2,7 @@
 using Autofac.Integration.WebApi;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
+using Portrack.Providers.MarketData;
 using Portrack.Repositories.Application;
 using System.Reflection;
 using System.Web.Http;
@@ -45,6 +46,7 @@ namespace Portrack
 
             builder.RegisterType<ApplicationDbContext>();
             builder.RegisterType<ApplicationRepository>().As<IApplicationRepository>();
+            builder.RegisterType<YahooMarketDataProvider>().As<IMarketDataProvider>();
 
             IContainer container = builder.Build();
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);

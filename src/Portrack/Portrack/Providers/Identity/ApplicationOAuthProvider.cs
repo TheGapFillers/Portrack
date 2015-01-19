@@ -6,7 +6,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Portrack.Providers
+namespace Portrack.Providers.Identity
 {
 	public class ApplicationOAuthProvider : OAuthAuthorizationServerProvider
 	{

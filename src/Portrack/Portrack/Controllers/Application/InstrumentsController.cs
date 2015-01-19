@@ -1,9 +1,9 @@
-﻿using Portrack.Repositories.Application;
-using System;
+﻿using Portrack.Models.Application;
+using Portrack.Providers.MarketData;
+using Portrack.Repositories.Application;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 
 namespace Portrack.Controllers.Application
@@ -19,7 +19,9 @@ namespace Portrack.Controllers.Application
         /// Class constructor which injected 'IApplicationRepository' dependency.
         /// </summary>
         /// <param name="repository">Injected 'IApplicationRepository' dependency.</param>
-        public InstrumentsController(IApplicationRepository repository) : base(repository) 
+        /// <param name="provider">Injected 'IMarketDataProvider' dependency.</param>
+        public InstrumentsController(IApplicationRepository repository, IMarketDataProvider provider)
+            : base(repository, provider)
         {
         }
 
@@ -33,18 +35,27 @@ namespace Portrack.Controllers.Application
         [HttpGet]
         public async Task<IHttpActionResult> Get(string tickers = null)
         {
-            if (string.IsNullOrWhiteSpace(tickers))
+            var instruments = new List<Instrument>();
+
+            if (tickers == null)
+                instruments = (await _repository.GetInstrumentsAsync()).ToList(); 
+                    
+            else 
             {
-                return Ok(await _repository.GetInstrumentsAsync());
+                IEnumerable<string> tickersEnum = tickers.Split(',').Select(s => s.Trim());
+
+                if (tickersEnum.Count() == 1)
+                    instruments.Add(await _repository.GetInstrumentAsync(tickersEnum.SingleOrDefault()));
+
+                else
+                    instruments = (await _repository.GetInstrumentsAsync(tickersEnum)).ToList();
             }
 
-            IEnumerable<string> tickersEnum = tickers.Split(',').Select(s => s.Trim());
-            if (tickersEnum.Count() == 1)
-            {
-                return Ok(await _repository.GetInstrumentAsync(tickersEnum.First()));
-            }
 
-            return Ok(await _repository.GetInstrumentsAsync(tickersEnum));
+            ICollection<Quote> quotes = await _provider.GetQuotesAsync(instruments.Select(i => i.Ticker));
+            instruments.ForEach(i => i.Quote = quotes.SingleOrDefault(q => q.Ticker == i.Ticker));
+
+            return Ok(instruments);
         }
     }
 }
