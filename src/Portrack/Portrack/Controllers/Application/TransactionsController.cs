@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNet.Identity.Owin;
-using Portrack.Models.Application;
-using Portrack.Repositories.AspAuth;
-using Portrack.Repositories.Services;
+﻿using Portrack.Models.Application;
+using Portrack.Repositories.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 
-namespace Portrack.Controllers
+namespace Portrack.Controllers.Application
 {
     /// <summary>
     /// API class class against which all the transactions call are made.
@@ -19,10 +16,10 @@ namespace Portrack.Controllers
     public class TransactionsController : BaseController
     {
         /// <summary>
-        /// Class constructor which injected 'IServicesRepository' dependency.
+        /// Class constructor which injected 'IApplicationRepository' dependency.
         /// </summary>
-        /// <param name="repository">Injected 'IServicesRepository' dependency.</param>
-        public TransactionsController(IServicesRepository repository)
+        /// <param name="repository">Injected 'IApplicationRepository' dependency.</param>
+        public TransactionsController(IApplicationRepository repository)
             : base(repository)
         {
         }

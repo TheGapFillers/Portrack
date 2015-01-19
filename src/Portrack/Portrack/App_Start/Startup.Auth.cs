@@ -6,7 +6,7 @@ using Microsoft.Owin.Security.OAuth;
 using Owin;
 using Portrack.Identity.Models;
 using Portrack.Providers;
-using Portrack.Repositories.AspAuth;
+using Portrack.Repositories.Identity;
 using System;
 
 namespace Portrack
@@ -36,8 +36,8 @@ namespace Portrack
         public void ConfigureAuth(IAppBuilder app)
         {
             // Configure the db context, user manager and signin manager to use a single instance per request
-            app.CreatePerOwinContext(AspAuthDbContext.Create);
-            app.CreatePerOwinContext<AspAuthUserManager>(AspAuthUserManager.Create);
+            app.CreatePerOwinContext(IdentityDbContext.Create);
+            app.CreatePerOwinContext<PortrackUserManager>(PortrackUserManager.Create);
             app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
 
             // Enable the application to use a cookie to store information for the signed in user
@@ -49,7 +49,7 @@ namespace Portrack
                 {
                     // Enables the application to validate the security stamp when the user logs in.
                     // This is a security feature which is used when you change a password or add an external login to your account.  
-                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<AspAuthUserManager, AspAuthUser>(
+                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<PortrackUserManager, PortrackUser>(
                         validateInterval: TimeSpan.FromMinutes(20),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 
-namespace Portrack.Repositories.Services.Mappers
+namespace Portrack.Repositories.Application.Mappers
 {
     public class PositionMap : EntityTypeConfiguration<Position>
     {

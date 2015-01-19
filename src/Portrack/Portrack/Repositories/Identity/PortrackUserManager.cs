@@ -8,7 +8,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Portrack.Repositories.AspAuth
+namespace Portrack.Repositories.Identity
 {
     public class EmailService : IIdentityMessageService
     {
@@ -29,18 +29,18 @@ namespace Portrack.Repositories.AspAuth
     }
 
     // Configure the application user manager which is used in this application.
-    public class AspAuthUserManager : UserManager<AspAuthUser>
+    public class PortrackUserManager : UserManager<PortrackUser>
     {
-        public AspAuthUserManager(IUserStore<AspAuthUser> store)
+        public PortrackUserManager(IUserStore<PortrackUser> store)
             : base(store)
         {
         }
-        public static AspAuthUserManager Create(IdentityFactoryOptions<AspAuthUserManager> options,
+        public static PortrackUserManager Create(IdentityFactoryOptions<PortrackUserManager> options,
             IOwinContext context)
         {
-            var manager = new AspAuthUserManager(new UserStore<AspAuthUser>(context.Get<AspAuthDbContext>()));
+            var manager = new PortrackUserManager(new UserStore<PortrackUser>(context.Get<IdentityDbContext>()));
             // Configure validation logic for usernames
-            manager.UserValidator = new UserValidator<AspAuthUser>(manager)
+            manager.UserValidator = new UserValidator<PortrackUser>(manager)
             {
                 AllowOnlyAlphanumericUserNames = false,
                 RequireUniqueEmail = true
@@ -63,11 +63,11 @@ namespace Portrack.Repositories.AspAuth
 
             // Register two factor authentication providers. This application uses Phone and Emails as a step of receiving a code for verifying the user
             // You can write your own provider and plug it in here.
-            manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<AspAuthUser>
+            manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<PortrackUser>
             {
                 MessageFormat = "Your security code is {0}"
             });
-            manager.RegisterTwoFactorProvider("Email Code", new EmailTokenProvider<AspAuthUser>
+            manager.RegisterTwoFactorProvider("Email Code", new EmailTokenProvider<PortrackUser>
             {
                 Subject = "Security Code",
                 BodyFormat = "Your security code is {0}"
@@ -78,26 +78,26 @@ namespace Portrack.Repositories.AspAuth
             if (dataProtectionProvider != null)
             {
                 manager.UserTokenProvider =
-                    new DataProtectorTokenProvider<AspAuthUser>(dataProtectionProvider.Create("ASP.NET Identity"));
+                    new DataProtectorTokenProvider<PortrackUser>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
         }
     }
 
     // Configure the application sign-in manager which is used in this application.  
-    public class ApplicationSignInManager : SignInManager<AspAuthUser, string>
+    public class ApplicationSignInManager : SignInManager<PortrackUser, string>
     {
-        public ApplicationSignInManager(AspAuthUserManager userManager, IAuthenticationManager authenticationManager) :
+        public ApplicationSignInManager(PortrackUserManager userManager, IAuthenticationManager authenticationManager) :
             base(userManager, authenticationManager) { }
 
-        public override Task<ClaimsIdentity> CreateUserIdentityAsync(AspAuthUser user)
+        public override Task<ClaimsIdentity> CreateUserIdentityAsync(PortrackUser user)
         {
-            return user.GenerateUserIdentityAsync((AspAuthUserManager)UserManager);
+            return user.GenerateUserIdentityAsync((PortrackUserManager)UserManager);
         }
 
         public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)
         {
-            return new ApplicationSignInManager(context.GetUserManager<AspAuthUserManager>(), context.Authentication);
+            return new ApplicationSignInManager(context.GetUserManager<PortrackUserManager>(), context.Authentication);
         }
     }
 }

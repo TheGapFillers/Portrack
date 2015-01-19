@@ -6,14 +6,14 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Portrack.Repositories.Services
+namespace Portrack.Repositories.Application
 {
-    public class ServicesRepository : IServicesRepository
+    public class ApplicationRepository : IApplicationRepository
     {
-        private ServicesDbContext _context;
+        private ApplicationDbContext _context;
 
 
-        public ServicesRepository(ServicesDbContext context)
+        public ApplicationRepository(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -52,7 +52,7 @@ namespace Portrack.Repositories.Services
         {
             var query = _context.Portfolios
                 .Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
-                && portfolioNames.Contains(p.PortfolioName, StringComparer.InvariantCultureIgnoreCase));
+                && portfolioNames.Contains(p.PortfolioName));
 
             return await query.ToListAsync<Portfolio>();
         }
@@ -100,7 +100,7 @@ namespace Portrack.Repositories.Services
 
         public async Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName)
         {
-            var query = _context.Positions.Include(p => p.Portfolio)
+            var query = _context.Positions.Include(p => p.Portfolio).Include(p => p.Instrument)
                 .Where(p => p.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
                 && p.Portfolio.PortfolioName.Equals(portfolioName, StringComparison.InvariantCultureIgnoreCase));
 
@@ -112,7 +112,7 @@ namespace Portrack.Repositories.Services
             var query = _context.Positions.Include(p => p.Portfolio).Include(p => p.Instrument)
                 .Where(p => p.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
                 && p.Portfolio.PortfolioName.Equals(portfolioName, StringComparison.InvariantCultureIgnoreCase)
-                && tickers.Contains(p.Instrument.Ticker, StringComparer.InvariantCultureIgnoreCase));
+                && tickers.Contains(p.Instrument.Ticker));
 
             return await query.ToListAsync<Position>();
         }
@@ -124,7 +124,7 @@ namespace Portrack.Repositories.Services
 
         public async Task<Position> GetPositionAsync(string userName, string portfolioName, string ticker)
         {
-            var query = _context.Positions//.Include(p => p.PositionData)
+            var query = _context.Positions.Include(p => p.Portfolio).Include(p => p.Instrument)
                 .Where(p => p.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
                 && p.Portfolio.PortfolioName.Equals(portfolioName, StringComparison.InvariantCultureIgnoreCase)
                 && p.Instrument.Ticker.Equals(ticker, StringComparison.InvariantCultureIgnoreCase));
@@ -165,7 +165,7 @@ namespace Portrack.Repositories.Services
         {
             var query = _context.Transactions.Where(p => p.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
                 && p.PortfolioName.Equals(portfolioName, StringComparison.InvariantCultureIgnoreCase)
-                && tickers.Contains(p.Ticker, StringComparer.InvariantCultureIgnoreCase));
+                && tickers.Contains(p.Ticker));
 
             return await query.ToListAsync<Transaction>();
         }
@@ -215,7 +215,7 @@ namespace Portrack.Repositories.Services
 
         public async Task<ICollection<Instrument>> GetInstrumentsAsync(IEnumerable<string> tickers)
         {
-            var query = _context.Instruments.Where(i => tickers.Contains(i.Ticker, StringComparer.InvariantCultureIgnoreCase));
+            var query = _context.Instruments.Where(i => tickers.Contains(i.Ticker));
 
             ICollection<Instrument> instruments = await query.ToListAsync<Instrument>();
 
@@ -247,9 +247,21 @@ namespace Portrack.Repositories.Services
             return instrument;
         }
 
+        public async Task<ICollection<Instrument>> GetPortfolioInstrumentsAsync(string userName, string portfolioName)
+        {
+            ICollection<Position> positions = await GetPositionsAsync(userName, portfolioName);
+            IEnumerable<string> tickers = positions.Select(pos => pos.Ticker);
+            var query = _context.Instruments.Where(i => tickers.Contains(i.Ticker));
+
+            return await query.ToListAsync();
+        }
+
         public Instrument AddInstrument(Instrument instrument)
         {
             return _context.Instruments.Add(instrument);
         }
+
+
+        
     }
 }

@@ -1,27 +1,26 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
+using Portrack.Models;
+using Portrack.Repositories.Identity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using Portrack.Models;
-using Portrack.Repositories.AspAuth;
 
-namespace Portrack.Controllers
+namespace Portrack.Controllers.Identity
 {
     [Authorize]
     public class ManageController : Controller
     {
         private ApplicationSignInManager _signInManager;
-        private AspAuthUserManager _userManager;
+        private PortrackUserManager _userManager;
 
         public ManageController()
         {
         }
 
-        public ManageController(AspAuthUserManager userManager, ApplicationSignInManager signInManager)
+        public ManageController(PortrackUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -39,11 +38,11 @@ namespace Portrack.Controllers
             }
         }
 
-        public AspAuthUserManager UserManager
+        public PortrackUserManager UserManager
         {
             get
             {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<AspAuthUserManager>();
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<PortrackUserManager>();
             }
             private set
             {
