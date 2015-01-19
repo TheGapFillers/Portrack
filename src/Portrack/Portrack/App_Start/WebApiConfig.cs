@@ -2,7 +2,7 @@
 using Autofac.Integration.WebApi;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
-using Portrack.Repositories.Services;
+using Portrack.Repositories.Application;
 using System.Reflection;
 using System.Web.Http;
 
@@ -43,8 +43,8 @@ namespace Portrack
             var builder = new ContainerBuilder();
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 
-            builder.RegisterType<ServicesDbContext>();
-            builder.RegisterType<ServicesRepository>().As<IServicesRepository>();
+            builder.RegisterType<ApplicationDbContext>();
+            builder.RegisterType<ApplicationRepository>().As<IApplicationRepository>();
 
             IContainer container = builder.Build();
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);

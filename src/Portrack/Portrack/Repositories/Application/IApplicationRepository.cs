@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Portrack.Repositories.Services
+namespace Portrack.Repositories.Application
 {
-    public interface IServicesRepository : IDisposable
+    public interface IApplicationRepository : IDisposable
     {
         Task<int> SaveAsync();
 
@@ -44,6 +44,7 @@ namespace Portrack.Repositories.Services
         Task<ICollection<Instrument>> GetInstrumentsAsync();
         Task<ICollection<Instrument>> GetInstrumentsAsync(IEnumerable<string> tickers);
         Task<ICollection<Instrument>> GetInstrumentsAsync(params string[] tickers);
+        Task<ICollection<Instrument>> GetPortfolioInstrumentsAsync(string userName, string portfolioName);
         Task<Instrument> GetInstrumentAsync(string ticker);
 
         Instrument AddInstrument(Instrument instrument);

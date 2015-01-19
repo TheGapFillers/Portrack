@@ -1,14 +1,11 @@
-﻿using Microsoft.AspNet.Identity.Owin;
-using Portrack.Models.Application;
-using Portrack.Repositories.AspAuth;
-using Portrack.Repositories.Services;
+﻿using Portrack.Models.Application;
+using Portrack.Repositories.Application;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
 
-namespace Portrack.Controllers
+namespace Portrack.Controllers.Application
 {
     /// <summary>
     /// API class class against which all the portfolios call are made.
@@ -18,10 +15,10 @@ namespace Portrack.Controllers
     public class PortfoliosController : BaseController
     {
         /// <summary>
-        /// Class constructor which injected 'IServicesRepository' dependency.
+        /// Class constructor which injected 'IApplicationRepository' dependency.
         /// </summary>
-        /// <param name="repository">Injected 'IServicesRepository' dependency.</param>
-        public PortfoliosController(IServicesRepository repository) 
+        /// <param name="repository">Injected 'IApplicationRepository' dependency.</param>
+        public PortfoliosController(IApplicationRepository repository) 
             : base (repository)
         {
         }
@@ -48,6 +45,18 @@ namespace Portrack.Controllers
             }
 
             return Ok(await _repository.GetPortfoliosAsync(User.Identity.Name, porfolioNameEnum));
+        }
+
+
+        /// <summary>
+        /// Get method to get the instruments of the specified portfolio of the current authenticated user.
+        /// </summary>
+        /// <returns>Ok status with a list of instruments.</returns>
+        [Route("instruments/{portfolioName}")]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetInstruments(string portfolioName)
+        {
+            return Ok(await _repository.GetPortfolioInstrumentsAsync(User.Identity.Name, portfolioName));
         }
 
 
@@ -82,6 +91,6 @@ namespace Portrack.Controllers
                 return Ok(createdPortfolio);
 
             return Ok();
-        }
+        }      
     }
 }

@@ -1,11 +1,11 @@
 using Portrack.Models.Application;
-using Portrack.Repositories.Services.Mappers;
+using Portrack.Repositories.Application.Mappers;
 using System.Collections.Generic;
 using System.Data.Entity;
 
-namespace Portrack.Repositories.Services
+namespace Portrack.Repositories.Application
 {
-    public class ServicesDbContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
         // Your context has been configured to use a 'DataModel' connection string from your application's 
         // configuration file (App.config or Web.config). By default, this connection string targets the 
@@ -13,11 +13,11 @@ namespace Portrack.Repositories.Services
         // 
         // If you wish to target a different database and/or database provider, modify the 'DataModel' 
         // connection string in the application configuration file.
-        public ServicesDbContext()
-            : base("ServicesConnection")
+        public ApplicationDbContext()
+            : base("ApplicationConnection")
         {
             Configuration.LazyLoadingEnabled = false;                                                           // Disable lazy loading for all db sets.
-            Database.SetInitializer<ServicesDbContext>(new ServicesDbContextInitializer());    // No code first initialisation.
+            Database.SetInitializer<ApplicationDbContext>(new ApplicationDbContextInitializer());    // No code first initialisation.
         }
 
         // Add a DbSet for each entity type that you want to include in your model. For more information 
@@ -43,9 +43,9 @@ namespace Portrack.Repositories.Services
         }
     }
 
-    public class ServicesDbContextInitializer : DropCreateDatabaseIfModelChanges<ServicesDbContext>
+    public class ApplicationDbContextInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
-        protected override void Seed(ServicesDbContext context)
+        protected override void Seed(ApplicationDbContext context)
         {
             var instruments = new List<Instrument>
             {

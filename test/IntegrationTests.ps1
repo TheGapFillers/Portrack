@@ -9,6 +9,16 @@ ${access_token} = $authToken.access_token
 $authToken.access_token | Out-File "C:\Users\Ambroise\Dev\aaa.txt"
 
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/instruments/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
+
+
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/transactions/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/transactions/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
+
+
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/instruments/GOOG,YHOO -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/instruments/GOOG,YHOO" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 
 $portfolio ='
@@ -18,6 +28,7 @@ $portfolio ='
 }
 '
 Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/portfolios -Body $portfolio -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
+
 
 $transaction ='
 {

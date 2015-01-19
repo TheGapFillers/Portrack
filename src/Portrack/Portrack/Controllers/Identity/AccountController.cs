@@ -3,26 +3,26 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Portrack.Identity.Models;
 using Portrack.Models;
-using Portrack.Repositories.AspAuth;
+using Portrack.Repositories.Identity;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace Portrack.Controllers
+namespace Portrack.Controllers.Identity
 {
     [Authorize]
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
-        private AspAuthUserManager _userManager;
+        private PortrackUserManager _userManager;
 
         public AccountController()
         {
         }
 
-        public AccountController(AspAuthUserManager userManager, ApplicationSignInManager signInManager)
+        public AccountController(PortrackUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -40,11 +40,11 @@ namespace Portrack.Controllers
             }
         }
 
-        public AspAuthUserManager UserManager
+        public PortrackUserManager UserManager
         {
             get
             {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<AspAuthUserManager>();
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<PortrackUserManager>();
             }
             private set
             {
@@ -163,7 +163,7 @@ namespace Portrack.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new AspAuthUser { UserName = model.Email, Email = model.Email, Hometown = model.Hometown };
+                var user = new PortrackUser { UserName = model.Email, Email = model.Email, Hometown = model.Hometown };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -379,7 +379,7 @@ namespace Portrack.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new AspAuthUser { UserName = model.Email, Email = model.Email, Hometown = model.Hometown };
+                var user = new PortrackUser { UserName = model.Email, Email = model.Email, Hometown = model.Hometown };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

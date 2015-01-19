@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security.OAuth;
 using Portrack.Identity.Models;
-using Portrack.Repositories.AspAuth;
+using Portrack.Repositories.Identity;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -78,9 +78,9 @@ namespace Portrack.Providers
 		{
 			if (context.UserName == "ambroise.couissin@gmail.com")
 			{
-				var userManager = context.OwinContext.GetUserManager<AspAuthUserManager>();
+				var userManager = context.OwinContext.GetUserManager<PortrackUserManager>();
 
-				AspAuthUser user = await userManager.FindByNameAsync(context.UserName);
+				PortrackUser user = await userManager.FindByNameAsync(context.UserName);
 				ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager);
 				context.Validated(oAuthIdentity);
 			}
