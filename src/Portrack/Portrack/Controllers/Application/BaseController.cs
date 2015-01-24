@@ -10,6 +10,7 @@ namespace Portrack.Controllers.Application
     /// <summary>
     /// Base controller of Portrack. Responsible for the User manager and the IApplicationRepository.
     /// </summary>
+    [Authorize]
     public class BaseController : ApiController
     {
         protected PortrackUserManager _userManager;

@@ -27,7 +27,7 @@ $portfolio ='
   "PortfolioName": "BambiPortfolio1",
 }
 '
-Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/portfolios -Body $portfolio -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/portfolios -Body $portfolio -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"} 
 
 
 $transaction ='
@@ -39,6 +39,6 @@ $transaction ='
   "type":"Buy"
 }
 '
-Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"} -TimeoutSec 300
 
 

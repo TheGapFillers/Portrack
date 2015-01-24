@@ -35,14 +35,15 @@ namespace Portrack.Models.Application
             {
                 if (position == null)
                 {
-                    if (transaction.Type == TransactionType.Sell)
-                        return TransactionResult.Failed(this, position, transaction,
-                            "Cannot sell on a non-existing position.");
+                    return TransactionResult.Failed(this, position, transaction,
+                        "Cannot sell on a non-existing position.");
                 }
 
                 if (transaction.Shares > position.Shares)
+                {
                     return TransactionResult.Failed(this, position, transaction,
                         "Not enough shares for this position. Cannot sell.");
+                }
 
                 position.Shares -= transaction.Shares;
             }
@@ -54,8 +55,8 @@ namespace Portrack.Models.Application
                     position = new Position(this, instrument);
                     Positions.Add(position);
                 }
-              
-                position.Shares += transaction.Shares;            
+
+                position.Shares += transaction.Shares;
             }
 
 
