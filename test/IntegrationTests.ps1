@@ -17,7 +17,7 @@ Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/transactions/ -Hea
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/transactions/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 
-Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/instruments/GOOG,YHOO -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/instruments/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
 Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/instruments/GOOG,YHOO" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 
