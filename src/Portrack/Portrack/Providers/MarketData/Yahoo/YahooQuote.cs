@@ -1,10 +1,6 @@
-﻿using Portrack.Models.Application;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System;
 
-namespace Portrack.Models.Application
+namespace Portrack.Providers.MarketData.Yahoo
 {
 
     public class YahooRootQuotes

@@ -1,12 +1,10 @@
 ﻿${clientId} = "web"
 ${clientSecret} = ""
 ${UserName} = "ambroise.couissin@gmail.com"
-${Password} = ""
+${Password} = "Aaaa-1111"
 $authToken = invoke-restmethod -Method Post -uri http://localhost:24717/Token -ContentType "application/x-www-form-urlencoded;charset=UTF-8" -Body "grant_type=password&username=${UserName}&password=${Password}&client_id=${clientId}&client_secret=${clientSecret}"
 ${token_type} = $authToken.token_type
 ${access_token} = $authToken.access_token
-
-$authToken.access_token | Out-File "C:\Users\Ambroise\Dev\aaa.txt"
 
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
@@ -23,7 +21,6 @@ Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/instruments/GOOG,
 
 $portfolio ='
 {
-  "UserName": "ambroise.couissin@gmail.com",
   "PortfolioName": "BambiPortfolio1",
 }
 '
@@ -39,6 +36,6 @@ $transaction ='
   "type":"Buy"
 }
 '
-Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"} -TimeoutSec 300
+Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 
