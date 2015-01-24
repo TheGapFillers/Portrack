@@ -142,7 +142,8 @@ publish/
 !**/packages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/packages/repositories.config
-
+# except NuGet.exe which is needed
+!NuGet.exe
 # Windows Azure Build Output
 csx/
 *.build.csdef
