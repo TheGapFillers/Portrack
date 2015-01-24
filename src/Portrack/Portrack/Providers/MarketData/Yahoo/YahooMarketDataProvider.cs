@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 
-namespace Portrack.Providers.MarketData 
+namespace Portrack.Providers.MarketData.Yahoo 
 {
     public class YahooMarketDataProvider : IMarketDataProvider
     {

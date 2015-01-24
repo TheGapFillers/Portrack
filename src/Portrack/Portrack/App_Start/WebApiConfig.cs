@@ -3,6 +3,7 @@ using Autofac.Integration.WebApi;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
 using Portrack.Providers.MarketData;
+using Portrack.Providers.MarketData.Yahoo;
 using Portrack.Repositories.Application;
 using System.Reflection;
 using System.Web.Http;

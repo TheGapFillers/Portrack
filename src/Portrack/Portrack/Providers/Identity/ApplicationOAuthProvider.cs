@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNet.Identity.Owin;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using Portrack.Identity.Models;
 using Portrack.Repositories.Identity;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace Portrack.Providers.Identity
@@ -31,11 +36,6 @@ namespace Portrack.Providers.Identity
 				if (expectedRootUri.AbsoluteUri == context.RedirectUri)
 				{
 					context.Validated();
-				}
-				else if (context.ClientId == "web")
-				{
-					var expectedUri = new Uri(context.Request.Uri, "/");
-					context.Validated(expectedUri.AbsoluteUri);
 				}
 			}
 
@@ -74,18 +74,24 @@ namespace Portrack.Providers.Identity
 		}
 
 
-		public async override Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
+		public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
 		{
-			if (context.UserName == "ambroise.couissin@gmail.com")
-			{
-				var userManager = context.OwinContext.GetUserManager<PortrackUserManager>();
+			var userManager = context.OwinContext.GetUserManager<PortrackUserManager>();
 
-				PortrackUser user = await userManager.FindByNameAsync(context.UserName);
-				ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager);
-				context.Validated(oAuthIdentity);
+			PortrackUser user = await userManager.FindAsync(context.UserName, context.Password);
+
+			// User not found.
+			if (user == null)
+			{
+				context.Rejected();
+				return;
 			}
-			else
-				await base.GrantResourceOwnerCredentials(context);
+
+			ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager); 
+
+			var ticket = new AuthenticationTicket(oAuthIdentity, CreateProperties(user.UserName));
+
+			context.Validated(ticket);
 		}
 
 		public override Task MatchEndpoint(OAuthMatchEndpointContext context)
@@ -111,30 +117,32 @@ namespace Portrack.Providers.Identity
 
 		public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
 		{
-			if (context.Parameters.Get("client_id") == "web")
+			string clientId;
+			string clientSecret;
+			if (context.TryGetBasicCredentials(out clientId, out clientSecret) ||
+				context.TryGetFormCredentials(out clientId, out clientSecret))
 			{
-				context.Validated(context.ClientId);
-				return Task.FromResult(0);
+				if (clientId == "web" && clientSecret == "")
+				{
+					context.Validated();
+				}
 			}
-			else
-				return base.ValidateClientAuthentication(context);
-
-			
-			//clientId = Parameters.Get(Constants.Parameters.ClientId);
-			//if (!String.IsNullOrEmpty(clientId))
-			//{
-			//    clientSecret = Parameters.Get(Constants.Parameters.ClientSecret);
-			//    ClientId = clientId;
-			//    return true;
-			//}
-			//clientId = null;
-			//clientSecret = null;
-			//return false;
+			return Task.FromResult(0);
 		}
 
 		public override Task ValidateTokenRequest(OAuthValidateTokenRequestContext context)
 		{
 			return base.ValidateTokenRequest(context);
+		}
+
+
+		public static AuthenticationProperties CreateProperties(string userName)
+		{
+			var data = new Dictionary<string, string>
+			{
+				{ "userName", userName },
+			};
+			return new AuthenticationProperties(data);
 		}
 	}
 
