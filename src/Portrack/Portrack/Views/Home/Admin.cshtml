@@ -1,0 +1,23 @@
+﻿@{ Layout = ""; }
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/admin">
+    <title>Blog Admin</title>
+    @Styles.Render("~/adminstyles")
+    <meta name="description" content="" />
+</head>
+<body>
+    <div ng-view>
+    </div>
+    @Scripts.Render("~/Scripts/angular.js")
+    @Scripts.Render("~/Scripts/angular-route.js")
+    @Scripts.Render("~/Scripts/angular-sanitize.js")
+    @Scripts.Render("~/Scripts/angular-cookies.js")
+    @Scripts.Render("~/Scripts/marked.js")
+    @Scripts.Render("~/Scripts/angular-marked.js")
+    @Scripts.Render("~/adminscripts")
+</body>
+</html>
