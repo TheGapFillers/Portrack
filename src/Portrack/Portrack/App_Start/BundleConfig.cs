@@ -1,46 +1,97 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Web;
+using System.Web.Hosting;
 using System.Web.Optimization;
 
 namespace Portrack
 {
     public class BundleConfig
     {
+        public static string AdminAppDir = "app";
+
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
-            bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                "~/Scripts/jquery-{version}.js"));
+            CleanupUnusedFiles();
+            BundleTable.VirtualPathProvider = new ScriptBundlePathProvider(HostingEnvironment.VirtualPathProvider);
+            AddAppBundles(bundles);
+            bundles.IgnoreList.Ignore("*Spec.js");
+        }
 
-            bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
-                "~/Scripts/jquery.unobtrusive*",
-                "~/Scripts/jquery.validate*"));
+        private static void AddAppBundles(BundleCollection bundles)
+        {
+            var scriptBundle = new ScriptBundle("~/adminscripts");
+            var adminAppDirFullPath = HttpContext.Current.Server.MapPath(string.Format("~/{0}", AdminAppDir));
+            if (Directory.Exists(adminAppDirFullPath))
+            {
+                scriptBundle.Include(
+                    // Order matters, so get the core app setup first
+                    string.Format("~/{0}/app.module.js", AdminAppDir),
+                    string.Format("~/{0}/app.core.module.js", AdminAppDir))
+                    // then get any other top level js files
+                    .IncludeDirectory(string.Format("~/{0}", AdminAppDir), "*.js", false)
+                    // then get all nested module js files
+                    .IncludeDirectory(string.Format("~/{0}", AdminAppDir), "*.module.js", true)
+                    // finally, get all the other js files
+                    .IncludeDirectory(string.Format("~/{0}", AdminAppDir), "*.js", true);
+            }
+            bundles.Add(scriptBundle);
+            bundles.Add(new StyleBundle("~/adminstyles").Include(
+                "~/content/css/admin.css"));
+        }
 
-            bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
-                "~/Scripts/knockout-{version}.js",
-                "~/Scripts/knockout.validation.js"));
+        [Conditional("DEBUG")]
+        private static void CleanupUnusedFiles()
+        {
+            var adminAppDirFullPath = HttpContext.Current.Server.MapPath(string.Format("~/{0}", AdminAppDir));
+            if (Directory.Exists(adminAppDirFullPath))
+            {
+                var jsFiles = Directory.GetFiles(adminAppDirFullPath, "*.js", SearchOption.AllDirectories);
+                foreach (var jsFile in jsFiles)
+                {
+                    var tsFile = jsFile.Remove(jsFile.Length - 3, 3) + ".ts";
+                    if (!File.Exists(tsFile) && !jsFile.EndsWith("spec.js"))
+                    {
+                        File.Delete(jsFile);
+                        var map = jsFile + ".map";
+                        if (File.Exists(map)) File.Delete(map);
+                    }
+                }
+            }
+        }
+    }
 
-            bundles.Add(new ScriptBundle("~/bundles/app").Include(
-                "~/Scripts/sammy-{version}.js",
-                "~/Scripts/app/common.js",
-                "~/Scripts/app/app.datamodel.js",
-                "~/Scripts/app/app.viewmodel.js",
-                "~/Scripts/app/home.viewmodel.js",
-                "~/Scripts/app/_run.js"));
+    class ScriptBundlePathProvider : VirtualPathProvider
+    {
+        private readonly VirtualPathProvider _virtualPathProvider;
 
-            // Use the development version of Modernizr to develop with and learn from. Then, when you're
-            // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
-            bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
-                "~/Scripts/modernizr-*"));
+        public ScriptBundlePathProvider(VirtualPathProvider virtualPathProvider)
+        {
+            _virtualPathProvider = virtualPathProvider;
+        }
 
-            bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                "~/Scripts/bootstrap.js",
-                "~/Scripts/respond.js"));
+        public override bool FileExists(string virtualPath)
+        {
+            return _virtualPathProvider.FileExists(virtualPath);
+        }
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
-                 "~/Content/bootstrap.css",
-                 "~/Content/Site.css"));
+        public override VirtualFile GetFile(string virtualPath)
+        {
+            return _virtualPathProvider.GetFile(virtualPath);
+        }
+
+        public override VirtualDirectory GetDirectory(string virtualDir)
+        {
+            return _virtualPathProvider.GetDirectory(virtualDir);
+        }
+
+        public override bool DirectoryExists(string virtualDir)
+        {
+            return _virtualPathProvider.DirectoryExists(virtualDir);
         }
     }
 }
