@@ -5,48 +5,49 @@ using System.Threading.Tasks;
 
 namespace Portrack.Repositories.Application
 {
-    public interface IApplicationRepository : IDisposable
-    {
-        Task<int> SaveAsync();
+	public interface IApplicationRepository : IDisposable
+	{
+		Task<int> SaveAsync();
 
 
-        Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName);
-        Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, IEnumerable<string> portfolioNames);
-        Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, params string[] portfolioNames);
-        Task<Portfolio> GetPortfolioAsync(string userName, string portfolioName, bool includePositions = false, bool includeTransactions = false);
+		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName);
+		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, IEnumerable<string> portfolioNames);
+		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, params string[] portfolioNames);
+		Task<Portfolio> GetPortfolioAsync(string userName, string portfolioName, bool includePositions = false, bool includeTransactions = false);
 
-        Task<Portfolio> AddPortfolio(Portfolio portfolio);
-        Task<Portfolio> DeletePortfolioAsync(string userName, string portfolioName);
-
-
-
-        Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName);
-        Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName, IEnumerable<string> tickers);
-        Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName, params string[] tickers);
-        Task<Position> GetPositionAsync(string userName, string portfolioName, string ticker);
-
-        Position AddPosition(Position position);
-        Position DeletePositionAsync(Position position);
+		Task<Portfolio> AddPortfolio(Portfolio portfolio);
+		Task<Portfolio> DeletePortfolioAsync(string userName, string portfolioName);
 
 
 
-        Task<ICollection<Transaction>> GetTransactionsAsync(string userName);
-        Task<ICollection<Transaction>> GetTransactionsAsync(string userName, string portfolioName);
-        Task<ICollection<Transaction>> GetTransactionsAsync(string userName, string portfolioName, IEnumerable<string> tickers);
-        Task<ICollection<Transaction>> GetTransactionsAsync(string userName, string portfolioName, params string[] tickers);
+		Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName);
+		Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName, IEnumerable<string> tickers);
+		Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName, params string[] tickers);
+		Task<Position> GetPositionAsync(string userName, string portfolioName, string ticker);
 
-        Transaction AddTransaction(Transaction transaction);
-        Task<Transaction> RemoveLastTransactionAsync(string userName, string portfolioName);
-        Task<Transaction> RemoveLastTransactionAsync(string userName, string portfolioName, string ticker);
-
+		Position AddPosition(Position position);
+		Position DeletePositionAsync(Position position);
 
 
-        Task<ICollection<Instrument>> GetInstrumentsAsync();
-        Task<ICollection<Instrument>> GetInstrumentsAsync(IEnumerable<string> tickers);
-        Task<ICollection<Instrument>> GetInstrumentsAsync(params string[] tickers);
-        Task<ICollection<Instrument>> GetPortfolioInstrumentsAsync(string userName, string portfolioName);
-        Task<Instrument> GetInstrumentAsync(string ticker);
 
-        Instrument AddInstrument(Instrument instrument);
-    }
+		Task<ICollection<Transaction>> GetTransactionsAsync(string userName);
+		Task<ICollection<Transaction>> GetTransactionsAsync(string userName, string portfolioName);
+		Task<ICollection<Transaction>> GetTransactionsAsync(string userName, string portfolioName, IEnumerable<string> tickers);
+		Task<ICollection<Transaction>> GetTransactionsAsync(string userName, string portfolioName, params string[] tickers);
+
+		Transaction AddTransaction(Transaction transaction);
+		Task<Transaction> RemoveLastTransactionAsync(string userName, string portfolioName);
+		Task<Transaction> RemoveLastTransactionAsync(string userName, string portfolioName, string ticker);
+
+
+
+		Task<ICollection<Instrument>> GetInstrumentsAsync();
+		Task<ICollection<Instrument>> GetInstrumentsAsync(IEnumerable<string> tickers);
+		Task<ICollection<Instrument>> GetInstrumentsAsync(params string[] tickers);
+		Task<ICollection<Instrument>> GetPortfolioInstrumentsAsync(string userName, string portfolioName);
+		Task<Instrument> GetInstrumentAsync(string ticker);
+
+		Instrument AddInstrument(Instrument instrument);
+		Instrument DeleteInstrument(Instrument instrument);
+	}
 }
