@@ -261,12 +261,11 @@ namespace Portrack.Repositories.Application
 			return _context.Instruments.Add(instrument);
 		}
 
-		public Instrument DeleteInstrumentAsync(Instrument instrument)
+		public Instrument DeleteInstrument(Instrument instrument)
 		{
 			Instrument deletedInstrument = _context.Instruments.Remove(instrument);
 
 			return deletedInstrument;
 		}
-		
 	}
 }
