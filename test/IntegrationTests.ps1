@@ -27,6 +27,11 @@ $portfolio ='
 Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/portfolios -Body $portfolio -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"} 
 
 
+Invoke-RestMethod -Method Delete -Uri http://localhost:24717/api/portfolios/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
+#Then following must return null
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
+
+
 $transaction ='
 {
   "portfolioName":"BambiPortfolio1",
