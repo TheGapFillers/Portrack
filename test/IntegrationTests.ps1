@@ -13,7 +13,10 @@ Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/instrum
 
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/transactions/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/transactions/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/transactions/BambiPortfolio1/MSFT -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/positions/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/positions/BambiPortfolio1/MSFT,GOOG" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/instruments/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
 Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/instruments/GOOG,YHOO" -Headers @{"Authorization"= "${token_type} ${access_token}"}
@@ -31,7 +34,6 @@ Invoke-RestMethod -Method Delete -Uri http://localhost:24717/api/portfolios/Bamb
 #Then following must return null
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
-
 $transaction ='
 {
   "portfolioName":"BambiPortfolio1",
@@ -41,6 +43,15 @@ $transaction ='
   "type":"Buy"
 }
 '
-Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
+$transaction ='
+{
+  "portfolioName":"BambiPortfolio1",
+  "ticker": "msft",
+  "shares": 2,
+  "date":"2015-02-08",
+  "type":"Buy"
+}
+'
 
+Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 

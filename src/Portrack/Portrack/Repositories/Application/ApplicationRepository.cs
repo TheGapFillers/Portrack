@@ -144,8 +144,6 @@ namespace Portrack.Repositories.Application
 			return deletedPosition;
 		}
 
-
-
 		public async Task<ICollection<Transaction>> GetTransactionsAsync(string userName)
 		{
 			var query = _context.Transactions.Where(t => t.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
