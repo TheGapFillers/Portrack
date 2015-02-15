@@ -26,7 +26,6 @@ namespace Portrack.Controllers.Application
 		{
 		}
 
-
 		/// <summary>
 		/// Get method to get the transactions of the current authenticated user.
 		/// </summary>
@@ -70,6 +69,8 @@ namespace Portrack.Controllers.Application
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
+			//Todo: check if no quot at all to return properly
+
 			// Get the portfolio represented by the PortfolioName in the posted transaction.
 			Portfolio portfolio = await _repository.GetPortfolioAsync(User.Identity.Name, transaction.PortfolioName, true, true);
 			IHttpActionResult portFolioError;
@@ -93,6 +94,8 @@ namespace Portrack.Controllers.Application
 				position = new Position(portfolio, instrument);
 				portfolio.Positions.Add(position);
 			}
+
+			transaction = await retrieveTransactionPriceAsync(transaction, instrument);
 
 			// Add the transaction and get the transaction result.
 			TransactionResult result = portfolio.AddTransaction(transaction, position);
@@ -119,6 +122,15 @@ namespace Portrack.Controllers.Application
 			}
 
 			return retVal;
+		}
+
+		private async Task<Transaction> retrieveTransactionPriceAsync(Transaction transaction, Instrument instrument) {
+			//ICollection<Quote> quotes = await _provider.GetHistoricalPricesAsync(new List<String> {transaction.Ticker}, transaction.Date, transaction.Date.AddDays(1.0));
+			ICollection<Quote> quotes = await _provider.GetQuotesAsync(new List<String> {transaction.Ticker});
+			instrument.Quote = quotes.SingleOrDefault();
+
+			transaction.Price = instrument.Quote.Last * transaction.Shares;
+			return transaction;
 		}
 
 		private void clearPositionIfNoMoreShares(TransactionResult result) {

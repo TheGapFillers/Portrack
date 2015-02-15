@@ -20,6 +20,7 @@ Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/positions/BambiPo
 
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/instruments/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
 Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/instruments/GOOG,YHOO" -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/instruments/MSFT" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 
 $portfolio ='
@@ -48,7 +49,7 @@ $transaction ='
   "portfolioName":"BambiPortfolio1",
   "ticker": "msft",
   "shares": 2,
-  "date":"2015-02-08",
+  "date":"2015-02-10",
   "type":"Buy"
 }
 '
