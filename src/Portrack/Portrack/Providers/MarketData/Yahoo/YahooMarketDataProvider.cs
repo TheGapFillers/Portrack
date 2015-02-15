@@ -24,6 +24,8 @@ namespace Portrack.Providers.MarketData.Yahoo
                 string uri = string.Format("{0}{1}", YQLUri, YQLQuery);
                 response = await httpClient.GetAsync(uri);
             }
+			//Todo add safeguard if no quote or NPE here
+			//Todo Might be possible to merge the if and the else
 
             var quotes = new List<Quote>();
             if (tickers.Count() == 1)
@@ -55,7 +57,7 @@ namespace Portrack.Providers.MarketData.Yahoo
         }
 
 
-
+		//Todo might be possible to merge some parts with GetQuotesAsync() 
         public async Task<List<Quote>> GetHistoricalPricesAsync(IEnumerable<string> tickers, DateTime startDate, DateTime endDate)
         {
             string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
@@ -69,6 +71,9 @@ namespace Portrack.Providers.MarketData.Yahoo
                 string uri = string.Format("{0}{1}", YQLUri, YQLQuery);
                 response = await httpClient.GetAsync(uri);
             }
+
+			//Todo add safeguard if no quote or NPE here
+			//Todo Might be possible to merge the if and the else
 
             var quotes = new List<Quote>();
             if (tickers.Count() == 1)
