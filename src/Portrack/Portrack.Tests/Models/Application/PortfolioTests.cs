@@ -44,6 +44,19 @@ namespace Portrack.Tests.Models.Application
             Assert.AreEqual("Cannot work on a non-existing position.", result.Errors.FirstOrDefault());
         }
 
+		[TestMethod]
+		public void CheckBuyNonExistingPositionError()
+        {
+            var transactionToAdd = new Transaction { Ticker = "MSFT", Shares = 1, Type = TransactionType.Buy };
+
+            TransactionResult result = _portfolio.AddTransaction(
+                transactionToAdd, 
+                null
+            );
+
+            Assert.AreEqual(false, result.IsSuccess);
+            Assert.AreEqual("Cannot work on a non-existing position.", result.Errors.FirstOrDefault());
+        }
 
         [TestMethod]
         public void CheckNotEnoughShareToSellError()

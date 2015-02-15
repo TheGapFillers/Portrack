@@ -46,13 +46,16 @@ namespace Portrack.Models.Application
 					);
                 }
                 position.Shares -= transaction.Shares;
-            }
-
-            if (transaction.Type == TransactionType.Buy)
+            } else if (transaction.Type == TransactionType.Buy)
             {
                 position.Shares += transaction.Shares;
-            }
-
+			} else //Should never happen
+			{
+				 return TransactionResult.Failed(
+					this, position, transaction,
+                    "Unknown transaction type."
+				);
+			}
 
             transaction.Ticker = transaction.Ticker.ToUpperInvariant();
 
