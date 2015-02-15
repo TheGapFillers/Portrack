@@ -27,35 +27,29 @@ namespace Portrack.Models.Application
         /// </summary>
         /// <param name="transaction">The transaction to execute.</param>
         /// <param name="position">The current position against which the transaction will be executed.</param>
-        /// <param name="instrument">The instrument represented by the transaction.</param>
         /// <returns>The transaction results.</returns>
-        public TransactionResult AddTransaction(Transaction transaction, Position position, Instrument instrument)
+        public TransactionResult AddTransaction(Transaction transaction, Position position)
         {
+			if (position == null)
+            {
+                return TransactionResult.Failed(
+					this, position, transaction, "Cannot work on a non-existing position."
+				);
+            }
             if (transaction.Type == TransactionType.Sell)
             {
-                if (position == null)
-                {
-                    return TransactionResult.Failed(this, position, transaction,
-                        "Cannot sell on a non-existing position.");
-                }
-
                 if (transaction.Shares > position.Shares)
                 {
-                    return TransactionResult.Failed(this, position, transaction,
-                        "Not enough shares for this position. Cannot sell.");
+                    return TransactionResult.Failed(
+						this, position, transaction,
+                        "Not enough shares for this position. Cannot sell."
+					);
                 }
-
                 position.Shares -= transaction.Shares;
             }
 
             if (transaction.Type == TransactionType.Buy)
             {
-                if (position == null) // if position doesn't exist when buying, created a new one.
-                {
-                    position = new Position(this, instrument);
-                    Positions.Add(position);
-                }
-
                 position.Shares += transaction.Shares;
             }
 

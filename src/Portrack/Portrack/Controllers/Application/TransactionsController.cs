@@ -88,9 +88,14 @@ namespace Portrack.Controllers.Application
 				
 			// Get the position associated position if it exists.
 			Position position = await _repository.GetPositionAsync(portfolio.UserName, portfolio.PortfolioName, instrument.Ticker);
+			if (position == null)
+			{
+				position = new Position(portfolio, instrument);
+				portfolio.Positions.Add(position);
+			}
 
 			// Add the transaction and get the transaction result.
-			TransactionResult result = portfolio.AddTransaction(transaction, position, instrument);
+			TransactionResult result = portfolio.AddTransaction(transaction, position);
 			clearPositionIfNoMoreShares(result);
 
 			// Send the changes made in the data layer to the database and return the transaction results.

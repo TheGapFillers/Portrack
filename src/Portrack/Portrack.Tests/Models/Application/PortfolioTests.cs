@@ -37,12 +37,11 @@ namespace Portrack.Tests.Models.Application
 
             TransactionResult result = _portfolio.AddTransaction(
                 transactionToAdd, 
-                null, 
-                _testData.Instruments.SingleOrDefault(i => i.Ticker == "MSFT")
+                null
             );
 
             Assert.AreEqual(false, result.IsSuccess);
-            Assert.AreEqual("Cannot sell on a non-existing position.", result.Errors.FirstOrDefault());
+            Assert.AreEqual("Cannot work on a non-existing position.", result.Errors.FirstOrDefault());
         }
 
 
@@ -52,8 +51,7 @@ namespace Portrack.Tests.Models.Application
             var transactionToAdd = new Transaction { Ticker = "YHOO", Shares = 5, Type = TransactionType.Sell };
             TransactionResult result = _portfolio.AddTransaction(
                 transactionToAdd,
-                _portfolio.Positions.SingleOrDefault(pos => pos.Ticker == "YHOO"), 
-                _testData.Instruments.SingleOrDefault(i => i.Ticker == "YHOO")
+                _portfolio.Positions.SingleOrDefault(pos => pos.Ticker == "YHOO")
             );
 
             Assert.AreEqual(false, result.IsSuccess);
