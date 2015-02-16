@@ -23,6 +23,14 @@ namespace Portrack.Providers.MarketData.Yahoo
 
     public class YahooRootQuote
     {
+		public YahooRootQuotes toYahooRootQuotes()
+		{
+			var yahooRootQuotes = new YahooRootQuotes();
+			yahooRootQuotes.query = new YahooQueryQuotes();
+			yahooRootQuotes.query.results = new YahooResultsQuotes();
+			yahooRootQuotes.query.results.quote = new YahooQuote[] {this.query.results.quote};
+			return yahooRootQuotes;
+		}
         public YahooQueryQuote query { get; set; }
     }
 
