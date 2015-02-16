@@ -125,8 +125,8 @@ namespace Portrack.Controllers.Application
 		}
 
 		private async Task<Transaction> retrieveTransactionPriceAsync(Transaction transaction, Instrument instrument) {
-			//ICollection<Quote> quotes = await _provider.GetHistoricalPricesAsync(new List<String> {transaction.Ticker}, transaction.Date, transaction.Date.AddDays(1.0));
-			ICollection<Quote> quotes = await _provider.GetQuotesAsync(new List<String> {transaction.Ticker});
+			ICollection<Quote> quotes = await _provider.GetHistoricalPricesAsync(new List<String> {transaction.Ticker}, transaction.Date, transaction.Date);
+			//ICollection<Quote> quotes = await _provider.GetQuotesAsync(new List<String> {transaction.Ticker});
 			instrument.Quote = quotes.SingleOrDefault();
 
 			transaction.Price = instrument.Quote.Last * transaction.Shares;

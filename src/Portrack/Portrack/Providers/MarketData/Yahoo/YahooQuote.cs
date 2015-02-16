@@ -124,6 +124,10 @@ namespace Portrack.Providers.MarketData.Yahoo
         public string StockExchange { get; set; }
         public string DividendYield { get; set; }
         public string PercentChange { get; set; }
+        public string High { get; set; }
+        public string Low { get; set; }
+        public string Close { get; set; }
+        public string Adj_Close { get; set; }
     }
 
 

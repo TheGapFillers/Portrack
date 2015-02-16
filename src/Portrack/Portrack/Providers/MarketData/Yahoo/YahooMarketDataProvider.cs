@@ -83,7 +83,7 @@ namespace Portrack.Providers.MarketData.Yahoo
                 quotes.Add(new Quote
                 {
                     Ticker = rootObject.query.results.quote.Symbol,
-                    Last = Convert.ToDecimal(rootObject.query.results.quote.LastTradePriceOnly)
+                    Last = Convert.ToDecimal(rootObject.query.results.quote.Close)
                 });
             }
             else
@@ -95,7 +95,7 @@ namespace Portrack.Providers.MarketData.Yahoo
                     quotes.Add(new Quote
                     {
                         Ticker = yahooQuote.Symbol,
-                        Last = Convert.ToDecimal(yahooQuote.LastTradePriceOnly)
+                        Last = Convert.ToDecimal(yahooQuote.Close)
                     });
                 }
             }

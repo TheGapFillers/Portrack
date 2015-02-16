@@ -49,7 +49,7 @@ $transaction ='
   "portfolioName":"BambiPortfolio1",
   "ticker": "msft",
   "shares": 2,
-  "date":"2015-02-10",
+  "date":"2015-02-11",
   "type":"Buy"
 }
 '
