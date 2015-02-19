@@ -62,6 +62,7 @@ namespace Portrack.Controllers.Application
 		/// <returns>
 		///     Ok(createdPortfolio) if datalayer accepted transaction.
 		///     BadRequest(ModelState) if modelstate is invalid.
+		///     InternalServerError if DataMarkerProvider's response is invalid
 		/// </returns>
 		[Route("")]
 		[HttpPost]
@@ -95,8 +96,15 @@ namespace Portrack.Controllers.Application
 				portfolio.Positions.Add(position);
 			}
 
-			transaction = await retrieveTransactionPriceAsync(transaction, instrument);
-
+			try
+			{
+				transaction = await retrieveTransactionPriceAsync(transaction, instrument);
+			}
+			catch (Exception ex)
+			{
+				return InternalServerError(ex);
+			}
+			
 			// Add the transaction and get the transaction result.
 			TransactionResult result = portfolio.AddTransaction(transaction, position);
 			clearPositionIfNoMoreShares(result);

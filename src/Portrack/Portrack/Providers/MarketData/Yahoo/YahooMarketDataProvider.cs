@@ -17,54 +17,56 @@ namespace Portrack.Providers.MarketData.Yahoo
 			string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
 
 			YQLQuery = string.Format("q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20({0})&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=", formattedTickers);
-			HttpResponseMessage response = await getHttpResponseFromYQLasync();
 
-			//Todo add safeguard if no quote or NPE here
-			List<Quote> quotes = await createListOfQuoteFromYQLasync(tickers, response, q => q.LastTradePriceOnly);
-			return quotes;
+			return await createListOfQuoteFromYQLAsync(tickers, q => q.LastTradePriceOnly);
 		}
 
-
-		//Todo might be possible to merge some parts with GetQuotesAsync() 
 		public async Task<List<Quote>> GetHistoricalPricesAsync(IEnumerable<string> tickers, DateTime startDate, DateTime endDate)
 		{
 			string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
 
 			YQLQuery = string.Format(@"q=select * from yahoo.finance.historicaldata where symbol in ({0}) and startDate = ""{1}"" and endDate = ""{2}""&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=",
 				formattedTickers, startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"));
-			HttpResponseMessage response = await getHttpResponseFromYQLasync();
+			
+			return await createListOfQuoteFromYQLAsync(tickers, q => q.Close);
+		}
 
-			//Todo add safeguard if no quote or NPE here
-			List<Quote> quotes = await createListOfQuoteFromYQLasync(tickers, response, q => q.Close);
-			return quotes;
+		///<exception cref="System.Web.HttpException">Thrown if response from YQL query is not OK</exception>
+		private async Task<List<Quote>> createListOfQuoteFromYQLAsync(IEnumerable<string> tickers, Func<YahooQuote, IConvertible> quoteProperty)
+		{
+			HttpResponseMessage response = await getHttpResponseFromYQLasync();
+			if (response.StatusCode == System.Net.HttpStatusCode.OK)
+			{
+				YahooRootQuotes rootObject = await getRootQuotesFromResponseAsync(tickers, response);
+				return createListOfQuoteFromRootObject(rootObject, quoteProperty);
+			}
+			else
+			{
+				throw new System.Web.HttpException();
+			}
+			
 		}
 
 		private async Task<HttpResponseMessage> getHttpResponseFromYQLasync()
 		{
-			HttpResponseMessage response;
 			using (var httpClient = new HttpClient())
 			{
 				string uri = string.Format("{0}{1}", YQLUri, YQLQuery);
-				response = await httpClient.GetAsync(uri);
+				return await httpClient.GetAsync(uri);
 			}
-			return response;
 		}
 
-		private async Task<List<Quote>> createListOfQuoteFromYQLasync(IEnumerable<string> tickers, HttpResponseMessage response, Func<YahooQuote, IConvertible> quoteProperty)
+		private async Task<YahooRootQuotes> getRootQuotesFromResponseAsync(IEnumerable<string> tickers, HttpResponseMessage response)
 		{
-			List<Quote> quotes;
-			YahooRootQuotes rootObject;
 			if (tickers.Count() == 1)
 			{
 				YahooRootQuote singleRootQuote = await response.Content.ReadAsAsync<YahooRootQuote>();
-				rootObject = singleRootQuote.toYahooRootQuotes();
+				return singleRootQuote.toYahooRootQuotes();
 			}
 			else
 			{
-				rootObject = await response.Content.ReadAsAsync<YahooRootQuotes>();
+				return await response.Content.ReadAsAsync<YahooRootQuotes>();
 			}
-			quotes = createListOfQuoteFromRootObject(rootObject, quoteProperty);
-			return quotes;
 		}
 
 		private List<Quote> createListOfQuoteFromRootObject(YahooRootQuotes rootObject, Func<YahooQuote, IConvertible> quoteProperty)
