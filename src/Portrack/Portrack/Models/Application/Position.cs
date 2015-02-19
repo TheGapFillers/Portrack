@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Portrack.Models.Application
 {
@@ -23,14 +24,16 @@ namespace Portrack.Models.Application
         public Instrument Instrument { get; private set; }
         public string Ticker { get { return Instrument != null ? Instrument.Ticker : string.Empty; } }
         public int Shares { get; set; }
-
-
         public PositionData PositionData { get; set; }
     }
 
     public class PositionData
     {
-        //public int PositionId { get; set; }
+        public PositionData(decimal costBasis, decimal marketValue) {
+			CostBasis = costBasis;
+			MarketValue = marketValue;
+		}
+
         public decimal CostBasis { get; set; }
         public decimal MarketValue { get; set; }
         public decimal Gain { get { return MarketValue - CostBasis; } }

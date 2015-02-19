@@ -108,7 +108,6 @@ namespace Portrack.Controllers.Application
 			// Add the transaction and get the transaction result.
 			TransactionResult result = portfolio.AddTransaction(transaction, position);
 			clearPositionIfNoMoreShares(result);
-
 			// Send the changes made in the data layer to the database and return the transaction results.
 			await _repository.SaveAsync();
 			return Ok(result);
