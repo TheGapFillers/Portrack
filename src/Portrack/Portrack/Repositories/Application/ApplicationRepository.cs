@@ -93,11 +93,6 @@ namespace Portrack.Repositories.Application
 			return deletedPortfolio;
 		}
 
-
-
-
-
-
 		public async Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName)
 		{
 			var query = _context.Positions.Include(p => p.Portfolio).Include(p => p.Instrument)
