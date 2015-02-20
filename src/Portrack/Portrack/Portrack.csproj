@@ -191,7 +191,6 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\Application\BaseController.cs" />
     <Compile Include="Controllers\Application\InstrumentsController.cs" />
-    <Compile Include="Controllers\Application\PositionsController.cs" />
     <Compile Include="Providers\MarketData\Yahoo\YahooQuote.cs" />
     <Compile Include="Providers\MarketData\IMarketDataProvider.cs" />
     <Compile Include="Providers\MarketData\Yahoo\YahooMarketDataProvider.cs" />
