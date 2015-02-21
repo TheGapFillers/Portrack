@@ -46,37 +46,37 @@ namespace Portrack.Controllers.Application
 				IEnumerable<string> tickerEnum = tickers.Split(',').Select(s => s.Trim());
 				positions = await _repository.GetPositionsAsync(User.Identity.Name, portfolioName, tickerEnum);
 			}
-			foreach (Position p in positions)
-			{
-				await computePositionData(p);
-			}
+
+			// Populate the position data of all positions.
+			await ComputePositionDataAsync(positions);
+
 			return Ok(positions);
 		}
 
-		private async Task computePositionData(Position p)
+		/// <summary>
+		/// Populate all the positions with their associated calculated position data.
+		/// </summary>
+		/// <param name="positions">Positions to be populated with position data.</param>
+		private async Task ComputePositionDataAsync(ICollection<Position> positions)
 		{
-			p.PositionData = new PositionData(
-				await computePositionCostBasisAsync(p),
-				await computePositionMarketValueAsync(p)
-			);
-		}
+			// Get the needed transactions.
+			ICollection<Transaction> allRequiredTransactions = await _repository.GetTransactionsAsync(
+				User.Identity.Name, positions.First().Portfolio.PortfolioName, positions.Select(p => p.Ticker));
 
-		private async Task<decimal> computePositionCostBasisAsync(Position p)
-		{
-			decimal retVal = 0.0m;
-			ICollection<Transaction> transactions = await _repository.GetTransactionsAsync(User.Identity.Name, p.Portfolio.PortfolioName, p.Ticker);
-			foreach (Transaction t in transactions)
+			// Get the needed quotes
+			ICollection<Quote> allRequiredQuotes = await _provider.GetQuotesAsync(positions.Select(p => p.Ticker));
+
+			// Loop accross all positions and populate with position data.
+			foreach (Position position in positions)
 			{
-				retVal += t.Price;
-			}
-			return retVal;
-		}
+				IEnumerable<Transaction> transactions = allRequiredTransactions
+					.Where(p => p.Ticker.Equals(position.Ticker, StringComparison.OrdinalIgnoreCase));
 
-		private async Task<decimal> computePositionMarketValueAsync(Position p)
-		{
-			ICollection<Quote> quotes = await _provider.GetQuotesAsync(new List<String> {p.Ticker});
-			Quote quote = quotes.SingleOrDefault();
-			return quote.Last * p.Shares;
+				Quote quote = allRequiredQuotes
+					.SingleOrDefault(q => q.Ticker.Equals(position.Ticker, StringComparison.OrdinalIgnoreCase));
+
+				position.SetPositionData(transactions, quote);
+			}
 		}
 	}
 }
