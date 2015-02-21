@@ -23,7 +23,8 @@ namespace Portrack.Models.Application
 		[Range(1, 99999, ErrorMessage = "The shares amount has to be a stricly positive integer.")]
 		public int Shares { get; set; }
 		public decimal Price { get; set; }
-		public decimal Commision { get; set; }	
+		public decimal Commision { get; set; }
+		public decimal TotalPrice { get { return Price + Commision; } }
 	}
 
 	public enum TransactionType

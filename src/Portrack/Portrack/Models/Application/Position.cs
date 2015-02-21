@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Portrack.Models.Application
@@ -26,6 +28,7 @@ namespace Portrack.Models.Application
 		public int Shares { get; set; }
 		public PositionData PositionData { get; set; }
 
+
 		public void SetPositionData(IEnumerable<Transaction> transactions, Quote quote)
 		{
 			PositionData = new PositionData
@@ -35,15 +38,53 @@ namespace Portrack.Models.Application
 			};
 		}
 
-
+		/// <summary>
+		/// Calculate the cost basis of the position.
+		/// </summary>
+		/// <param name="transactions">All the transaction on that position.</param>
+		/// <returns>a decimal, the cost basis of the position.</returns>
 		private decimal CalculateCostBasis(IEnumerable<Transaction> transactions)
 		{
-			decimal retVal = 0.0m;
-			foreach (Transaction t in transactions)
+			transactions = transactions.OrderBy(t => t.Date);
+
+			var datedSharesAndPrices = new List<DatedSharesAndPrice>(); // intermediate list to calculate cost basis.
+			foreach (Transaction transaction in transactions)
 			{
-				retVal += t.Price;
+				if (transaction.Shares >= 0)
+				{
+					datedSharesAndPrices.Add(new DatedSharesAndPrice { Date = transaction.Date.Date, Shares = transaction.Shares, Price = transaction.TotalPrice });
+				}
+				else
+				{
+					int transactionQuantity = transaction.Shares;
+					foreach (DatedSharesAndPrice datedSharesAndPrice in datedSharesAndPrices.OrderBy(qd => qd.Date))
+					{
+						if (transactionQuantity <= datedSharesAndPrice.Shares)
+						{
+							datedSharesAndPrice.Shares += transactionQuantity;
+							break;
+						}
+						else
+						{
+							transactionQuantity += datedSharesAndPrice.Shares;
+							datedSharesAndPrice.Shares = 0;
+							continue;
+						}
+					}
+				}
 			}
-			return retVal;
+
+			decimal costBasis = 0;
+			datedSharesAndPrices.ForEach(qd => costBasis += qd.Shares * qd.Price);
+
+			return costBasis;
+		}
+
+		private class DatedSharesAndPrice
+		{
+			public int Shares { get; set; }
+			public DateTime Date { get; set; }
+			public decimal Price { get; set; }
 		}
 	}
 
