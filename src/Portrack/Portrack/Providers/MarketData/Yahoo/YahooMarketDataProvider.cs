@@ -93,10 +93,7 @@ namespace Portrack.Providers.MarketData.Yahoo
                         Last = Convert.ToDecimal(yahooQuote.LastTradePriceOnly)
                     });           
                 }            
-                else
-                {
-                    throw new Exception("Yahoo Quote casting error.");
-                }
+                else { throw new Exception("Yahoo Quote casting error."); }
 
                 return quotes.Cast<T>().ToList();
             }
@@ -126,10 +123,7 @@ namespace Portrack.Providers.MarketData.Yahoo
                         Close = Convert.ToDecimal(yahooHistoricalPrice.Close)
                     });                   
                 }
-                else
-                {
-                    throw new Exception("Yahoo Historical Price casting error.");
-                }
+                else { throw new Exception("Yahoo Historical Price casting error."); }
 
                 return historicalPrices.Cast<T>().ToList();
             }
@@ -157,76 +151,32 @@ namespace Portrack.Providers.MarketData.Yahoo
 
                     });                
                 }
-                else
-                {
-                    throw new Exception("Yahoo Dividend casting error.");
-                }
+                else { throw new Exception("Yahoo Dividend casting error."); }
 
                 return dividends.Cast<T>().ToList();
             }
-            else
-            {
-                throw new Exception("Unknown YQL type.");
-            }
+            else { throw new Exception("Unknown YQL type."); }
         }
 
         private static object ConvertToObject<T>(YahooRootObject<object> rootObject)
         {
             JObject jObject = (JObject)rootObject.query.results.quote;
             var convertedObject = new object();
-            bool tryAgain = true;
-            int tryCount = 0;
 
             if (typeof(T) == typeof(Quote))
             {
-                while (tryAgain)
-                {
-                    try
-                    {
-                        switch (tryCount)
-                        {
-                            case 0: tryCount++; convertedObject = jObject.ToObject<List<YahooQuote>>(); break;
-                            case 1: tryCount++; convertedObject = jObject.ToObject<YahooQuote>(); break;
-                        }
-
-                        tryAgain = false;
-                    }
-                    catch { }
-                }
+                try { convertedObject = jObject.ToObject<List<YahooQuote>>(); }
+                catch { convertedObject = jObject.ToObject<YahooQuote>(); }
             }
             else if (typeof(T) == typeof(HistoricalPrice))
             {
-                while (tryAgain)
-                {
-                    try
-                    {
-                        switch (tryCount)
-                        {
-                            case 0: tryCount++; convertedObject = jObject.ToObject<List<YahooHistoricalPrice>>(); break;
-                            case 1: tryCount++; convertedObject = jObject.ToObject<YahooHistoricalPrice>(); break;
-                        }
-
-                        tryAgain = false;
-                    }
-                    catch { }
-                }
+                try { convertedObject = jObject.ToObject<List<YahooHistoricalPrice>>(); }
+                catch { convertedObject = jObject.ToObject<YahooHistoricalPrice>(); }
             }
             else if (typeof(T) == typeof(Dividend))
             {
-                while (tryAgain)
-                {
-                    try
-                    {
-                        switch (tryCount)
-                        {
-                            case 0: tryCount++; convertedObject = jObject.ToObject<List<YahooDividend>>(); break;
-                            case 1: tryCount++; convertedObject = jObject.ToObject<YahooDividend>(); break;
-                        }
-
-                        tryAgain = false;
-                    }
-                    catch { }
-                }
+                try { convertedObject = jObject.ToObject<List<YahooDividend>>(); }
+                catch { convertedObject = jObject.ToObject<YahooDividend>(); }
             }
 
             return convertedObject;
