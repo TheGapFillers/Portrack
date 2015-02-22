@@ -192,9 +192,16 @@
     <Compile Include="Controllers\Application\BaseController.cs" />
     <Compile Include="Controllers\Application\InstrumentsController.cs" />
     <Compile Include="Controllers\Application\PositionsController.cs" />
+    <Compile Include="Models\MarketData\Dividend.cs" />
+    <Compile Include="Models\MarketData\HistoricalPrice.cs" />
+    <Compile Include="Models\MarketData\MarketDataBase.cs" />
+    <Compile Include="Models\MarketData\Quote.cs" />
+    <Compile Include="Providers\MarketData\Yahoo\YahooDividend.cs" />
+    <Compile Include="Providers\MarketData\Yahoo\YahooHistoricalPrice.cs" />
     <Compile Include="Providers\MarketData\Yahoo\YahooQuote.cs" />
     <Compile Include="Providers\MarketData\IMarketDataProvider.cs" />
     <Compile Include="Providers\MarketData\Yahoo\YahooMarketDataProvider.cs" />
+    <Compile Include="Providers\MarketData\Yahoo\YahooRootObject.cs" />
     <Compile Include="Repositories\Identity\PortrackUserManager.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Identity\AccountController.cs" />

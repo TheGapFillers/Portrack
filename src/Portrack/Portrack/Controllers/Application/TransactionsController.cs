@@ -1,4 +1,5 @@
 ﻿using Portrack.Models.Application;
+using Portrack.Models.MarketData;
 using Portrack.Providers.MarketData;
 using Portrack.Repositories.Application;
 using System;
@@ -133,11 +134,9 @@ namespace Portrack.Controllers.Application
 
         private async Task<decimal> RetrieveTransactionPriceAsync(Transaction transaction, Instrument instrument)
         {
-            ICollection<Quote> quotes = await _provider.GetHistoricalPricesAsync(new List<String> { transaction.Ticker }, transaction.Date, transaction.Date);
+            ICollection<HistoricalPrice> price = await _provider.GetHistoricalPricesAsync(new List<String> { transaction.Ticker }, transaction.Date, transaction.Date);
 
-            instrument.Quote = quotes.SingleOrDefault();
-
-            return instrument.Quote.Last * transaction.Shares;
+            return price.SingleOrDefault().Close * transaction.Shares;
         }
 
         private void ClearPositionIfNoMoreShares(TransactionResult result)

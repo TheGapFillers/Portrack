@@ -1,4 +1,5 @@
 ﻿using Portrack.Models.Application;
+using Portrack.Models.MarketData;
 using Portrack.Providers.MarketData;
 using Portrack.Repositories.Application;
 using System.Collections.Generic;

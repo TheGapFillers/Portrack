@@ -1,4 +1,5 @@
 ﻿
+using Portrack.Models.MarketData;
 using System.Collections.Generic;
 namespace Portrack.Models.Application
 {
@@ -21,11 +22,5 @@ namespace Portrack.Models.Application
     {
         
     }
-
-
-    public class Quote
-    {
-        public string Ticker { get; set; }
-        public decimal Last { get; set; }
-    }
+  
 }
