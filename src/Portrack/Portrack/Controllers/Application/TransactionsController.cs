@@ -133,7 +133,7 @@ namespace Portrack.Controllers.Application
 
             instrument.Quote = quotes.SingleOrDefault();
 
-            transaction.Price = instrument.Quote.Last * transaction.Shares;
+            transaction.Price = instrument.Quote.Last;
             return transaction;
         }
 

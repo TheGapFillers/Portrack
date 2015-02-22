@@ -39,7 +39,7 @@ namespace Portrack.Models.Application
 		}
 
 		/// <summary>
-		/// Calculate the cost basis of the position.
+		/// Calculate the cost basis of the position using FIFO method.
 		/// </summary>
 		/// <param name="transactions">All the transaction on that position.</param>
 		/// <returns>a decimal, the cost basis of the position.</returns>
@@ -50,7 +50,7 @@ namespace Portrack.Models.Application
 			var datedSharesAndPrices = new List<DatedSharesAndPrice>(); // intermediate list to calculate cost basis.
 			foreach (Transaction transaction in transactions)
 			{
-				if (transaction.Shares >= 0)
+				if (transaction.Type == TransactionType.Buy)
 				{
 					datedSharesAndPrices.Add(new DatedSharesAndPrice { Date = transaction.Date.Date, Shares = transaction.Shares, Price = transaction.TotalPrice });
 				}
@@ -61,12 +61,12 @@ namespace Portrack.Models.Application
 					{
 						if (transactionQuantity <= datedSharesAndPrice.Shares)
 						{
-							datedSharesAndPrice.Shares += transactionQuantity;
+							datedSharesAndPrice.Shares -= transactionQuantity;
 							break;
 						}
 						else
 						{
-							transactionQuantity += datedSharesAndPrice.Shares;
+							transactionQuantity -= datedSharesAndPrice.Shares;
 							datedSharesAndPrice.Shares = 0;
 							continue;
 						}
