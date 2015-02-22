@@ -1,4 +1,6 @@
-﻿using Portrack.Models.Application;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Portrack.Models.MarketData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,80 +9,227 @@ using System.Threading.Tasks;
 
 namespace Portrack.Providers.MarketData.Yahoo
 {
-	public class YahooMarketDataProvider : IMarketDataProvider
-	{
-		private const string YQLUri = "https://query.yahooapis.com/v1/public/yql?";
-		private string YQLQuery { get; set; }
+    public class YahooMarketDataProvider : IMarketDataProvider
+    {
+        private const string YQLUriPrefix = "https://query.yahooapis.com/v1/public/yql?q=";
+        private const string YQLUriSuffix = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
 
-		public async Task<List<Quote>> GetQuotesAsync(IEnumerable<string> tickers)
-		{
-			string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
+        private string YQLQuery { get; set; }
 
-			YQLQuery = string.Format("q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20({0})&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=", formattedTickers);
+        public async Task<List<Quote>> GetQuotesAsync(IEnumerable<string> tickers)
+        {
+            string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
 
-			return await createListOfQuoteFromYQLAsync(tickers, q => q.LastTradePriceOnly);
-		}
+            YQLQuery = string.Format("select * from yahoo.finance.quotes where symbol in ({0})", formattedTickers);
 
-		public async Task<List<Quote>> GetHistoricalPricesAsync(IEnumerable<string> tickers, DateTime startDate, DateTime endDate)
-		{
-			string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
+            return await GetDataFromYQLAsync<Quote>();
+        }
 
-			YQLQuery = string.Format(@"q=select * from yahoo.finance.historicaldata where symbol in ({0}) and startDate = ""{1}"" and endDate = ""{2}""&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=",
-				formattedTickers, startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"));
-			
-			return await createListOfQuoteFromYQLAsync(tickers, q => q.Close);
-		}
+        public async Task<List<HistoricalPrice>> GetHistoricalPricesAsync(IEnumerable<string> tickers, DateTime startDate, DateTime endDate)
+        {
+            string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
 
-		///<exception cref="System.Web.HttpException">Thrown if response from YQL query is not OK</exception>
-		private async Task<List<Quote>> createListOfQuoteFromYQLAsync(IEnumerable<string> tickers, Func<YahooQuote, IConvertible> quoteProperty)
-		{
-			HttpResponseMessage response = await getHttpResponseFromYQLasync();
-			if (response.StatusCode == System.Net.HttpStatusCode.OK)
-			{
-				YahooRootQuotes rootObject = await getRootQuotesFromResponseAsync(tickers, response);
-				return createListOfQuoteFromRootObject(rootObject, quoteProperty);
-			}
-			else
-			{
-				throw new System.Web.HttpException();
-			}
-			
-		}
+            YQLQuery = string.Format(@"select * from yahoo.finance.historicaldata where symbol in ({0}) and startDate = ""{1}"" and endDate = ""{2}""",
+                formattedTickers, startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"));
 
-		private async Task<HttpResponseMessage> getHttpResponseFromYQLasync()
-		{
-			using (var httpClient = new HttpClient())
-			{
-				string uri = string.Format("{0}{1}", YQLUri, YQLQuery);
-				return await httpClient.GetAsync(uri);
-			}
-		}
+            return await GetDataFromYQLAsync<HistoricalPrice>();
+        }
 
-		private async Task<YahooRootQuotes> getRootQuotesFromResponseAsync(IEnumerable<string> tickers, HttpResponseMessage response)
-		{
-			if (tickers.Count() == 1)
-			{
-				YahooRootQuote singleRootQuote = await response.Content.ReadAsAsync<YahooRootQuote>();
-				return singleRootQuote.toYahooRootQuotes();
-			}
-			else
-			{
-				return await response.Content.ReadAsAsync<YahooRootQuotes>();
-			}
-		}
+        public async Task<List<Dividend>> GetHistoricalDividendAsync(IEnumerable<string> tickers, DateTime startDate, DateTime endDate)
+        {
+            string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
 
-		private List<Quote> createListOfQuoteFromRootObject(YahooRootQuotes rootObject, Func<YahooQuote, IConvertible> quoteProperty)
-		{
-			var quotes = new List<Quote>();
-			foreach (YahooQuote yahooQuote in rootObject.query.results.quote)
-			{
-				quotes.Add(new Quote
-				{
-					Ticker = yahooQuote.Symbol,
-					Last = Convert.ToDecimal(quoteProperty(yahooQuote))
-				});
-			}
-			return quotes;
-		}
-	}
+            YQLQuery = string.Format(@"select * from yahoo.finance.dividendhistory where symbol in ({0}) and startDate = ""{1}"" and endDate = ""{2}""",
+                formattedTickers, startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"));
+
+            return await GetDataFromYQLAsync<Dividend>();
+        }
+
+
+        private async Task<List<T>> GetDataFromYQLAsync<T>()
+            where T : MarketDataBase
+        {
+            HttpResponseMessage response;
+            using (var httpClient = new HttpClient())
+            {
+                string uri = string.Format("{0}{1}{2}", YQLUriPrefix, YQLQuery, YQLUriSuffix);
+                response = await httpClient.GetAsync(uri);
+            }
+
+            YahooRootObject<object> rootObject = await response.Content.ReadAsAsync<YahooRootObject<object>>();
+            return CreateDataFromYahooRootObject<T>(rootObject);
+        }
+
+
+
+        private List<T> CreateDataFromYahooRootObject<T>(YahooRootObject<object> rootObject)
+            where T : MarketDataBase
+        {
+            var data = new List<T>();
+            object convertedObject;
+            if (typeof(T) == typeof(Quote))
+            {
+                convertedObject = ConvertToObject<T>(rootObject);
+
+                List<Quote> quotes = data.Cast<Quote>().ToList();
+
+                if (convertedObject.GetType() == typeof(List<YahooQuote>))
+                {
+                    foreach (YahooQuote yahooQuote in (List<YahooQuote>)convertedObject)
+                    {
+                        quotes.Add(new Quote
+                        {
+                            Ticker = yahooQuote.Symbol,
+                            Last = Convert.ToDecimal(yahooQuote.LastTradePriceOnly)
+                        });
+                    }
+                }
+                else if (convertedObject.GetType() == typeof(YahooQuote))
+                {
+                    YahooQuote yahooQuote = (YahooQuote)convertedObject;
+                    quotes.Add(new Quote
+                    {
+                        Ticker = yahooQuote.Symbol,
+                        Last = Convert.ToDecimal(yahooQuote.LastTradePriceOnly)
+                    });           
+                }            
+                else
+                {
+                    throw new Exception("Yahoo Quote casting error.");
+                }
+
+                return quotes.Cast<T>().ToList();
+            }
+            else if (typeof(T) == typeof(HistoricalPrice))
+            {
+                convertedObject = ConvertToObject<T>(rootObject);
+
+                List<HistoricalPrice> historicalPrices = data.Cast<HistoricalPrice>().ToList();
+
+                if (convertedObject.GetType() == typeof(List<YahooHistoricalPrice>))
+                {
+                    foreach (YahooHistoricalPrice yahooHistoricalPrice in (List<YahooHistoricalPrice>)convertedObject)
+                    {
+                        historicalPrices.Add(new HistoricalPrice
+                        {
+                            Ticker = yahooHistoricalPrice.Symbol,
+                            Close = Convert.ToDecimal(yahooHistoricalPrice.Close)
+                        });
+                    }
+                }
+                else if (convertedObject.GetType() == typeof(YahooHistoricalPrice))
+                {
+                    YahooHistoricalPrice yahooHistoricalPrice = (YahooHistoricalPrice)convertedObject;
+                    historicalPrices.Add(new HistoricalPrice
+                    {
+                        Ticker = yahooHistoricalPrice.Symbol,
+                        Close = Convert.ToDecimal(yahooHistoricalPrice.Close)
+                    });                   
+                }
+                else
+                {
+                    throw new Exception("Yahoo Historical Price casting error.");
+                }
+
+                return historicalPrices.Cast<T>().ToList();
+            }
+            else if (typeof(T) == typeof(Dividend))
+            {
+                convertedObject = ConvertToObject<T>(rootObject);
+
+                List<Dividend> dividends = data.Cast<Dividend>().ToList();
+
+                if (convertedObject.GetType() == typeof(List<YahooHistoricalPrice>))
+                {
+                    foreach (YahooDividend yahooDividend in (List<YahooDividend>)rootObject.query.results.quote)
+                    {
+                        dividends.Add(new Dividend
+                        {
+
+                        });
+                    }
+                }
+                else if (convertedObject.GetType() == typeof(YahooHistoricalPrice))
+                {
+                    YahooDividend yahooDividend = (YahooDividend)rootObject.query.results.quote;
+                    dividends.Add(new Dividend
+                    {
+
+                    });                
+                }
+                else
+                {
+                    throw new Exception("Yahoo Dividend casting error.");
+                }
+
+                return dividends.Cast<T>().ToList();
+            }
+            else
+            {
+                throw new Exception("Unknown YQL type.");
+            }
+        }
+
+        private static object ConvertToObject<T>(YahooRootObject<object> rootObject)
+        {
+            JObject jObject = (JObject)rootObject.query.results.quote;
+            var convertedObject = new object();
+            bool tryAgain = true;
+            int tryCount = 0;
+
+            if (typeof(T) == typeof(Quote))
+            {
+                while (tryAgain)
+                {
+                    try
+                    {
+                        switch (tryCount)
+                        {
+                            case 0: tryCount++; convertedObject = jObject.ToObject<List<YahooQuote>>(); break;
+                            case 1: tryCount++; convertedObject = jObject.ToObject<YahooQuote>(); break;
+                        }
+
+                        tryAgain = false;
+                    }
+                    catch { }
+                }
+            }
+            else if (typeof(T) == typeof(HistoricalPrice))
+            {
+                while (tryAgain)
+                {
+                    try
+                    {
+                        switch (tryCount)
+                        {
+                            case 0: tryCount++; convertedObject = jObject.ToObject<List<YahooHistoricalPrice>>(); break;
+                            case 1: tryCount++; convertedObject = jObject.ToObject<YahooHistoricalPrice>(); break;
+                        }
+
+                        tryAgain = false;
+                    }
+                    catch { }
+                }
+            }
+            else if (typeof(T) == typeof(Dividend))
+            {
+                while (tryAgain)
+                {
+                    try
+                    {
+                        switch (tryCount)
+                        {
+                            case 0: tryCount++; convertedObject = jObject.ToObject<List<YahooDividend>>(); break;
+                            case 1: tryCount++; convertedObject = jObject.ToObject<YahooDividend>(); break;
+                        }
+
+                        tryAgain = false;
+                    }
+                    catch { }
+                }
+            }
+
+            return convertedObject;
+        }
+    }
 }

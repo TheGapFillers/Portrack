@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Portrack.Models.MarketData;
 
 namespace Portrack.Models.Application
 {
@@ -96,10 +97,11 @@ namespace Portrack.Models.Application
 
 	public class PositionData
 	{
-		public decimal CostBasis { get; set; }
-		public decimal MarketValue { get; set; }
-		public decimal Gain { get { return MarketValue - CostBasis; } }
-		public double GainPercentage { get { return CostBasis != 0 ? (double)(MarketValue / CostBasis) : 0; } }
-		public double OverallReturn { get; set; }
+		public decimal CostBasis { get; set; } // The total cost of all shares of an investment.
+		public decimal MarketValue { get; set; } // Market Value is defined as: The current value of an investment as indicated by the latest trade recorded.
+		public decimal Income { get; set; } // Interest, dividends, and capital gains distributions that you have received for an investment.
+		public decimal PriceAppreciation { get { return MarketValue - CostBasis; } } // How much an investment has appreciated in price.
+		public decimal Gain { get { return PriceAppreciation + Income; } }
+		public double GainPercentage { get { return CostBasis != 0 ? (double)(Gain / CostBasis) : 0; } }
 	}
 }
