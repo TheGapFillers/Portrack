@@ -52,9 +52,14 @@ namespace Portrack.Models.Application
 			{
 				if (transaction.Type == TransactionType.Buy)
 				{
-					datedSharesAndPrices.Add(new DatedSharesAndPrice { Date = transaction.Date.Date, Shares = transaction.Shares, Price = transaction.TotalPrice });
+					datedSharesAndPrices.Add(new DatedSharesAndPrice 
+					{ 
+						Date = transaction.Date.Date, 
+						Shares = transaction.Shares, 
+						PricePerShare = transaction.TotalPrice / transaction.Shares 
+					});
 				}
-				else
+				else if (transaction.Type == TransactionType.Sell)
 				{
 					int transactionQuantity = transaction.Shares;
 					foreach (DatedSharesAndPrice datedSharesAndPrice in datedSharesAndPrices.OrderBy(qd => qd.Date))
@@ -72,10 +77,11 @@ namespace Portrack.Models.Application
 						}
 					}
 				}
+				else { } // Should never happen for now.
 			}
 
 			decimal costBasis = 0;
-			datedSharesAndPrices.ForEach(qd => costBasis += qd.Shares * qd.Price);
+			datedSharesAndPrices.ForEach(qd => costBasis += qd.Shares * qd.PricePerShare);
 
 			return costBasis;
 		}
@@ -84,7 +90,7 @@ namespace Portrack.Models.Application
 		{
 			public int Shares { get; set; }
 			public DateTime Date { get; set; }
-			public decimal Price { get; set; }
+			public decimal PricePerShare { get; set; }
 		}
 	}
 

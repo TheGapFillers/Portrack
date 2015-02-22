@@ -96,8 +96,12 @@ namespace Portrack.Controllers.Application
                 portfolio.Positions.Add(position);
             }
 
-            transaction = await RetrieveTransactionPriceAsync(transaction, instrument);
-
+            // Retrieve transaction price from MarketData provider if price is absent.
+            if (transaction.Price == 0)
+            { 
+                transaction.Price = await RetrieveTransactionPriceAsync(transaction, instrument); 
+            }
+            
             // Add the transaction and get the transaction result.
             TransactionResult result = portfolio.AddTransaction(transaction, position);
             ClearPositionIfNoMoreShares(result);
@@ -127,14 +131,13 @@ namespace Portrack.Controllers.Application
             return retVal;
         }
 
-        private async Task<Transaction> RetrieveTransactionPriceAsync(Transaction transaction, Instrument instrument)
+        private async Task<decimal> RetrieveTransactionPriceAsync(Transaction transaction, Instrument instrument)
         {
             ICollection<Quote> quotes = await _provider.GetHistoricalPricesAsync(new List<String> { transaction.Ticker }, transaction.Date, transaction.Date);
 
             instrument.Quote = quotes.SingleOrDefault();
 
-            transaction.Price = instrument.Quote.Last;
-            return transaction;
+            return instrument.Quote.Last * transaction.Shares;
         }
 
         private void ClearPositionIfNoMoreShares(TransactionResult result)
