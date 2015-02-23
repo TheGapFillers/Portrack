@@ -110,6 +110,7 @@ namespace Portrack.Providers.MarketData.Yahoo
                         historicalPrices.Add(new HistoricalPrice
                         {
                             Ticker = yahooHistoricalPrice.Symbol,
+                            Date = Convert.ToDateTime(yahooHistoricalPrice.Date),
                             Close = Convert.ToDecimal(yahooHistoricalPrice.Close)
                         });
                     }
@@ -120,7 +121,8 @@ namespace Portrack.Providers.MarketData.Yahoo
                     historicalPrices.Add(new HistoricalPrice
                     {
                         Ticker = yahooHistoricalPrice.Symbol,
-                        Close = Convert.ToDecimal(yahooHistoricalPrice.Close)
+                        Date = Convert.ToDateTime(yahooHistoricalPrice.Date),
+                        Close = Convert.ToDecimal(yahooHistoricalPrice.Close),                   
                     });                   
                 }
                 else { throw new Exception("Yahoo Historical Price casting error."); }
@@ -139,7 +141,9 @@ namespace Portrack.Providers.MarketData.Yahoo
                     {
                         dividends.Add(new Dividend
                         {
-
+                            Ticker = yahooDividend.Symbol,
+                            Date = Convert.ToDateTime(yahooDividend.Date),
+                            Amount = Convert.ToDecimal(yahooDividend.Dividends)
                         });
                     }
                 }
@@ -148,7 +152,9 @@ namespace Portrack.Providers.MarketData.Yahoo
                     YahooDividend yahooDividend = (YahooDividend)rootObject.query.results.quote;
                     dividends.Add(new Dividend
                     {
-
+                        Ticker = yahooDividend.Symbol,
+                        Date = Convert.ToDateTime(yahooDividend.Date),
+                        Amount = Convert.ToDecimal(yahooDividend.Dividends)
                     });                
                 }
                 else { throw new Exception("Yahoo Dividend casting error."); }
