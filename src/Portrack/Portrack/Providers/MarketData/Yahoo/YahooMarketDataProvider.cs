@@ -116,15 +116,15 @@ namespace Portrack.Providers.MarketData.Yahoo
 			var token = JToken.Parse(rootObject.query.results.quote.ToString());
 			if (typeof(T) == typeof(Quote))
 			{
-				return jTokenToList<YahooQuote>(token);
+				return JTokenToList<YahooQuote>(token);
 			}
 			else if (typeof(T) == typeof(HistoricalPrice))
 			{
-				return jTokenToList<YahooHistoricalPrice>(token);
+				return JTokenToList<YahooHistoricalPrice>(token);
 			}
 			else if (typeof(T) == typeof(Dividend))
 			{
-				return jTokenToList<YahooDividend>(token);
+				return JTokenToList<YahooDividend>(token);
 			}
 			else
 			{
@@ -137,7 +137,7 @@ namespace Portrack.Providers.MarketData.Yahoo
 		/// If multiple quotes are received, directly cast to a list
 		/// If a single quote is received, puts it in a list of one element
 		/// </summary>
-		private static List<T> jTokenToList<T>(JToken token)
+		private static List<T> JTokenToList<T>(JToken token)
 		{
 			if (token is JArray)
 			{
@@ -145,9 +145,7 @@ namespace Portrack.Providers.MarketData.Yahoo
 			}
 			else
 			{
-				var singleList = new List<T>();
-				singleList.Add(token.ToObject<T>());
-				return singleList;
+				return new List<T> { token.ToObject<T>() };
 			}
 		}
 	}
