@@ -83,17 +83,11 @@ namespace Portrack.Providers.MarketData.Yahoo
                             Last = Convert.ToDecimal(yahooQuote.LastTradePriceOnly)
                         });
                     }
-                }
-                else if (convertedObject.GetType() == typeof(YahooQuote))
-                {
-                    YahooQuote yahooQuote = (YahooQuote)convertedObject;
-                    quotes.Add(new Quote
-                    {
-                        Ticker = yahooQuote.Symbol,
-                        Last = Convert.ToDecimal(yahooQuote.LastTradePriceOnly)
-                    });           
-                }            
-                else { throw new Exception("Yahoo Quote casting error."); }
+                }        
+                else 
+				{ 
+					throw new Exception("Yahoo Quote casting error."); 
+				}
 
                 return quotes.Cast<T>().ToList();
             }
@@ -115,17 +109,10 @@ namespace Portrack.Providers.MarketData.Yahoo
                         });
                     }
                 }
-                else if (convertedObject.GetType() == typeof(YahooHistoricalPrice))
-                {
-                    YahooHistoricalPrice yahooHistoricalPrice = (YahooHistoricalPrice)convertedObject;
-                    historicalPrices.Add(new HistoricalPrice
-                    {
-                        Ticker = yahooHistoricalPrice.Symbol,
-                        Date = Convert.ToDateTime(yahooHistoricalPrice.Date),
-                        Close = Convert.ToDecimal(yahooHistoricalPrice.Close),                   
-                    });                   
-                }
-                else { throw new Exception("Yahoo Historical Price casting error."); }
+                else 
+				{ 
+					throw new Exception("Yahoo Historical Price casting error."); 
+				}
 
                 return historicalPrices.Cast<T>().ToList();
             }
@@ -147,45 +134,58 @@ namespace Portrack.Providers.MarketData.Yahoo
                         });
                     }
                 }
-                else if (convertedObject.GetType() == typeof(YahooHistoricalPrice))
-                {
-                    YahooDividend yahooDividend = (YahooDividend)rootObject.query.results.quote;
-                    dividends.Add(new Dividend
-                    {
-                        Ticker = yahooDividend.Symbol,
-                        Date = Convert.ToDateTime(yahooDividend.Date),
-                        Amount = Convert.ToDecimal(yahooDividend.Dividends)
-                    });                
-                }
-                else { throw new Exception("Yahoo Dividend casting error."); }
+                else 
+				{ 
+					throw new Exception("Yahoo Dividend casting error."); 
+				}
 
                 return dividends.Cast<T>().ToList();
             }
-            else { throw new Exception("Unknown YQL type."); }
+            else { 
+				throw new Exception("Unknown YQL type."); 
+}
         }
 
         private static object ConvertToObject<T>(YahooRootObject<object> rootObject)
         {
-            JObject jObject = (JObject)rootObject.query.results.quote;
-            var convertedObject = new object();
-
+			var token = JToken.Parse(rootObject.query.results.quote.ToString());
             if (typeof(T) == typeof(Quote))
             {
-                try { convertedObject = jObject.ToObject<List<YahooQuote>>(); }
-                catch { convertedObject = jObject.ToObject<YahooQuote>(); }
+				if (token is JArray)
+				{
+					return token.ToObject<List<YahooQuote>>();
+				} else {
+					var singleList = new List<YahooQuote>();
+					singleList.Add(token.ToObject<YahooQuote>());
+					return singleList;
+				}
             }
             else if (typeof(T) == typeof(HistoricalPrice))
             {
-                try { convertedObject = jObject.ToObject<List<YahooHistoricalPrice>>(); }
-                catch { convertedObject = jObject.ToObject<YahooHistoricalPrice>(); }
+				if (token is JArray)
+				{
+					return token.ToObject<List<YahooHistoricalPrice>>();
+				} else {
+					var singleList = new List<YahooHistoricalPrice>();
+					singleList.Add(token.ToObject<YahooHistoricalPrice>());
+					return singleList;
+				}
             }
             else if (typeof(T) == typeof(Dividend))
             {
-                try { convertedObject = jObject.ToObject<List<YahooDividend>>(); }
-                catch { convertedObject = jObject.ToObject<YahooDividend>(); }
+				if (token is JArray)
+				{
+					return token.ToObject<List<YahooDividend>>();
+				} else {
+					var singleList = new List<YahooDividend>();
+					singleList.Add(token.ToObject<YahooDividend>());
+					return singleList;
+				}
             }
-
-            return convertedObject;
+			else
+			{
+				throw new Exception("Unknown YQL type.");
+			}
         }
     }
 }
