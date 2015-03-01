@@ -62,11 +62,10 @@ namespace Portrack.Providers.MarketData.Yahoo
 		private List<T> CreateDataFromYahooRootObject<T>(YahooRootObject<object> rootObject)
 			where T : MarketDataBase
 		{
-			var data = new List<T>();
 			object convertedObject = ConvertToObject<T>(rootObject);
 			if (typeof(T) == typeof(Quote))
 			{
-				List<Quote> quotes = data.Cast<Quote>().ToList();
+				List<Quote> quotes = new List<Quote>();
 				foreach (YahooQuote yahooQuote in (List<YahooQuote>)convertedObject)
 				{
 					quotes.Add(new Quote
@@ -79,7 +78,7 @@ namespace Portrack.Providers.MarketData.Yahoo
 			}
 			else if (typeof(T) == typeof(HistoricalPrice))
 			{
-				List<HistoricalPrice> historicalPrices = data.Cast<HistoricalPrice>().ToList();
+				List<HistoricalPrice> historicalPrices = new List<HistoricalPrice>();
 				foreach (YahooHistoricalPrice yahooHistoricalPrice in (List<YahooHistoricalPrice>)convertedObject)
 				{
 					historicalPrices.Add(new HistoricalPrice
@@ -93,7 +92,7 @@ namespace Portrack.Providers.MarketData.Yahoo
 			}
 			else if (typeof(T) == typeof(Dividend))
 			{
-				List<Dividend> dividends = data.Cast<Dividend>().ToList();
+				List<Dividend> dividends = new List<Dividend>();
 				foreach (YahooDividend yahooDividend in (List<YahooDividend>)rootObject.query.results.quote)
 				{
 					dividends.Add(new Dividend
