@@ -56,17 +56,19 @@ namespace Portrack.Providers.MarketData.Yahoo
 			}
 
 			YahooRootObject<object> rootObject = await response.Content.ReadAsAsync<YahooRootObject<object>>();
-			return CreateDataFromYahooRootObject<T>(rootObject);
+			return CreateMarketDataFromYahooRootObject<T>(rootObject);
 		}
 
-		private List<T> CreateDataFromYahooRootObject<T>(YahooRootObject<object> rootObject)
+		private List<T> CreateMarketDataFromYahooRootObject<T>(YahooRootObject<object> rootObject)
 			where T : MarketDataBase
 		{
-			object convertedObject = ConvertToObject<T>(rootObject);
+			var jToken = JToken.Parse(rootObject.query.results.quote.ToString());
+
 			if (typeof(T) == typeof(Quote))
 			{
+				List<YahooQuote> yahooQuotes = JTokenToList<YahooQuote>(jToken);
 				List<Quote> quotes = new List<Quote>();
-				foreach (YahooQuote yahooQuote in (List<YahooQuote>)convertedObject)
+				foreach (YahooQuote yahooQuote in yahooQuotes)
 				{
 					quotes.Add(new Quote
 					{
@@ -76,10 +78,12 @@ namespace Portrack.Providers.MarketData.Yahoo
 				}
 				return quotes.Cast<T>().ToList();
 			}
+
 			else if (typeof(T) == typeof(HistoricalPrice))
 			{
+				List<YahooHistoricalPrice> yahooHistoricalPrices = JTokenToList<YahooHistoricalPrice>(jToken);
 				List<HistoricalPrice> historicalPrices = new List<HistoricalPrice>();
-				foreach (YahooHistoricalPrice yahooHistoricalPrice in (List<YahooHistoricalPrice>)convertedObject)
+				foreach (YahooHistoricalPrice yahooHistoricalPrice in yahooHistoricalPrices)
 				{
 					historicalPrices.Add(new HistoricalPrice
 					{
@@ -90,10 +94,12 @@ namespace Portrack.Providers.MarketData.Yahoo
 				}
 				return historicalPrices.Cast<T>().ToList();
 			}
+
 			else if (typeof(T) == typeof(Dividend))
 			{
+				List<YahooDividend> yahooDividends = JTokenToList<YahooDividend>(jToken);
 				List<Dividend> dividends = new List<Dividend>();
-				foreach (YahooDividend yahooDividend in (List<YahooDividend>)rootObject.query.results.quote)
+				foreach (YahooDividend yahooDividend in yahooDividends)
 				{
 					dividends.Add(new Dividend
 					{
@@ -110,26 +116,6 @@ namespace Portrack.Providers.MarketData.Yahoo
 			}
 		}
 
-		private static object ConvertToObject<T>(YahooRootObject<object> rootObject)
-		{
-			var token = JToken.Parse(rootObject.query.results.quote.ToString());
-			if (typeof(T) == typeof(Quote))
-			{
-				return JTokenToList<YahooQuote>(token);
-			}
-			else if (typeof(T) == typeof(HistoricalPrice))
-			{
-				return JTokenToList<YahooHistoricalPrice>(token);
-			}
-			else if (typeof(T) == typeof(Dividend))
-			{
-				return JTokenToList<YahooDividend>(token);
-			}
-			else
-			{
-				throw new Exception("Unknown YQL type.");
-			}
-		}
 
 		/// <summary>
 		/// Converts Yahoo's response's quote into a list of T.
