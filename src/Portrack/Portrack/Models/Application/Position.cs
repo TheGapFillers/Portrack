@@ -39,12 +39,25 @@ namespace Portrack.Models.Application
 			};
 		}
 
+		// <summary>
+		/// Calculate the cost basis of the position based on selected method
+		/// </summary>
+		/// <param name="transactions">All the transaction on that position.</param>
+		/// <returns>a decimal, the cost basis of the position.</returns>
+		private decimal CalculateCostBasis(IEnumerable<Transaction> transactions)
+		{
+			//todo Give user the ability to choose a method or automatically choose for him
+			return CalculateCostBasisFIFO(transactions);
+			//return CalculateCostBasisHIFO(transactions);
+			//return CalculateCostBasisAverage(transactions);
+		}
+
 		/// <summary>
 		/// Calculate the cost basis of the position using FIFO method.
 		/// </summary>
 		/// <param name="transactions">All the transaction on that position.</param>
 		/// <returns>a decimal, the cost basis of the position.</returns>
-		private decimal CalculateCostBasis(IEnumerable<Transaction> transactions)
+		private decimal CalculateCostBasisFIFO(IEnumerable<Transaction> transactions)
 		{
 			transactions = transactions.OrderBy(t => t.Date);
 
@@ -65,6 +78,7 @@ namespace Portrack.Models.Application
 					int transactionQuantity = transaction.Shares;
 					foreach (DatedSharesAndPrice datedSharesAndPrice in datedSharesAndPrices.OrderBy(qd => qd.Date))
 					{
+						
 						if (transactionQuantity <= datedSharesAndPrice.Shares)
 						{
 							datedSharesAndPrice.Shares -= transactionQuantity;
@@ -78,13 +92,58 @@ namespace Portrack.Models.Application
 						}
 					}
 				}
-				else { } // Should never happen for now.
+				else 
+				{ 
+					throw new ArgumentException("Invalid Transaction type. Must be either Buy or Sell");
+				}
 			}
 
 			decimal costBasis = 0;
 			datedSharesAndPrices.ForEach(qd => costBasis += qd.Shares * qd.PricePerShare);
 
 			return costBasis;
+		}
+
+		/// <summary>
+		/// Calculate the cost basis of the position using High-Cost First-Out method.
+		/// It sells the more expensive share first
+		/// </summary>
+		/// <param name="transactions">All the transaction on that position.</param>
+		/// <returns>a decimal, the cost basis of the position.</returns>
+		private decimal CalculateCostBasisHIFO(IEnumerable<Transaction> transactions)
+		{
+			IEnumerable<Transaction> transactionsBuy = transactions.Where(t => t.Type == TransactionType.Buy)
+																   .OrderByDescending(t => t.Price);
+			IEnumerable<Transaction> transactionsSell = transactions.Where(t => t.Type == TransactionType.Sell)
+																	.OrderBy(t => t.Date);
+			foreach (Transaction sale in transactionsSell)
+			{
+				int transactionQuantity = sale.Shares;
+				foreach (Transaction purchase in transactionsBuy)
+				{
+					if (transactionQuantity <= purchase.Shares)
+					{
+						purchase.Shares -= transactionQuantity;
+						break;
+					}
+					else
+					{
+						transactionQuantity -= purchase.Shares;
+						purchase.Shares = 0;
+						continue;
+					}
+				}
+			}
+			
+			decimal costBasis = 0;
+			transactionsBuy.ToList<Transaction>().ForEach(t => costBasis += t.Shares * t.Price);
+
+			return costBasis;
+		}
+
+		private decimal CalculateCostBasisAverage(IEnumerable<Transaction> transactions)
+		{
+			throw new NotImplementedException();
 		}
 
 		private class DatedSharesAndPrice
