@@ -25,7 +25,7 @@ namespace Portrack.Repositories.Application
 
         
         public DbSet<Portfolio> Portfolios { get; set; }
-        public DbSet<Position> Positions { get; set; }
+        public DbSet<Holding> Holdings { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Instrument> Instruments { get; set; }
 
@@ -35,9 +35,7 @@ namespace Portrack.Repositories.Application
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Configurations.Add(new PortfolioMap());
-            //modelBuilder.Configurations.Add(new PortfolioDataMap());
-            modelBuilder.Configurations.Add(new PositionMap());
-            //modelBuilder.Configurations.Add(new PositionDataMap());
+            modelBuilder.Configurations.Add(new HoldingMap());
             modelBuilder.Configurations.Add(new TransactionMap());
             modelBuilder.Configurations.Add(new InstrumentMap());
         }

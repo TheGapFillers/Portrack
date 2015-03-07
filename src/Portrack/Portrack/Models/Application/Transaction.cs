@@ -37,23 +37,23 @@ namespace Portrack.Models.Application
 	public class TransactionResult
 	{
 		public Portfolio Portfolio { get; private set; }
-		public Position Position { get; private set; }
+		public Holding Holding { get; private set; }
 		public Transaction Transaction { get; private set; }
 
-		private TransactionResult(Portfolio portfolio, Position position, Transaction transaction, bool success)
+		private TransactionResult(Portfolio portfolio, Holding holding, Transaction transaction, bool success)
 		{
 			Portfolio = portfolio;
-			Position = position;
+			Holding = holding;
 			Transaction = transaction;
 
 			IsSuccess = success;
 			Errors = new string[0];
 		}
 
-		private TransactionResult(Portfolio portfolio, Position position, Transaction transaction, IEnumerable<string> errors)
+		private TransactionResult(Portfolio portfolio, Holding holding, Transaction transaction, IEnumerable<string> errors)
 		{
 			Portfolio = portfolio;
-			Position = position;
+			Holding = holding;
 			Transaction = transaction;
 
 			if (errors == null)
@@ -65,22 +65,22 @@ namespace Portrack.Models.Application
 			Errors = errors;
 		}
 
-		public TransactionResult(Portfolio portfolio, Position position, Transaction transaction, params string[] errors) 
-			: this(portfolio, position, transaction, (IEnumerable<string>) errors)
+		public TransactionResult(Portfolio portfolio, Holding holding, Transaction transaction, params string[] errors) 
+			: this(portfolio, holding, transaction, (IEnumerable<string>) errors)
 		{            
 		}
 
 		public IEnumerable<string> Errors { get; private set;}
 		public bool IsSuccess { get; private set;}
 
-		public static TransactionResult Succeeded(Portfolio portfolio, Position position, Transaction transaction)
+		public static TransactionResult Succeeded(Portfolio portfolio, Holding holding, Transaction transaction)
 		{
-			return new TransactionResult(portfolio, position, transaction, true);
+			return new TransactionResult(portfolio, holding, transaction, true);
 		}
 
-		public static TransactionResult Failed(Portfolio portfolio, Position position, Transaction transaction, params string[] errors)
+		public static TransactionResult Failed(Portfolio portfolio, Holding holding, Transaction transaction, params string[] errors)
 		{
-			return new TransactionResult(portfolio, position, transaction, errors);
+			return new TransactionResult(portfolio, holding, transaction, errors);
 		}
 	}
 }

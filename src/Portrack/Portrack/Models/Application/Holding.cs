@@ -1,19 +1,19 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using Portrack.Models.MarketData;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Portrack.Models.Application
 {
-    public class Position
+    public class Holding
     {
-        public Position()
+        public Holding()
         {
 
         }
 
-        public Position(Portfolio portfolio, Instrument instrument, int shareAmount = 0)
+        public Holding(Portfolio portfolio, Instrument instrument, int shareAmount = 0)
         {
             Portfolio = portfolio;
             Instrument = instrument;
@@ -21,18 +21,18 @@ namespace Portrack.Models.Application
         }
 
         [JsonIgnore]
-        public int PositionId { get; set; }
+        public int HoldingId { get; set; }
         [JsonIgnore]
         public Portfolio Portfolio { get; set; }
         public Instrument Instrument { get; private set; }
         public string Ticker { get { return Instrument != null ? Instrument.Ticker : string.Empty; } }
         public int Shares { get; set; }
-        public PositionData PositionData { get; set; }
+        public HoldingData HoldingData { get; set; }
 
 
-        public void SetPositionData(IEnumerable<Transaction> transactions, Quote quote)
+        public void SetHoldingData(IEnumerable<Transaction> transactions, Quote quote)
         {
-            PositionData = new PositionData
+            HoldingData = new HoldingData
             {
                 CostBasis = CalculateCostBasis(transactions),
                 MarketValue = quote.Last * Shares
@@ -40,10 +40,10 @@ namespace Portrack.Models.Application
         }
 
         /// <summary>
-        /// Calculate the cost basis of the position using FIFO method.
+        /// Calculate the cost basis of the holding using FIFO method.
         /// </summary>
-        /// <param name="transactions">All the transaction on that position.</param>
-        /// <returns>a decimal, the cost basis of the position.</returns>
+        /// <param name="transactions">All the transaction on that holding.</param>
+        /// <returns>a decimal, the cost basis of the holding.</returns>
         private decimal CalculateCostBasis(IEnumerable<Transaction> transactions)
         {
             var datedSharesAndPrices = new List<DatedSharesAndPrice>(); // intermediate list to calculate cost basis.
@@ -89,7 +89,7 @@ namespace Portrack.Models.Application
         }
     }
 
-    public class PositionData
+    public class HoldingData
     {
         public decimal CostBasis { get; set; } // The total cost of all shares of an investment.
         public decimal MarketValue { get; set; } // Market Value is defined as: The current value of an investment as indicated by the latest trade recorded.

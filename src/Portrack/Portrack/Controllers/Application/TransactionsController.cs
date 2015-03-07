@@ -89,12 +89,12 @@ namespace Portrack.Controllers.Application
                     string.Format("Instrument '{0}' doens't exist.", transaction.Ticker)));
             }
 
-            // Get the position associated position if it exists.
-            Position position = await _repository.GetPositionAsync(portfolio.UserName, portfolio.PortfolioName, instrument.Ticker);
-            if (position == null)
+            // Get the holding associated holding if it exists.
+            Holding holding = await _repository.GetHoldingAsync(portfolio.UserName, portfolio.PortfolioName, instrument.Ticker);
+            if (holding == null)
             {
-                position = new Position(portfolio, instrument);
-                portfolio.Positions.Add(position);
+                holding = new Holding(portfolio, instrument);
+                portfolio.Holdings.Add(holding);
             }
 
             // Retrieve transaction price from MarketData provider if price is absent.
@@ -104,8 +104,8 @@ namespace Portrack.Controllers.Application
             }
             
             // Add the transaction and get the transaction result.
-            TransactionResult result = portfolio.AddTransaction(transaction, position);
-            ClearPositionIfNoMoreShares(result);
+            TransactionResult result = portfolio.AddTransaction(transaction, holding);
+            ClearHoldingIfNoMoreShares(result);
 
             // Send the changes made in the data layer to the database and return the transaction results.
             await _repository.SaveAsync();
@@ -120,9 +120,9 @@ namespace Portrack.Controllers.Application
                 return Ok(TransactionResult.Failed(null, null, transaction,
                     string.Format("Portfolio '{0}' | '{1}' not found.", User.Identity.Name, transaction.PortfolioName)));
             }
-            else if (portfolio.Positions == null)
+            else if (portfolio.Holdings == null)
             {
-                retVal = InternalServerError(new Exception("Positions loading for portfolio failed."));
+                retVal = InternalServerError(new Exception("Holdings loading for portfolio failed."));
             }
             else if (portfolio.Transactions == null)
             {
@@ -139,11 +139,11 @@ namespace Portrack.Controllers.Application
             return price.SingleOrDefault().Close * transaction.Shares;
         }
 
-        private void ClearPositionIfNoMoreShares(TransactionResult result)
+        private void ClearHoldingIfNoMoreShares(TransactionResult result)
         {
-            if (result.IsSuccess && result.Position.Shares == 0)
+            if (result.IsSuccess && result.Holding.Shares == 0)
             {
-                _repository.DeletePositionAsync(result.Position);
+                _repository.DeleteHoldingAsync(result.Holding);
             }
         }
 

@@ -20,10 +20,10 @@ namespace Portrack.Tests.Models.Application
 			{
 				PortfolioName = "PortfolioTest",
 				UserName = "UserTest",
-				Positions = new List<Position>
+				Holdings = new List<Holding>
 				{
-					new Position(_portfolio, _testData.Instruments.SingleOrDefault(i => i.Ticker == "YHOO"), 4),
-					new Position(_portfolio, _testData.Instruments.SingleOrDefault(i => i.Ticker == "GOOG"), 6),
+					new Holding(_portfolio, _testData.Instruments.SingleOrDefault(i => i.Ticker == "YHOO"), 4),
+					new Holding(_portfolio, _testData.Instruments.SingleOrDefault(i => i.Ticker == "GOOG"), 6),
 				},
 				Transactions = new List<Transaction>()
 			};
@@ -64,7 +64,7 @@ namespace Portrack.Tests.Models.Application
 			var transactionToAdd = new Transaction { Ticker = "YHOO", Shares = 5, Type = TransactionType.Sell };
 			TransactionResult result = _portfolio.AddTransaction(
 				transactionToAdd,
-				_portfolio.Positions.SingleOrDefault(pos => pos.Ticker == "YHOO")
+				_portfolio.Holdings.SingleOrDefault(h => h.Ticker == "YHOO")
 			);
 
 			Assert.AreEqual(false, result.IsSuccess);

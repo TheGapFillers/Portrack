@@ -25,4 +25,4 @@ $transaction ='
 }
 '
 Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
-Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/positions/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/holdings/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}

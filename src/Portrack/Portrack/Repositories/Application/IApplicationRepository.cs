@@ -13,20 +13,20 @@ namespace Portrack.Repositories.Application
 		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName);
 		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, IEnumerable<string> portfolioNames);
 		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, params string[] portfolioNames);
-		Task<Portfolio> GetPortfolioAsync(string userName, string portfolioName, bool includePositions = false, bool includeTransactions = false);
+		Task<Portfolio> GetPortfolioAsync(string userName, string portfolioName, bool includeHoldings = false, bool includeTransactions = false);
 
 		Task<Portfolio> AddPortfolio(Portfolio portfolio);
 		Task<Portfolio> DeletePortfolioAsync(string userName, string portfolioName);
 
 
 
-		Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName);
-		Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName, IEnumerable<string> tickers);
-		Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName, params string[] tickers);
-		Task<Position> GetPositionAsync(string userName, string portfolioName, string ticker);
+		Task<ICollection<Holding>> GetHoldingsAsync(string userName, string portfolioName);
+		Task<ICollection<Holding>> GetHoldingsAsync(string userName, string portfolioName, IEnumerable<string> tickers);
+		Task<ICollection<Holding>> GetHoldingsAsync(string userName, string portfolioName, params string[] tickers);
+		Task<Holding> GetHoldingAsync(string userName, string portfolioName, string ticker);
 
-		Position AddPosition(Position position);
-		Position DeletePositionAsync(Position position);
+		Holding AddHolding(Holding holding);
+		Holding DeleteHoldingAsync(Holding holding);
 
 
 

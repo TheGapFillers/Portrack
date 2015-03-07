@@ -63,11 +63,11 @@ namespace Portrack.Repositories.Application
 		}
 
 		public async Task<Portfolio> GetPortfolioAsync(string userName, string portfolioName,
-			bool includePositions = false, bool includeTransactions = false)
+			bool includeHoldings = false, bool includeTransactions = false)
 		{
 			IQueryable<Portfolio> query = _context.Portfolios;
 
-			if (includePositions) query = query.Include(p => p.Positions);
+			if (includeHoldings) query = query.Include(p => p.Holdings);
 			if (includeTransactions) query = query.Include(p => p.Transactions);
 
 			query = query.Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
@@ -93,50 +93,48 @@ namespace Portrack.Repositories.Application
 			return deletedPortfolio;
 		}
 
-		public async Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName)
+		public async Task<ICollection<Holding>> GetHoldingsAsync(string userName, string portfolioName)
 		{
-			var query = _context.Positions.Include(p => p.Portfolio).Include(p => p.Instrument)
+			var query = _context.Holdings.Include(p => p.Portfolio).Include(p => p.Instrument)
 				.Where(p => p.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
 				&& p.Portfolio.PortfolioName.Equals(portfolioName, StringComparison.InvariantCultureIgnoreCase));
 
-			return await query.ToListAsync<Position>();
+			return await query.ToListAsync<Holding>();
 		}
 
-		public async Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName, IEnumerable<string> tickers)
+		public async Task<ICollection<Holding>> GetHoldingsAsync(string userName, string portfolioName, IEnumerable<string> tickers)
 		{
-			var query = _context.Positions.Include(p => p.Portfolio).Include(p => p.Instrument)
+			var query = _context.Holdings.Include(p => p.Portfolio).Include(p => p.Instrument)
 				.Where(p => p.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
 				&& p.Portfolio.PortfolioName.Equals(portfolioName, StringComparison.InvariantCultureIgnoreCase)
 				&& tickers.Contains(p.Instrument.Ticker));
 
-			return await query.ToListAsync<Position>();
+			return await query.ToListAsync<Holding>();
 		}
 
-		public Task<ICollection<Position>> GetPositionsAsync(string userName, string portfolioName, params string[] tickers)
+		public Task<ICollection<Holding>> GetHoldingsAsync(string userName, string portfolioName, params string[] tickers)
 		{
-			return GetPositionsAsync(userName, portfolioName, (IEnumerable<string>)tickers);
+			return GetHoldingsAsync(userName, portfolioName, (IEnumerable<string>)tickers);
 		}
 
-		public async Task<Position> GetPositionAsync(string userName, string portfolioName, string ticker)
+		public async Task<Holding> GetHoldingAsync(string userName, string portfolioName, string ticker)
 		{
-			var query = _context.Positions.Include(p => p.Portfolio).Include(p => p.Instrument)
+			var query = _context.Holdings.Include(p => p.Portfolio).Include(p => p.Instrument)
 				.Where(p => p.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
 				&& p.Portfolio.PortfolioName.Equals(portfolioName, StringComparison.InvariantCultureIgnoreCase)
 				&& p.Instrument.Ticker.Equals(ticker, StringComparison.InvariantCultureIgnoreCase));
 
-			return await query.SingleOrDefaultAsync<Position>();
+			return await query.SingleOrDefaultAsync<Holding>();
 		}
 
-		public Position AddPosition(Position position)
+		public Holding AddHolding(Holding holding)
 		{
-			return _context.Positions.Add(position);
+			return _context.Holdings.Add(holding);
 		}
 
-		public Position DeletePositionAsync(Position position)
+		public Holding DeleteHoldingAsync(Holding holding)
 		{
-			Position deletedPosition = _context.Positions.Remove(position);
-
-			return deletedPosition;
+			return _context.Holdings.Remove(holding);
 		}
 
 		public async Task<ICollection<Transaction>> GetTransactionsAsync(string userName)
@@ -242,8 +240,8 @@ namespace Portrack.Repositories.Application
 
 		public async Task<ICollection<Instrument>> GetPortfolioInstrumentsAsync(string userName, string portfolioName)
 		{
-			ICollection<Position> positions = await GetPositionsAsync(userName, portfolioName);
-			IEnumerable<string> tickers = positions.Select(pos => pos.Ticker);
+			ICollection<Holding> holdings = await GetHoldingsAsync(userName, portfolioName);
+			IEnumerable<string> tickers = holdings.Select(h => h.Ticker);
 			var query = _context.Instruments.Where(i => tickers.Contains(i.Ticker));
 
 			return await query.ToListAsync();
