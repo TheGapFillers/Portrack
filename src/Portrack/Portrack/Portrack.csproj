@@ -191,7 +191,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\Application\BaseController.cs" />
     <Compile Include="Controllers\Application\InstrumentsController.cs" />
-    <Compile Include="Controllers\Application\PositionsController.cs" />
+    <Compile Include="Controllers\Application\HoldingsController.cs" />
     <Compile Include="Models\MarketData\Dividend.cs" />
     <Compile Include="Models\MarketData\HistoricalPrice.cs" />
     <Compile Include="Models\MarketData\MarketDataBase.cs" />
@@ -215,7 +215,7 @@
     <Compile Include="Models\Identity\AccountViewModels.cs" />
     <Compile Include="Models\Identity\PortrackUser.cs" />
     <Compile Include="Models\Application\Instrument.cs" />
-    <Compile Include="Models\Application\Position.cs" />
+    <Compile Include="Models\Application\Holding.cs" />
     <Compile Include="Models\Identity\ManageViewModels.cs" />
     <Compile Include="Models\Identity\MeViewModels.cs" />
     <Compile Include="Models\Application\Portfolio.cs" />
@@ -226,7 +226,7 @@
     <Compile Include="Repositories\Application\IApplicationRepository.cs" />
     <Compile Include="Repositories\Application\Mappers\InstrumentMap.cs" />
     <Compile Include="Repositories\Application\Mappers\PortfolioMap.cs" />
-    <Compile Include="Repositories\Application\Mappers\PositionMap.cs" />
+    <Compile Include="Repositories\Application\Mappers\HoldingMap.cs" />
     <Compile Include="Repositories\Application\Mappers\TransactionMap.cs" />
     <Compile Include="Repositories\Application\ApplicationDbContext.cs" />
     <Compile Include="Repositories\Application\ApplicationRepository.cs" />

@@ -15,7 +15,7 @@ namespace Portrack.Models.Application
 		public string UserName { get; set; }
 
 		[JsonIgnore]
-		public ICollection<Position> Positions { get; set; }
+		public ICollection<Holding> Holdings { get; set; }
 		[JsonIgnore]
 		public ICollection<Transaction> Transactions { get; set; }
 
@@ -26,35 +26,35 @@ namespace Portrack.Models.Application
 		/// Method of the portfolio class to add a transaction.
 		/// </summary>
 		/// <param name="transaction">The transaction to execute.</param>
-		/// <param name="position">The current position against which the transaction will be executed.</param>
+		/// <param name="holding">The current holding against which the transaction will be executed.</param>
 		/// <returns>The transaction results.</returns>
-		public TransactionResult AddTransaction(Transaction transaction, Position position)
+		public TransactionResult AddTransaction(Transaction transaction, Holding holding)
 		{
-			if (position == null)
+			if (holding == null)
 			{
 				return TransactionResult.Failed(
-					this, position, transaction, "Cannot work on a non-existing position."
+					this, holding, transaction, "Cannot work on a non-existing holding."
 				);
 			}
 			if (transaction.Type == TransactionType.Sell)
 			{
-				if (transaction.Shares > position.Shares)
+				if (transaction.Shares > holding.Shares)
 				{
 					return TransactionResult.Failed(
-						this, position, transaction,
-						"Not enough shares for this position. Cannot sell."
+						this, holding, transaction,
+						"Not enough shares for this holding. Cannot sell."
 					);
 				}
-				position.Shares -= transaction.Shares;
+				holding.Shares -= transaction.Shares;
 			} 
 			else if (transaction.Type == TransactionType.Buy)
 			{
-				position.Shares += transaction.Shares;
+				holding.Shares += transaction.Shares;
 			} 
 			else //Should never happen
 			{
 				 return TransactionResult.Failed(
-					this, position, transaction,
+					this, holding, transaction,
 					"Unknown transaction type."
 				);
 			}
@@ -64,7 +64,7 @@ namespace Portrack.Models.Application
 			Transactions = Transactions ?? new List<Transaction>();
 			Transactions.Add(transaction);
 
-			return TransactionResult.Succeeded(this, position, transaction);
+			return TransactionResult.Succeeded(this, holding, transaction);
 		}
 	}
 
