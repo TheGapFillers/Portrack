@@ -30,13 +30,50 @@ namespace Portrack.Models.Application
         public HoldingData HoldingData { get; set; }
 
 
-        public void SetHoldingData(IEnumerable<Transaction> transactions, Quote quote)
+        public void SetHoldingData(IEnumerable<Transaction> transactions, Quote quote, IEnumerable<Dividend> dividends)
         {
             HoldingData = new HoldingData
             {
                 CostBasis = CalculateCostBasis(transactions),
-                MarketValue = quote.Last * Shares
+                MarketValue = quote.Last * Shares,
+                Income = CalculateDividendIncome(transactions, dividends)
             };
+        }
+
+        private decimal CalculateDividendIncome(IEnumerable<Transaction> transactions, IEnumerable<Dividend> dividends)
+        {
+            decimal totalDividendAmount = 0;
+            foreach (Dividend dividend in dividends)
+            {
+                totalDividendAmount += dividend.Amount * GetTransactionSharesAtDate(transactions, dividend.Date);
+            }
+
+            return totalDividendAmount;
+        }
+
+        /// <summary>
+        /// Get the number of shares at the specified date from the specified transactions.
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        private decimal GetTransactionSharesAtDate(IEnumerable<Transaction> transactions, DateTime dateTime)
+        {
+            int shareNumber = 0;
+            foreach (Transaction transaction in transactions.Where(t => t.Date < dateTime).OrderBy(t => t.Date))
+            {
+                switch (transaction.Type)
+                {
+                    case TransactionType.Buy:
+                        shareNumber += transaction.Shares;
+                        break;
+                    case TransactionType.Sell:
+                        shareNumber -= transaction.Shares;
+                        break;
+                }
+            }
+
+            return shareNumber;
         }
 
         /// <summary>

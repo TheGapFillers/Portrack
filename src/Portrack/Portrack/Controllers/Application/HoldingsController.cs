@@ -60,12 +60,19 @@ namespace Portrack.Controllers.Application
 		/// <param name="holdings">Holings to be populated with holding data.</param>
 		private async Task ComputeHoldingDataAsync(ICollection<Holding> holdings)
 		{
+			if (holdings == null || holdings.Count == 0)
+				return;
+
 			// Get the needed transactions.
 			ICollection<Transaction> allRequiredTransactions = await _repository.GetTransactionsAsync(
 				User.Identity.Name, holdings.First().Portfolio.PortfolioName, holdings.Select(p => p.Ticker));
 
 			// Get the needed quotes
 			ICollection<Quote> allRequiredQuotes = await _provider.GetQuotesAsync(holdings.Select(p => p.Ticker));
+
+			// Get the needed dividends
+			ICollection<Dividend> allRequiredDividends = await _provider.GetHistoricalDividendAsync(
+				holdings.Select(p => p.Ticker), allRequiredTransactions.OrderBy(t => t.Date).First().Date, DateTime.UtcNow);
 
 			// Loop accross all holdings and populate with holding data.
 			foreach (Holding holding in holdings)
@@ -76,7 +83,10 @@ namespace Portrack.Controllers.Application
 				Quote quote = allRequiredQuotes
 					.SingleOrDefault(q => q.Ticker.Equals(holding.Ticker, StringComparison.OrdinalIgnoreCase));
 
-				holding.SetHoldingData(transactions, quote);
+				IEnumerable<Dividend> dividends = allRequiredDividends
+					.Where(p => p.Ticker.Equals(holding.Ticker, StringComparison.OrdinalIgnoreCase));
+
+				holding.SetHoldingData(transactions, quote, dividends);
 			}
 		}
 	}
