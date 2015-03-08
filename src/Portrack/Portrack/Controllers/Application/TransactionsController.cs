@@ -4,6 +4,7 @@ using Portrack.Providers.MarketData;
 using Portrack.Repositories.Application;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -69,9 +70,18 @@ namespace Portrack.Controllers.Application
         [HttpPost]
         public async Task<IHttpActionResult> Post([FromBody]Transaction transaction)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) 
+                return BadRequest(ModelState);
 
-            //Todo: check if no quot at all to return properly
+            // Check that the date of the transaction is valid.
+            var schedule = new UnitedStatesHolidaySchedule(UnitedStatesHolidayScheduleTypes.StockMarket, transaction.Date.Year);
+            if (schedule.GetObservedHolidays().Contains(transaction.Date.Date))
+                return Ok(TransactionResult.Failed(null, null, transaction,
+                        string.Format("'{0}' is a market holiday.", transaction.Date.ToString("yyyy-MM-dd"))));
+
+            if (transaction.Date.IsWeekend())
+                return Ok(TransactionResult.Failed(null, null, transaction,
+                    string.Format("'{0}' is a week end date.", transaction.Date.ToString("yyyy-MM-dd"))));
 
             // Get the portfolio represented by the PortfolioName in the posted transaction.
             Portfolio portfolio = await _repository.GetPortfolioAsync(User.Identity.Name, transaction.PortfolioName, true, true);
@@ -99,9 +109,7 @@ namespace Portrack.Controllers.Application
 
             // Retrieve transaction price from MarketData provider if price is absent.
             if (transaction.Price == 0)
-            { 
                 transaction.Price = await RetrieveTransactionPriceAsync(transaction, instrument); 
-            }
             
             // Add the transaction and get the transaction result.
             TransactionResult result = portfolio.AddTransaction(transaction, holding);
