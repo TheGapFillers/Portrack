@@ -63,7 +63,7 @@ namespace Portrack.Providers.MarketData.Yahoo
 			where T : MarketDataBase
 		{
 			if (rootObject.query.results == null)
-				throw new Exception("No data found fron provider with those parameters.");
+				throw new Exception("No data found from provider with those parameters.");
 
 			var jToken = JToken.Parse(rootObject.query.results.quote.ToString());
 

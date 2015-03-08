@@ -15,8 +15,8 @@ Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/transactions/ -Hea
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/transactions/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/transactions/BambiPortfolio1/MSFT -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
-Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/holdings/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
-Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/holdings/BambiPortfolio1/MSFT,GOOG" -Headers @{"Authorization"= "${token_type} ${access_token}"}
+Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/holdings/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"} | Format-List
+Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/holdings/BambiPortfolio1/MSFT,GOOG" -Headers @{"Authorization"= "${token_type} ${access_token}"} | Format-List
 
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/instruments/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
 Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/instruments/GOOG,YHOO" -Headers @{"Authorization"= "${token_type} ${access_token}"}
@@ -40,7 +40,7 @@ $transaction ='
   "portfolioName":"BambiPortfolio1",
   "ticker": "goog",
   "shares": 2,
-  "date":"2014-03-04",
+  "date":"2014-04-18",
   "type":"Buy"
 }
 '
