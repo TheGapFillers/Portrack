@@ -62,6 +62,9 @@ namespace Portrack.Providers.MarketData.Yahoo
 		private List<T> CreateMarketDataFromYahooRootObject<T>(YahooRootObject<object> rootObject)
 			where T : MarketDataBase
 		{
+			if (rootObject.query.results == null)
+				throw new Exception("No data found fron provider with those parameters.");
+
 			var jToken = JToken.Parse(rootObject.query.results.quote.ToString());
 
 			if (typeof(T) == typeof(Quote))
