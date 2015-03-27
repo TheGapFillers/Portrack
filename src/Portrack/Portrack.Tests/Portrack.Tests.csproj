@@ -55,6 +55,14 @@
     <Compile Include="Repositories\TestData.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Portrack.Models.Application\Portrack.Models.Application.csproj">
+      <Project>{f07cf6f5-0a09-46d8-98d2-b8f3d66d2436}</Project>
+      <Name>Portrack.Models.Application</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Portrack.Models.MarketData\Portrack.Models.MarketData.csproj">
+      <Project>{348d2aae-b48d-4135-9eeb-ae55fd8a9f1c}</Project>
+      <Name>Portrack.Models.MarketData</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Portrack\Portrack.csproj">
       <Project>{c1a6cee2-4930-4084-a69f-c37fdeba5314}</Project>
       <Name>Portrack</Name>

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using Portrack.Models;
 using Portrack.Repositories.Identity;
+using Portrack.ViewModels.Identity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
