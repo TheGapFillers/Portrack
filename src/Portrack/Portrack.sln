@@ -38,6 +38,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portrack.Models.Application
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portrack.Repositories.Application.EF", "Portrack.Repositories.Application.EF\Portrack.Repositories.Application.EF.csproj", "{74157DD8-D7C5-448F-9D0D-6164406E9F78}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controllers", "Controllers", "{2D0EC910-6D47-4D5D-9D4F-FE126DB9596D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portrack.Controllers.Application", "Portrack.Controllers.Application\Portrack.Controllers.Application.csproj", "{28610256-DD81-4A9F-B8CD-D14B7FA07326}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -160,6 +164,16 @@ Global
 		{74157DD8-D7C5-448F-9D0D-6164406E9F78}.Release|ARM.ActiveCfg = Release|Any CPU
 		{74157DD8-D7C5-448F-9D0D-6164406E9F78}.Release|x64.ActiveCfg = Release|Any CPU
 		{74157DD8-D7C5-448F-9D0D-6164406E9F78}.Release|x86.ActiveCfg = Release|Any CPU
+		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Release|ARM.ActiveCfg = Release|Any CPU
+		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Release|x64.ActiveCfg = Release|Any CPU
+		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -174,5 +188,6 @@ Global
 		{41D68509-5669-4F54-877B-A9356B6667D0} = {9CF83DB8-9B84-42D5-AFD6-18C0DC00F749}
 		{F07CF6F5-0A09-46D8-98D2-B8F3D66D2436} = {FF1730CC-1CB9-4698-9F44-ABAA57297D23}
 		{74157DD8-D7C5-448F-9D0D-6164406E9F78} = {9CF83DB8-9B84-42D5-AFD6-18C0DC00F749}
+		{28610256-DD81-4A9F-B8CD-D14B7FA07326} = {2D0EC910-6D47-4D5D-9D4F-FE126DB9596D}
 	EndGlobalSection
 EndGlobal

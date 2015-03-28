@@ -2,6 +2,8 @@
 using Autofac.Integration.WebApi;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
+using Portrack.Controllers.Application;
+using Portrack.Controllers.Application.Base;
 using Portrack.Providers.MarketData;
 using Portrack.Providers.MarketData.Yahoo;
 using Portrack.Repositories.Application;
@@ -44,6 +46,11 @@ namespace Portrack
             // Setup the Autofac builder for dependency injection.
             var builder = new ContainerBuilder();
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
+            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(ApplicationBaseController)));
+            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(HoldingsController)));
+            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(InstrumentsController)));
+            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(PortfoliosController)));
+            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(TransactionsController)));
 
             builder.RegisterType<ApplicationDbContext>();
             builder.RegisterType<ApplicationRepository>().As<IApplicationRepository>();
