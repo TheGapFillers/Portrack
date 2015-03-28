@@ -208,15 +208,10 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Controllers\Application\BaseController.cs" />
-    <Compile Include="Controllers\Application\InstrumentsController.cs" />
-    <Compile Include="Controllers\Application\HoldingsController.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Identity\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Identity\ManageController.cs" />
-    <Compile Include="Controllers\Application\PortfoliosController.cs" />
-    <Compile Include="Controllers\Application\TransactionsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -352,6 +347,10 @@
     <TypeScriptCompile Include="Scripts\typings\marked\marked.d.ts" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Portrack.Controllers.Application\Portrack.Controllers.Application.csproj">
+      <Project>{28610256-dd81-4a9f-b8cd-d14b7fa07326}</Project>
+      <Name>Portrack.Controllers.Application</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Portrack.Models.Application\Portrack.Models.Application.csproj">
       <Project>{f07cf6f5-0a09-46d8-98d2-b8f3d66d2436}</Project>
       <Name>Portrack.Models.Application</Name>

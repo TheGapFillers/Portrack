@@ -1,4 +1,5 @@
-﻿using Portrack.Models.Application;
+﻿using Portrack.Controllers.Application.Base;
+using Portrack.Models.Application;
 using Portrack.Models.MarketData;
 using Portrack.Providers.MarketData;
 using Portrack.Repositories.Application;
@@ -15,7 +16,7 @@ namespace Portrack.Controllers.Application
 	/// All the calls in this class need authorization.
 	/// </summary>
 	[RoutePrefix("api/holdings")]
-	public class HoldingsController : BaseController
+	public class HoldingsController : ApplicationBaseController
 	{
 		/// <summary>
 		/// Class constructor which injected 'IApplicationRepository' dependency.
