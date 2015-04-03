@@ -1,8 +1,8 @@
-﻿${clientId} = "web"
-${clientSecret} = ""
+﻿${clientId} = "3a85e21b1e0445c191866f97cffaff71"
+${clientSecret} = "J65y8RUHwUu3tcWJTQe1btO2WtYzmESZ3O17iw6JJIc"
 ${UserName} = "ambroise.couissin@gmail.com"
 ${Password} = "Aaaa-1111"
-$authToken = invoke-restmethod -Method Post -uri http://localhost:24717/Token -ContentType "application/x-www-form-urlencoded;charset=UTF-8" -Body "grant_type=password&username=${UserName}&password=${Password}&client_id=${clientId}&client_secret=${clientSecret}"
+$authToken = invoke-restmethod -Method Post -uri http://localhost:24717/Token -ContentType "application/x-www-form-urlencoded;charset=UTF-8" -Body "grant_type=password&username=${UserName}&password=${Password}&client_id=${clientId}&client_secret=${clientSecret}" -Verbose
 ${token_type} = $authToken.token_type
 ${access_token} = $authToken.access_token
 
