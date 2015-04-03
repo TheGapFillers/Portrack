@@ -35,8 +35,7 @@ namespace Portrack.Repositories.Identity
             : base(store)
         {
         }
-        public static PortrackUserManager Create(IdentityFactoryOptions<PortrackUserManager> options,
-            IOwinContext context)
+        public static PortrackUserManager Create(IdentityFactoryOptions<PortrackUserManager> options, IOwinContext context)
         {
             var manager = new PortrackUserManager(new UserStore<PortrackUser>(context.Get<IdentityDbContext>()));
             // Configure validation logic for usernames
@@ -50,10 +49,10 @@ namespace Portrack.Repositories.Identity
             manager.PasswordValidator = new PasswordValidator
             {
                 RequiredLength = 6,
-                RequireNonLetterOrDigit = true,
+                RequireNonLetterOrDigit = false,
                 RequireDigit = true,
                 RequireLowercase = true,
-                RequireUppercase = true,
+                RequireUppercase = false,
             };
 
             // Configure user lockout defaults
@@ -92,7 +91,7 @@ namespace Portrack.Repositories.Identity
 
         public override Task<ClaimsIdentity> CreateUserIdentityAsync(PortrackUser user)
         {
-            return user.GenerateUserIdentityAsync((PortrackUserManager)UserManager);
+            return user.GenerateUserIdentityAsync((PortrackUserManager)UserManager, "JWT");
         }
 
         public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)

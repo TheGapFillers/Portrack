@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.DataHandler.Encoder;
+using Microsoft.Owin.Security.Jwt;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
 using Portrack.Models.Identity;
 using Portrack.Providers.Identity;
 using Portrack.Repositories.Identity;
 using System;
+using System.Configuration;
 
 namespace Portrack
 {
@@ -16,21 +20,34 @@ namespace Portrack
         // Enable the application to use OAuthAuthorization. You can then secure your Web APIs
         static Startup()
         {
-            PublicClientId = "web";
+            string issuer = "http://localhost:24717/";
+            string audienceId = ConfigurationManager.AppSettings["as:AudienceId"];
+            byte[] audienceSecret = TextEncodings.Base64Url.Decode(ConfigurationManager.AppSettings["as:AudienceSecret"]);
 
-            OAuthOptions = new OAuthAuthorizationServerOptions
+            OAuthServerOptions = new OAuthAuthorizationServerOptions
             {
                 TokenEndpointPath = new PathString("/Token"),
                 AuthorizeEndpointPath = new PathString("/Account/Authorize"),
-                Provider = new ApplicationOAuthProvider(PublicClientId),
+                Provider = new ApplicationOAuthProvider(audienceId),
+                AccessTokenFormat = new CustomJwtFormat(issuer),
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
                 AllowInsecureHttp = true
             };
+
+            OAuthClientOptions = new JwtBearerAuthenticationOptions
+            {
+                AuthenticationMode = AuthenticationMode.Active,
+                AllowedAudiences = new[] { audienceId },
+                IssuerSecurityTokenProviders = new IIssuerSecurityTokenProvider[]
+                {
+                    new SymmetricKeyIssuerSecurityTokenProvider(issuer, audienceSecret)
+                }
+            };
         }
 
-        public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
+        public static OAuthAuthorizationServerOptions OAuthServerOptions { get; private set; }
+        public static JwtBearerAuthenticationOptions OAuthClientOptions { get; private set; }
 
-        public static string PublicClientId { get; private set; }
 
         // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
@@ -51,7 +68,7 @@ namespace Portrack
                     // This is a security feature which is used when you change a password or add an external login to your account.  
                     OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<PortrackUserManager, PortrackUser>(
                         validateInterval: TimeSpan.FromMinutes(20),
-                        regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
+                        regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager, "JWT"))
                 }
             });
             // Use a cookie to temporarily store information about a user logging in with a third party login provider
@@ -66,7 +83,8 @@ namespace Portrack
             app.UseTwoFactorRememberBrowserCookie(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie);
 
             // Enable the application to use bearer tokens to authenticate users
-            app.UseOAuthBearerTokens(OAuthOptions);
+            app.UseOAuthBearerTokens(OAuthServerOptions);
+            app.UseJwtBearerAuthentication(OAuthClientOptions);
 
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
