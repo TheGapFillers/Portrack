@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dividend.cs" />
+    <Compile Include="HistoricalCurrency.cs" />
     <Compile Include="HistoricalPrice.cs" />
     <Compile Include="MarketDataBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

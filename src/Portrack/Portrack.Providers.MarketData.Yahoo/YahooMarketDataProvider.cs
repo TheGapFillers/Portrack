@@ -45,6 +45,19 @@ namespace Portrack.Providers.MarketData.Yahoo
 			return await GetDataFromYQLAsync<Dividend>();
 		}
 
+		public async Task<List<HistoricalCurrency>> GetHistoricalCurrencyAsync(IEnumerable<string> pairs, DateTime date)
+		{
+			throw new NotImplementedException();
+
+			/*string formattedTickers = string.Join(",", pairs.Select(t => string.Format(@"""{0}""", t)));
+
+			YQLQuery = string.Format(@"http://finance.yahoo.com/connection/currency-converter-cache?date={2}",
+				formattedTickers, date.ToString("yyyyMMdd"));
+
+			//return await GetDataFromYQLAsync<HistoricalCurrency>();*/
+		}
+
+
 		private async Task<List<T>> GetDataFromYQLAsync<T>()
 			where T : MarketDataBase
 		{
