@@ -42,6 +42,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controllers", "Controllers"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheGapFillers.Portrack.Controllers.Application", "TheGapFillers.Portrack.Controllers.Application\TheGapFillers.Portrack.Controllers.Application.csproj", "{28610256-DD81-4A9F-B8CD-D14B7FA07326}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheGapFillers.Portrack.WebSite", "TheGapFillers.Portrack.WebSite\TheGapFillers.Portrack.WebSite.csproj", "{0F54500F-9F46-4600-A13F-DE32835D9C17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -174,6 +176,16 @@ Global
 		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Release|ARM.ActiveCfg = Release|Any CPU
 		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Release|x64.ActiveCfg = Release|Any CPU
 		{28610256-DD81-4A9F-B8CD-D14B7FA07326}.Release|x86.ActiveCfg = Release|Any CPU
+		{0F54500F-9F46-4600-A13F-DE32835D9C17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F54500F-9F46-4600-A13F-DE32835D9C17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F54500F-9F46-4600-A13F-DE32835D9C17}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{0F54500F-9F46-4600-A13F-DE32835D9C17}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0F54500F-9F46-4600-A13F-DE32835D9C17}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0F54500F-9F46-4600-A13F-DE32835D9C17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F54500F-9F46-4600-A13F-DE32835D9C17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F54500F-9F46-4600-A13F-DE32835D9C17}.Release|ARM.ActiveCfg = Release|Any CPU
+		{0F54500F-9F46-4600-A13F-DE32835D9C17}.Release|x64.ActiveCfg = Release|Any CPU
+		{0F54500F-9F46-4600-A13F-DE32835D9C17}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
