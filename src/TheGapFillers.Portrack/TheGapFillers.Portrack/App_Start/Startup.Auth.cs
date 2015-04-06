@@ -41,7 +41,7 @@ namespace TheGapFillers.Portrack
                 IssuerSecurityTokenProviders = new IIssuerSecurityTokenProvider[]
                 {
                     new SymmetricKeyIssuerSecurityTokenProvider(issuer, audienceSecret)
-                }
+                },
             };
         }
 
@@ -53,8 +53,8 @@ namespace TheGapFillers.Portrack
         public void ConfigureAuth(IAppBuilder app)
         {
             // Configure the db context, user manager and signin manager to use a single instance per request
-            app.CreatePerOwinContext(IdentityDbContext.Create);
-            app.CreatePerOwinContext<PortrackUserManager>(PortrackUserManager.Create);
+            app.CreatePerOwinContext(CustomIdentityDbContext.Create);
+            app.CreatePerOwinContext<CustomUserManager>(CustomUserManager.Create);
             app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
 
             // Enable the application to use a cookie to store information for the signed in user
@@ -66,7 +66,7 @@ namespace TheGapFillers.Portrack
                 {
                     // Enables the application to validate the security stamp when the user logs in.
                     // This is a security feature which is used when you change a password or add an external login to your account.  
-                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<PortrackUserManager, PortrackUser>(
+                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<CustomUserManager, CustomIdentityUser>(
                         validateInterval: TimeSpan.FromMinutes(20),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager, "JWT"))
                 }

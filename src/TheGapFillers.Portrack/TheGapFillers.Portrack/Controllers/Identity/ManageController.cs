@@ -14,13 +14,13 @@ namespace TheGapFillers.Portrack.Controllers.Identity
     public class ManageController : Controller
     {
         private ApplicationSignInManager _signInManager;
-        private PortrackUserManager _userManager;
+        private CustomUserManager _userManager;
 
         public ManageController()
         {
         }
 
-        public ManageController(PortrackUserManager userManager, ApplicationSignInManager signInManager)
+        public ManageController(CustomUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -38,11 +38,11 @@ namespace TheGapFillers.Portrack.Controllers.Identity
             }
         }
 
-        public PortrackUserManager UserManager
+        public CustomUserManager UserManager
         {
             get
             {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<PortrackUserManager>();
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<CustomUserManager>();
             }
             private set
             {

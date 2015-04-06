@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
+﻿using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
-using TheGapFillers.Portrack.Models.Identity;
-using TheGapFillers.Portrack.Repositories.Identity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using TheGapFillers.Portrack.Models.Identity;
+using TheGapFillers.Portrack.Repositories.Identity;
 
 namespace TheGapFillers.Portrack.Providers.Identity
 {
@@ -73,9 +73,9 @@ namespace TheGapFillers.Portrack.Providers.Identity
 		{
 			context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
-			var userManager = context.OwinContext.GetUserManager<PortrackUserManager>();
+			var userManager = context.OwinContext.GetUserManager<CustomUserManager>();
 
-			PortrackUser user = await userManager.FindAsync(context.UserName, context.Password);
+			CustomIdentityUser user = await userManager.FindAsync(context.UserName, context.Password);
 
 			// User not found.
 			if (user == null)
@@ -92,7 +92,7 @@ namespace TheGapFillers.Portrack.Providers.Identity
 
 			ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager, "JWT");
 
-			var ticket = new AuthenticationTicket(oAuthIdentity, CreateProperties(user.UserName));
+			var ticket = new AuthenticationTicket(oAuthIdentity, CreateProperties(user.UserName, user.Audience));
 
 			context.Validated(ticket);
 		}
@@ -118,10 +118,33 @@ namespace TheGapFillers.Portrack.Providers.Identity
 			return base.ValidateAuthorizeRequest(context);
 		}
 
-		public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
+		public async override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
 		{
+			string clientId = string.Empty;
+			string clientSecret = string.Empty;
+			string symmetricKeyAsBase64 = string.Empty;
+
+			if (!context.TryGetBasicCredentials(out clientId, out clientSecret))
+			{
+				context.TryGetFormCredentials(out clientId, out clientSecret);
+			}
+
+			if (context.ClientId == null)
+			{
+				context.SetError("invalid_clientId", "client_Id is not set");
+				return;
+			}
+
+			Audience audience = await CustomUserManager.FindAudience(Guid.Parse(context.ClientId));
+
+			if (audience == null)
+			{
+				context.SetError("invalid_clientId", string.Format("Invalid client_id '{0}'", context.ClientId));
+				return;
+			}
+
 			context.Validated();
-			return Task.FromResult<object>(null);
+			return;
 		}
 
 		public override Task ValidateTokenRequest(OAuthValidateTokenRequestContext context)
@@ -130,12 +153,15 @@ namespace TheGapFillers.Portrack.Providers.Identity
 		}
 
 
-		public static AuthenticationProperties CreateProperties(string userName)
+		public static AuthenticationProperties CreateProperties(string userName, Audience audience)
 		{
 			var data = new Dictionary<string, string>
 			{
 				{ "userName", userName },
+				{ "audienceName", audience.Name },
+				{ "audienceId", audience.AudienceId.ToString() }
 			};
+
 			return new AuthenticationProperties(data);
 		}
 	}

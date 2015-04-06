@@ -6,7 +6,11 @@ using Microsoft.Owin.Security;
 using TheGapFillers.Portrack.Models.Identity;
 using System;
 using System.Security.Claims;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
+using Microsoft.Owin.Security.DataHandler.Encoder;
+using System.Web;
 
 namespace TheGapFillers.Portrack.Repositories.Identity
 {
@@ -29,17 +33,20 @@ namespace TheGapFillers.Portrack.Repositories.Identity
     }
 
     // Configure the application user manager which is used in this application.
-    public class PortrackUserManager : UserManager<PortrackUser>
+    public class CustomUserManager : UserManager<CustomIdentityUser>
     {
-        public PortrackUserManager(IUserStore<PortrackUser> store)
+        public CustomUserManager(IUserStore<CustomIdentityUser> store)
             : base(store)
         {
         }
-        public static PortrackUserManager Create(IdentityFactoryOptions<PortrackUserManager> options, IOwinContext context)
+
+        public static CustomUserManager Create(IdentityFactoryOptions<CustomUserManager> options, IOwinContext context)
         {
-            var manager = new PortrackUserManager(new UserStore<PortrackUser>(context.Get<IdentityDbContext>()));
+            CustomIdentityDbContext identityContext = context.Get<CustomIdentityDbContext>();
+            var manager = new CustomUserManager(new UserStore<CustomIdentityUser>(identityContext));
+
             // Configure validation logic for usernames
-            manager.UserValidator = new UserValidator<PortrackUser>(manager)
+            manager.UserValidator = new UserValidator<CustomIdentityUser>(manager)
             {
                 AllowOnlyAlphanumericUserNames = false,
                 RequireUniqueEmail = true
@@ -62,11 +69,11 @@ namespace TheGapFillers.Portrack.Repositories.Identity
 
             // Register two factor authentication providers. This application uses Phone and Emails as a step of receiving a code for verifying the user
             // You can write your own provider and plug it in here.
-            manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<PortrackUser>
+            manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<CustomIdentityUser>
             {
                 MessageFormat = "Your security code is {0}"
             });
-            manager.RegisterTwoFactorProvider("Email Code", new EmailTokenProvider<PortrackUser>
+            manager.RegisterTwoFactorProvider("Email Code", new EmailTokenProvider<CustomIdentityUser>
             {
                 Subject = "Security Code",
                 BodyFormat = "Your security code is {0}"
@@ -77,26 +84,49 @@ namespace TheGapFillers.Portrack.Repositories.Identity
             if (dataProtectionProvider != null)
             {
                 manager.UserTokenProvider =
-                    new DataProtectorTokenProvider<PortrackUser>(dataProtectionProvider.Create("ASP.NET Identity"));
+                    new DataProtectorTokenProvider<CustomIdentityUser>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
+        }
+
+
+        public static async Task<Audience> FindAudience(Guid clientId)
+        {
+            CustomIdentityDbContext identityContext = HttpContext.Current.GetOwinContext().Get<CustomIdentityDbContext>();
+            Audience audience = await identityContext.Audiences.FindAsync(clientId);
+            return audience;
+        }
+
+
+        public static Audience AddAudience(string name)
+        {
+            var clientId = Guid.NewGuid();
+            var key = new byte[32];
+            RNGCryptoServiceProvider.Create().GetBytes(key);
+            var base64Secret = TextEncodings.Base64Url.Encode(key);
+            Audience newAudience = new Audience { AudienceId = clientId, Base64Secret = base64Secret, Name = name };
+
+            CustomIdentityDbContext identityContext = HttpContext.Current.GetOwinContext().Get<CustomIdentityDbContext>();
+            Audience createdAudience = identityContext.Audiences.Add(newAudience);
+            identityContext.SaveChangesAsync();
+            return createdAudience;
         }
     }
 
     // Configure the application sign-in manager which is used in this application.  
-    public class ApplicationSignInManager : SignInManager<PortrackUser, string>
+    public class ApplicationSignInManager : SignInManager<CustomIdentityUser, string>
     {
-        public ApplicationSignInManager(PortrackUserManager userManager, IAuthenticationManager authenticationManager) :
+        public ApplicationSignInManager(CustomUserManager userManager, IAuthenticationManager authenticationManager) :
             base(userManager, authenticationManager) { }
 
-        public override Task<ClaimsIdentity> CreateUserIdentityAsync(PortrackUser user)
+        public override Task<ClaimsIdentity> CreateUserIdentityAsync(CustomIdentityUser user)
         {
-            return user.GenerateUserIdentityAsync((PortrackUserManager)UserManager, "JWT");
+            return user.GenerateUserIdentityAsync((CustomUserManager)UserManager, "JWT");
         }
 
         public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)
         {
-            return new ApplicationSignInManager(context.GetUserManager<PortrackUserManager>(), context.Authentication);
+            return new ApplicationSignInManager(context.GetUserManager<CustomUserManager>(), context.Authentication);
         }
     }
 }

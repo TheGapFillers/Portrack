@@ -1,5 +1,7 @@
-﻿${clientId} = "3a85e21b1e0445c191866f97cffaff71"
-${clientSecret} = "J65y8RUHwUu3tcWJTQe1btO2WtYzmESZ3O17iw6JJIc"
+﻿Invoke-Restmethod -Method Post -Uri http://localhost:8282/api/audiences -ContentType "application/json" -Body "{ 'name' : 'Portrack' }"
+
+${clientId} = "14631eb2-6edc-e411-8398-e0b9a567eb25"
+${clientSecret} = "bcMTRsTDRszM19MKhbsRbbfRjVzDZJ4lxGbc3iZfiJ8"
 ${UserName} = "ambroise.couissin@gmail.com"
 ${Password} = "Aaaa-1111"
 $authToken = invoke-restmethod -Method Post -uri http://localhost:24717/Token -ContentType "application/x-www-form-urlencoded;charset=UTF-8" -Body "grant_type=password&username=${UserName}&password=${Password}&client_id=${clientId}&client_secret=${clientSecret}" -Verbose

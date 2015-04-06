@@ -9,6 +9,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Configuration;
+using System;
+using System.Collections.Generic;
 
 namespace TheGapFillers.Portrack.Controllers.Identity
 {
@@ -16,13 +19,13 @@ namespace TheGapFillers.Portrack.Controllers.Identity
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
-        private PortrackUserManager _userManager;
+        private CustomUserManager _userManager;
 
         public AccountController()
         {
         }
 
-        public AccountController(PortrackUserManager userManager, ApplicationSignInManager signInManager)
+        public AccountController(CustomUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -40,11 +43,11 @@ namespace TheGapFillers.Portrack.Controllers.Identity
             }
         }
 
-        public PortrackUserManager UserManager
+        public CustomUserManager UserManager
         {
             get
             {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<PortrackUserManager>();
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<CustomUserManager>();
             }
             private set
             {
@@ -163,7 +166,15 @@ namespace TheGapFillers.Portrack.Controllers.Identity
         {
             if (ModelState.IsValid)
             {
-                var user = new PortrackUser { UserName = model.Email, Email = model.Email, Hometown = model.Hometown };
+                Audience portrackAudience = await CustomUserManager.FindAudience(Guid.Parse(ConfigurationManager.AppSettings["as:AudienceId"]));
+                var user = new CustomIdentityUser 
+                { 
+                    UserName = model.Email, 
+                    Email = model.Email, 
+                    Hometown = model.Hometown, 
+                    Audience = portrackAudience
+                };
+
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -379,7 +390,7 @@ namespace TheGapFillers.Portrack.Controllers.Identity
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new PortrackUser { UserName = model.Email, Email = model.Email, Hometown = model.Hometown };
+                var user = new CustomIdentityUser { UserName = model.Email, Email = model.Email, Hometown = model.Hometown };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
