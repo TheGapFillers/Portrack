@@ -1,0 +1,329 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0F54500F-9F46-4600-A13F-DE32835D9C17}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TheGapFillers.Portrack.WebSite</RootNamespace>
+    <AssemblyName>TheGapFillers.Portrack.WebSite</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bower.json" />
+    <Content Include="package.json" />
+    <Content Include="Scripts\angular-animate.min.js.map" />
+    <Content Include="Scripts\angular-route.min.js.map" />
+    <Content Include="Scripts\angular-sanitize.min.js.map" />
+    <Content Include="Scripts\angular.min.js.map" />
+    <Content Include="Scripts\jquery-2.1.1.min.map" />
+    <Content Include="Scripts\toastr.min.js.map" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="app\admin\admin.html" />
+    <Content Include="app\dashboard\dashboard.html" />
+    <Content Include="app\layout\shell.html" />
+    <Content Include="app\layout\sidebar.html" />
+    <Content Include="app\layout\topnav.html" />
+    <Content Include="app\layout\widgetheader.html" />
+    <Content Include="content\bootstrap-theme.css" />
+    <Content Include="content\bootstrap-theme.min.css" />
+    <Content Include="content\bootstrap.css" />
+    <Content Include="content\bootstrap.min.css" />
+    <Content Include="content\breeze.directives.css" />
+    <Content Include="content\customtheme.css" />
+    <Content Include="content\font-awesome.css" />
+    <Content Include="content\font-awesome.min.css" />
+    <Content Include="content\fullcalendar.css" />
+    <Content Include="content\ie10mobile.css" />
+    <Content Include="content\images\AngularJS-small.png" />
+    <Content Include="content\images\animated-overlay.gif" />
+    <Content Include="content\images\breezelogo.png" />
+    <Content Include="content\images\icon.png" />
+    <Content Include="content\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="content\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="content\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="content\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="content\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="content\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="content\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="content\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="content\images\ui-icons_222222_256x240.png" />
+    <Content Include="content\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="content\images\ui-icons_454545_256x240.png" />
+    <Content Include="content\images\ui-icons_888888_256x240.png" />
+    <Content Include="content\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="content\jquery-ui.css" />
+    <Content Include="content\jquery.gritter.css" />
+    <Content Include="content\prettyPhoto.css" />
+    <Content Include="content\rateit.css" />
+    <Content Include="content\styles.css" />
+    <Content Include="content\themeimages\delete.gif" />
+    <Content Include="content\themeimages\favicon\favicon.png" />
+    <Content Include="content\themeimages\gritter\gritter.png" />
+    <Content Include="content\themeimages\gritter\ie-spacer.gif" />
+    <Content Include="content\themeimages\icons\android.png" />
+    <Content Include="content\themeimages\icons\chrome.png" />
+    <Content Include="content\themeimages\icons\firefox.png" />
+    <Content Include="content\themeimages\icons\ie.png" />
+    <Content Include="content\themeimages\icons\ios.png" />
+    <Content Include="content\themeimages\icons\linux.png" />
+    <Content Include="content\themeimages\icons\mac.png" />
+    <Content Include="content\themeimages\icons\metro.png" />
+    <Content Include="content\themeimages\icons\opera.png" />
+    <Content Include="content\themeimages\icons\safari.png" />
+    <Content Include="content\themeimages\icons\windows.png" />
+    <Content Include="content\themeimages\photos\s1.jpg" />
+    <Content Include="content\themeimages\photos\s10.jpg" />
+    <Content Include="content\themeimages\photos\s2.jpg" />
+    <Content Include="content\themeimages\photos\s3.jpg" />
+    <Content Include="content\themeimages\photos\s4.jpg" />
+    <Content Include="content\themeimages\photos\s5.jpg" />
+    <Content Include="content\themeimages\photos\s6.jpg" />
+    <Content Include="content\themeimages\photos\s7.jpg" />
+    <Content Include="content\themeimages\photos\s8.jpg" />
+    <Content Include="content\themeimages\photos\s9.jpg" />
+    <Content Include="content\themeimages\photos\t1.jpg" />
+    <Content Include="content\themeimages\photos\t10.jpg" />
+    <Content Include="content\themeimages\photos\t2.jpg" />
+    <Content Include="content\themeimages\photos\t3.jpg" />
+    <Content Include="content\themeimages\photos\t4.jpg" />
+    <Content Include="content\themeimages\photos\t5.jpg" />
+    <Content Include="content\themeimages\photos\t6.jpg" />
+    <Content Include="content\themeimages\photos\t7.jpg" />
+    <Content Include="content\themeimages\photos\t8.jpg" />
+    <Content Include="content\themeimages\photos\t9.jpg" />
+    <Content Include="content\themeimages\prettyPhoto\dark_rounded\btnNext.png" />
+    <Content Include="content\themeimages\prettyPhoto\dark_rounded\btnPrevious.png" />
+    <Content Include="content\themeimages\prettyPhoto\dark_rounded\contentPattern.png" />
+    <Content Include="content\themeimages\prettyPhoto\dark_rounded\default_thumbnail.gif" />
+    <Content Include="content\themeimages\prettyPhoto\dark_rounded\loader.gif" />
+    <Content Include="content\themeimages\prettyPhoto\dark_rounded\sprite.png" />
+    <Content Include="content\themeimages\prettyPhoto\dark_square\btnNext.png" />
+    <Content Include="content\themeimages\prettyPhoto\dark_square\btnPrevious.png" />
+    <Content Include="content\themeimages\prettyPhoto\dark_square\contentPattern.png" />
+    <Content Include="content\themeimages\prettyPhoto\dark_square\default_thumbnail.gif" />
+    <Content Include="content\themeimages\prettyPhoto\dark_square\loader.gif" />
+    <Content Include="content\themeimages\prettyPhoto\dark_square\sprite.png" />
+    <Content Include="content\themeimages\prettyPhoto\default\default_thumb.png" />
+    <Content Include="content\themeimages\prettyPhoto\default\loader.gif" />
+    <Content Include="content\themeimages\prettyPhoto\default\sprite.png" />
+    <Content Include="content\themeimages\prettyPhoto\default\sprite_next.png" />
+    <Content Include="content\themeimages\prettyPhoto\default\sprite_prev.png" />
+    <Content Include="content\themeimages\prettyPhoto\default\sprite_x.png" />
+    <Content Include="content\themeimages\prettyPhoto\default\sprite_y.png" />
+    <Content Include="content\themeimages\prettyPhoto\facebook\btnNext.png" />
+    <Content Include="content\themeimages\prettyPhoto\facebook\btnPrevious.png" />
+    <Content Include="content\themeimages\prettyPhoto\facebook\contentPatternBottom.png" />
+    <Content Include="content\themeimages\prettyPhoto\facebook\contentPatternLeft.png" />
+    <Content Include="content\themeimages\prettyPhoto\facebook\contentPatternRight.png" />
+    <Content Include="content\themeimages\prettyPhoto\facebook\contentPatternTop.png" />
+    <Content Include="content\themeimages\prettyPhoto\facebook\default_thumbnail.gif" />
+    <Content Include="content\themeimages\prettyPhoto\facebook\loader.gif" />
+    <Content Include="content\themeimages\prettyPhoto\facebook\sprite.png" />
+    <Content Include="content\themeimages\prettyPhoto\light_rounded\btnNext.png" />
+    <Content Include="content\themeimages\prettyPhoto\light_rounded\btnPrevious.png" />
+    <Content Include="content\themeimages\prettyPhoto\light_rounded\default_thumbnail.gif" />
+    <Content Include="content\themeimages\prettyPhoto\light_rounded\loader.gif" />
+    <Content Include="content\themeimages\prettyPhoto\light_rounded\sprite.png" />
+    <Content Include="content\themeimages\prettyPhoto\light_square\btnNext.png" />
+    <Content Include="content\themeimages\prettyPhoto\light_square\btnPrevious.png" />
+    <Content Include="content\themeimages\prettyPhoto\light_square\default_thumbnail.gif" />
+    <Content Include="content\themeimages\prettyPhoto\light_square\loader.gif" />
+    <Content Include="content\themeimages\prettyPhoto\light_square\sprite.png" />
+    <Content Include="content\themeimages\star.gif" />
+    <Content Include="content\themeimages\user.jpg" />
+    <Content Include="content\toastr.css" />
+    <Content Include="content\toastr.min.css" />
+    <Content Include="content\widgets.css" />
+    <Content Include="dist\css\sb-admin-2.css" />
+    <Content Include="dist\css\timeline.css" />
+    <Content Include="dist\js\sb-admin-2.js" />
+    <Content Include="Gruntfile.js" />
+    <Content Include="index.html" />
+    <Content Include="index_template.html" />
+    <Content Include="js\flot-data.js" />
+    <Content Include="js\morris-data.js" />
+    <Content Include="pages\blank.html" />
+    <Content Include="pages\buttons.html" />
+    <Content Include="pages\flot.html" />
+    <Content Include="pages\forms.html" />
+    <Content Include="pages\grid.html" />
+    <Content Include="pages\icons.html" />
+    <Content Include="pages\index.html" />
+    <Content Include="pages\login.html" />
+    <Content Include="pages\morris.html" />
+    <Content Include="pages\notifications.html" />
+    <Content Include="pages\panels-wells.html" />
+    <Content Include="pages\tables.html" />
+    <Content Include="pages\typography.html" />
+    <Content Include="Scripts\angular-animate.js" />
+    <Content Include="Scripts\angular-animate.min.js" />
+    <Content Include="Scripts\angular-mocks.js" />
+    <Content Include="Scripts\angular-route.js" />
+    <Content Include="Scripts\angular-route.min.js" />
+    <Content Include="Scripts\angular-sanitize.js" />
+    <Content Include="Scripts\angular-sanitize.min.js" />
+    <Content Include="Scripts\angular.js" />
+    <Content Include="Scripts\angular.min.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\breeze.angular.js" />
+    <Content Include="Scripts\breeze.debug.js" />
+    <Content Include="Scripts\breeze.directives.js" />
+    <Content Include="content\bootstrap-theme.css.map" />
+    <Content Include="content\bootstrap.css.map" />
+    <Content Include="content\toastr.less" />
+    <Content Include="content\toastr.scss" />
+    <None Include="Scripts\breeze.intellisense.js" />
+    <Content Include="Scripts\breeze.min.js" />
+    <Content Include="Scripts\breeze.saveErrorExtensions.js" />
+    <None Include="Scripts\jquery-2.1.1.intellisense.js" />
+    <Content Include="Scripts\jquery-2.1.1.js" />
+    <Content Include="Scripts\jquery-2.1.1.min.js" />
+    <Content Include="Scripts\moment-with-langs.js" />
+    <Content Include="Scripts\moment-with-langs.min.js" />
+    <Content Include="Scripts\moment.js" />
+    <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\q.js" />
+    <Content Include="Scripts\q.min.js" />
+    <Content Include="Scripts\spin.js" />
+    <Content Include="Scripts\spin.min.js" />
+    <Content Include="Scripts\theme\customtheme.js" />
+    <Content Include="Scripts\toastr.js" />
+    <Content Include="Scripts\toastr.min.js" />
+    <Content Include="Scripts\ui-bootstrap-tpls-0.10.0.js" />
+    <Content Include="Scripts\ui-bootstrap-tpls-0.10.0.min.js" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="app\admin\admin.ts" />
+    <TypeScriptCompile Include="app\app.ts" />
+    <TypeScriptCompile Include="app\common\bootstrap\bootstrap.dialog.ts" />
+    <TypeScriptCompile Include="app\common\bootstrap\common.bootstapModule.ts" />
+    <TypeScriptCompile Include="app\common\common.ts" />
+    <TypeScriptCompile Include="app\common\commonConfig.ts" />
+    <TypeScriptCompile Include="app\common\commonModule.ts" />
+    <TypeScriptCompile Include="app\common\logger.ts" />
+    <TypeScriptCompile Include="app\common\spinner.ts" />
+    <TypeScriptCompile Include="app\config.exceptionHandler.ts" />
+    <TypeScriptCompile Include="app\config.route.ts" />
+    <TypeScriptCompile Include="app\config.ts" />
+    <TypeScriptCompile Include="app\dashboard\dashboardCtrl.ts" />
+    <TypeScriptCompile Include="app\directives\cc-img-person.ts" />
+    <TypeScriptCompile Include="app\directives\cc-menu-item-rendered.ts" />
+    <TypeScriptCompile Include="app\directives\cc-scroll-to-top.ts" />
+    <TypeScriptCompile Include="app\directives\cc-sidebar.ts" />
+    <TypeScriptCompile Include="app\directives\cc-spinner.ts" />
+    <TypeScriptCompile Include="app\directives\cc-widget-close.ts" />
+    <TypeScriptCompile Include="app\directives\cc-widget-header.ts" />
+    <TypeScriptCompile Include="app\directives\cc-widget-minimize.ts" />
+    <TypeScriptCompile Include="app\layout\shellCtrl.ts" />
+    <TypeScriptCompile Include="app\layout\sidebarCtrl.ts" />
+    <TypeScriptCompile Include="app\services\datacontext.ts" />
+    <TypeScriptCompile Include="app\services\entityManagerFactory.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-cookies.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-route.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-sanitize.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-scenario.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\breeze\breeze.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\q\Q.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\toastr\toastr.d.ts" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>13375</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:13375/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

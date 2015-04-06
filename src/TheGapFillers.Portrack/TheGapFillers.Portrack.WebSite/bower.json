@@ -1,0 +1,19 @@
+{
+  "name": "Portrack.WebSite",
+  "version": "0.0.0",
+  "homepage": "https://github.com/TheGapFillers/Portrack",
+  "description": "frontendpackages",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.3.15",
+    "bootstrap": "~3.3.4",
+    "startbootstrap-sb-admin-2": "~1.0.5"
+  }
+}
