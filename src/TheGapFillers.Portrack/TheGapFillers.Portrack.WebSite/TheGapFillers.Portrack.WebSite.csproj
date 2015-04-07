@@ -60,6 +60,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bower.json" />
+    <Content Include="app.html" />
+    <Content Include="content\pictures\bambi.jpg" />
+    <Content Include="content\pictures\boris.jpg" />
+    <Content Include="content\pictures\fillTheGap.jpg" />
+    <Content Include="content\pictures\finance2.jpg" />
+    <Content Include="content\pictures\miguel2.jpg" />
+    <Content Include="content\pictures\valter.jpg" />
     <Content Include="index.html" />
     <Content Include="package.json" />
     <Content Include="readme.md" />
@@ -71,27 +78,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="dist\css\sb-admin-2.css" />
-    <Content Include="dist\css\timeline.css" />
-    <Content Include="dist\js\sb-admin-2.js" />
     <Content Include="Gruntfile.js" />
-    <Content Include="index_anguarl.html" />
-    <Content Include="index_template.html" />
-    <Content Include="js\flot-data.js" />
-    <Content Include="js\morris-data.js" />
-    <Content Include="pages\blank.html" />
-    <Content Include="pages\buttons.html" />
-    <Content Include="pages\flot.html" />
-    <Content Include="pages\forms.html" />
-    <Content Include="pages\grid.html" />
-    <Content Include="pages\icons.html" />
-    <Content Include="pages\index.html" />
-    <Content Include="pages\login.html" />
-    <Content Include="pages\morris.html" />
-    <Content Include="pages\notifications.html" />
-    <Content Include="pages\panels-wells.html" />
-    <Content Include="pages\tables.html" />
-    <Content Include="pages\typography.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
