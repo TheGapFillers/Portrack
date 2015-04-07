@@ -1,14 +1,14 @@
-﻿using TheGapFillers.Portrack.Controllers.Application.Base;
-using TheGapFillers.Portrack.Models.Application;
-using TheGapFillers.Portrack.Models.MarketData;
-using TheGapFillers.Portrack.Providers.MarketData;
-using TheGapFillers.Portrack.Repositories.Application;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using TheGapFillers.MarketData.Models;
+using TheGapFillers.MarketData.Providers;
+using TheGapFillers.Portrack.Controllers.Application.Base;
+using TheGapFillers.Portrack.Models.Application;
+using TheGapFillers.Portrack.Repositories.Application;
 
 namespace TheGapFillers.Portrack.Controllers.Application
 {

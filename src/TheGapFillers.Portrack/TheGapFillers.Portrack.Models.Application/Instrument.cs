@@ -1,5 +1,4 @@
-﻿using TheGapFillers.Portrack.Models.MarketData;
-using System.Collections.Generic;
+﻿using TheGapFillers.MarketData.Models;
 
 namespace TheGapFillers.Portrack.Models.Application
 {

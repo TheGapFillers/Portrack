@@ -1,19 +1,13 @@
 ﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.DataHandler.Encoder;
-using Microsoft.Owin.Security.Jwt;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
 using Owin;
 using System;
-using System.Configuration;
 using System.Web.Http;
-using TheGapFillers.Portrack.Models.Identity;
-using TheGapFillers.Portrack.Providers.Identity;
-using TheGapFillers.Portrack.Repositories.Identity;
+using TheGapFillers.Auth.Providers;
+using TheGapFillers.Auth.Repositories;
 
 namespace TheGapFillers.AuthService.WebApi
 {
@@ -24,13 +18,11 @@ namespace TheGapFillers.AuthService.WebApi
         static Startup()
         {
             string issuer = "http://localhost:24717/";
-            string audienceId = ConfigurationManager.AppSettings["as:AudienceId"];
-            byte[] audienceSecret = TextEncodings.Base64Url.Decode(ConfigurationManager.AppSettings["as:AudienceSecret"]);
 
             OAuthServerOptions = new OAuthAuthorizationServerOptions
             {
                 TokenEndpointPath = new PathString("/Token"),
-                Provider = new ApplicationOAuthProvider(audienceId),
+                Provider = new ApplicationOAuthProvider(),
                 AccessTokenFormat = new CustomJwtFormat(issuer),
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
                 AllowInsecureHttp = true

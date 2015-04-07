@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using TheGapFillers.Portrack.Repositories.Identity;
-using TheGapFillers.Portrack.ViewModels.Identity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using TheGapFillers.Auth.Repositories;
+using TheGapFillers.Portrack.ViewModels.Identity;
 
 namespace TheGapFillers.Portrack.Controllers.Identity
 {

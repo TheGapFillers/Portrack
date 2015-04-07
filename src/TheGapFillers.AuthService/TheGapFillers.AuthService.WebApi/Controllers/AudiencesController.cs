@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNet.Identity.Owin;
-using System.Net.Http;
-using System.Web.Http;
-using TheGapFillers.Portrack.Models.Identity;
-using TheGapFillers.Portrack.Repositories.Identity;
+﻿using System.Web.Http;
+using TheGapFillers.Auth.Models;
+using TheGapFillers.Auth.Repositories;
 
 namespace TheGapFillers.AuthService.WebApi.Controllers
 {
@@ -18,7 +16,6 @@ namespace TheGapFillers.AuthService.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            //PortrackUserManager userManager = Request.GetOwinContext().GetUserManager<PortrackUserManager>();
             Audience newAudience = CustomUserManager.AddAudience(audienceModel.Name);
 
             return Ok<Audience>(newAudience);
