@@ -7,11 +7,11 @@ using Microsoft.Owin.Security.DataHandler.Encoder;
 using Microsoft.Owin.Security.Jwt;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
-using TheGapFillers.Portrack.Models.Identity;
-using TheGapFillers.Portrack.Providers.Identity;
-using TheGapFillers.Portrack.Repositories.Identity;
 using System;
 using System.Configuration;
+using TheGapFillers.Auth.Models;
+using TheGapFillers.Auth.Providers;
+using TheGapFillers.Auth.Repositories;
 
 namespace TheGapFillers.Portrack
 {
@@ -28,7 +28,7 @@ namespace TheGapFillers.Portrack
             {
                 TokenEndpointPath = new PathString("/Token"),
                 AuthorizeEndpointPath = new PathString("/Account/Authorize"),
-                Provider = new ApplicationOAuthProvider(audienceId),
+                Provider = new ApplicationOAuthProvider(),
                 AccessTokenFormat = new CustomJwtFormat(issuer),
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
                 AllowInsecureHttp = true

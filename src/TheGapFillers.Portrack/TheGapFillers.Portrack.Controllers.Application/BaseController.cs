@@ -1,6 +1,6 @@
-﻿using TheGapFillers.Portrack.Providers.MarketData;
+﻿using System.Web.Http;
+using TheGapFillers.MarketData.Providers;
 using TheGapFillers.Portrack.Repositories.Application;
-using System.Web.Http;
 
 namespace TheGapFillers.Portrack.Controllers.Application.Base
 {

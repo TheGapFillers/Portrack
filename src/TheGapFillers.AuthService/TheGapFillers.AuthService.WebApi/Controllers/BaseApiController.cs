@@ -2,8 +2,7 @@
 using Microsoft.AspNet.Identity.Owin;
 using System.Net.Http;
 using System.Web.Http;
-using TheGapFillers.Portrack.Models.Identity;
-using TheGapFillers.Portrack.Repositories.Identity;
+using TheGapFillers.Auth.Repositories;
 
 namespace TheGapFillers.AuthService.WebApi.Controllers
 {

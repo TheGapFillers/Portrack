@@ -57,13 +57,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\TheGapFillers.Shared\MarketData\TheGapFillers.MarketData.Models\TheGapFillers.MarketData.Models.csproj">
+      <Project>{348d2aae-b48d-4135-9eeb-ae55fd8a9f1c}</Project>
+      <Name>TheGapFillers.MarketData.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TheGapFillers.Portrack.Models.Application\TheGapFillers.Portrack.Models.Application.csproj">
       <Project>{f07cf6f5-0a09-46d8-98d2-b8f3d66d2436}</Project>
       <Name>TheGapFillers.Portrack.Models.Application</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TheGapFillers.Portrack.Models.MarketData\TheGapFillers.Portrack.Models.MarketData.csproj">
-      <Project>{348d2aae-b48d-4135-9eeb-ae55fd8a9f1c}</Project>
-      <Name>TheGapFillers.Portrack.Models.MarketData</Name>
     </ProjectReference>
     <ProjectReference Include="..\TheGapFillers.Portrack.Repositories.Application\TheGapFillers.Portrack.Repositories.Application.csproj">
       <Project>{41d68509-5669-4f54-877b-a9356b6667d0}</Project>

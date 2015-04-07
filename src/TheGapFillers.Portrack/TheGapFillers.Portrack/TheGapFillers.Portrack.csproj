@@ -355,6 +355,30 @@
     <TypeScriptCompile Include="Scripts\typings\marked\marked.d.ts" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\TheGapFillers.Shared\Auth\TheGapFillers.Auth.Models\TheGapFillers.Auth.Models.csproj">
+      <Project>{4165eb8d-9ff5-4b73-a088-0c9e330aa9ed}</Project>
+      <Name>TheGapFillers.Auth.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TheGapFillers.Shared\Auth\TheGapFillers.Auth.Providers\TheGapFillers.Auth.Providers.csproj">
+      <Project>{fd6e442f-14ec-4b30-ac58-456cd8fa790e}</Project>
+      <Name>TheGapFillers.Auth.Providers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TheGapFillers.Shared\Auth\TheGapFillers.Auth.Repositories\TheGapFillers.Auth.Repositories.csproj">
+      <Project>{b03bdba2-159d-4b30-be3b-858b8d773be3}</Project>
+      <Name>TheGapFillers.Auth.Repositories</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TheGapFillers.Shared\MarketData\TheGapFillers.MarketData.Models\TheGapFillers.MarketData.Models.csproj">
+      <Project>{348d2aae-b48d-4135-9eeb-ae55fd8a9f1c}</Project>
+      <Name>TheGapFillers.MarketData.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TheGapFillers.Shared\MarketData\TheGapFillers.MarketData.Providers.Yahoo\TheGapFillers.MarketData.Providers.Yahoo.csproj">
+      <Project>{02fa1f91-f800-43a3-80a5-0ec7e7acfed4}</Project>
+      <Name>TheGapFillers.MarketData.Providers.Yahoo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TheGapFillers.Shared\MarketData\TheGapFillers.MarketData.Providers\TheGapFillers.MarketData.Providers.csproj">
+      <Project>{8cc792bf-f2b3-4c5b-bb6d-d56f10943159}</Project>
+      <Name>TheGapFillers.MarketData.Providers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TheGapFillers.Portrack.Controllers.Application\TheGapFillers.Portrack.Controllers.Application.csproj">
       <Project>{28610256-dd81-4a9f-b8cd-d14b7fa07326}</Project>
       <Name>TheGapFillers.Portrack.Controllers.Application</Name>
@@ -363,27 +387,6 @@
       <Project>{f07cf6f5-0a09-46d8-98d2-b8f3d66d2436}</Project>
       <Name>TheGapFillers.Portrack.Models.Application</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TheGapFillers.Portrack.Models.Identity\TheGapFillers.Portrack.Models.Identity.csproj">
-      <Project>{4165eb8d-9ff5-4b73-a088-0c9e330aa9ed}</Project>
-      <Name>TheGapFillers.Portrack.Models.Identity</Name>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </ProjectReference>
-    <ProjectReference Include="..\TheGapFillers.Portrack.Models.MarketData\TheGapFillers.Portrack.Models.MarketData.csproj">
-      <Project>{348d2aae-b48d-4135-9eeb-ae55fd8a9f1c}</Project>
-      <Name>TheGapFillers.Portrack.Models.MarketData</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TheGapFillers.Portrack.Providers.Identity\TheGapFillers.Portrack.Providers.Identity.csproj">
-      <Project>{fd6e442f-14ec-4b30-ac58-456cd8fa790e}</Project>
-      <Name>TheGapFillers.Portrack.Providers.Identity</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TheGapFillers.Portrack.Providers.MarketData.Yahoo\TheGapFillers.Portrack.Providers.MarketData.Yahoo.csproj">
-      <Project>{02fa1f91-f800-43a3-80a5-0ec7e7acfed4}</Project>
-      <Name>TheGapFillers.Portrack.Providers.MarketData.Yahoo</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TheGapFillers.Portrack.Providers.MarketData\TheGapFillers.Portrack.Providers.MarketData.csproj">
-      <Project>{8cc792bf-f2b3-4c5b-bb6d-d56f10943159}</Project>
-      <Name>TheGapFillers.Portrack.Providers.MarketData</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TheGapFillers.Portrack.Repositories.Application.EF\TheGapFillers.Portrack.Repositories.Application.EF.csproj">
       <Project>{74157dd8-d7c5-448f-9d0d-6164406e9f78}</Project>
       <Name>TheGapFillers.Portrack.Repositories.Application.EF</Name>
@@ -391,10 +394,6 @@
     <ProjectReference Include="..\TheGapFillers.Portrack.Repositories.Application\TheGapFillers.Portrack.Repositories.Application.csproj">
       <Project>{41d68509-5669-4f54-877b-a9356b6667d0}</Project>
       <Name>TheGapFillers.Portrack.Repositories.Application</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TheGapFillers.Portrack.Repositories.Identity\TheGapFillers.Portrack.Repositories.Identity.csproj">
-      <Project>{b03bdba2-159d-4b30-be3b-858b8d773be3}</Project>
-      <Name>TheGapFillers.Portrack.Repositories.Identity</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

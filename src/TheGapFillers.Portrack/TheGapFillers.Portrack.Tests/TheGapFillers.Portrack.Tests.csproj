@@ -59,10 +59,6 @@
       <Project>{f07cf6f5-0a09-46d8-98d2-b8f3d66d2436}</Project>
       <Name>TheGapFillers.Portrack.Models.Application</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TheGapFillers.Portrack.Models.MarketData\TheGapFillers.Portrack.Models.MarketData.csproj">
-      <Project>{348d2aae-b48d-4135-9eeb-ae55fd8a9f1c}</Project>
-      <Name>TheGapFillers.Portrack.Models.MarketData</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TheGapFillers.Portrack\TheGapFillers.Portrack.csproj">
       <Project>{c1a6cee2-4930-4084-a69f-c37fdeba5314}</Project>
       <Name>TheGapFillers.Portrack</Name>
