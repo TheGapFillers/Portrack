@@ -5,7 +5,7 @@
         /* This helps the ng-show/ng-hide animations start at the right place. */
         /* Since Angular has this but needs to load, this gives us the class early. */
         .ng-hide {
-            display: none!important;
+            display: none !important;
         }
     </style>
     <title data-ng-bind="title">Hot Towel Angular</title>
@@ -23,83 +23,426 @@
         }
     </script>
 
-    <link href="content/ie10mobile.css" rel="stylesheet" />
-    <link href="content/bootstrap.min.css" rel="stylesheet" />
-    <link href="content/font-awesome.min.css" rel="stylesheet" />
-    <link href="content/toastr.css" rel="stylesheet" />
-    <link href="content/customtheme.css" rel="stylesheet">
-    <link href="content/styles.css" rel="stylesheet" />
-    <link href="content/breeze.directives.css" rel="stylesheet" />
+    <!-- bower components css -->
+    <link href="bower/stylesheets.min.css" rel="stylesheet" />
+
 </head>
+
+
+
 <body>
-    <div>
-        <div data-ng-include="'/app/layout/shell.html'"></div>
-        <div id="splash-page" data-ng-show="false">
-            <div class="page-splash">
-                <div class="page-splash-message">
-                    Hot Towel Angular
-                </div>
-                <div class="progress progress-striped active page-progress-bar">
-                    <div class="bar"></div>
-                </div>
+    <div id="wrapper">
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Portfolio Tracker</a>
             </div>
+            <!-- /.navbar-header -->
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-envelope fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-messages">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="text-center" href="#">
+                                <strong>Read All Messages</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-messages -->
+                </li>
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-bell fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-alerts">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-comment fa-fw"></i> New Comment
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+                                    <span class="pull-right text-muted small">12 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-envelope fa-fw"></i> Message Sent
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-tasks fa-fw"></i> New Task
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="text-center" href="#">
+                                <strong>See All Alerts</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-alerts -->
+                </li>
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li>
+                            <a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+            <!-- /.navbar-top-links -->
+
+
+
+
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+
+                        <!--Controls-->
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Search...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">
+                                        <i class="fa fa-search fa-fw" title="Search"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Portfolio Name">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" title="Add Portfolio" type="button">
+                                        <i class="fa fa-plus fa-fw"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Group Name">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" title="Add Group" type="button">
+                                        <i class="fa fa-plus fa-fw"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </li>
+
+                        <!--User-->
+                        <li>
+                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> My Portfolios<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="pages/pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!--Group-->
+                        <li>
+                            <a href="#"><i class="fa fa-wrench fa-fw"></i> Group Fill the gap<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-wrench fa-fw"></i> Group French team<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-wrench fa-fw"></i> Group masters of potatos<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                                <li>
+                                    <a href="pages/flot.html">Portfolio 1</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+
+
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">My Portfolios</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+            <div class="container-fluid">
+                <!--portfolios-->
+                <div class="chart" style="float: left; margin: 30px;"></div>
+                <div class="chart" style="float: left; margin: 30px;"></div>
+                <div class="chart" style="float: left; margin: 30px;"></div>
+                <div class="chart" style="float: left; margin: 30px;"></div>
+                <div class="chart" style="float: left; margin: 30px;"></div>
+                <div class="chart" style="float: left; margin: 30px;"></div>
+                <div class="chart" style="float: left; margin: 30px;"></div>
+
+
+            </div>
+
+
+
+
         </div>
+        <!-- /#page-wrapper -->
     </div>
-    <span data-cc-scroll-to-top></span>
-
-    <!--INFO: The script files containg creation of modules must go on top before service scripts-->
-    <!-- Vendor Scripts -->
-    <script src="scripts/jquery-2.1.1.js"></script>
-    <script src="scripts/angular.js"></script>
-    <script src="scripts/angular-animate.js"></script>
-    <script src="scripts/angular-route.js"></script>
-    <script src="scripts/angular-sanitize.js"></script>
-    <script src="scripts/bootstrap.js"></script>
-    <script src="scripts/toastr.js"></script>
-    <script src="scripts/moment.js"></script>
-    <script src="scripts/ui-bootstrap-tpls-0.10.0.js"></script>
-    <script src="scripts/spin.js"></script>
-    <script src="scripts/breeze.debug.js"></script>
-    <script src="scripts/breeze.angular.js"></script>
-    <script src="scripts/breeze.directives.js"></script>
-    <script src="scripts/breeze.saveErrorExtensions.js"></script>
 
 
-    <!-- Bootstrapping -->
-    <script src="app/app.js"></script>
-    <script src="app/common/commonModule.js"></script>
-    <script src="app/config.js"></script>
-    <script src="app/config.exceptionHandler.js"></script>
-    <script src="app/config.route.js"></script>
-    <!-- common Modules -->
-    
-    <script src="app/common/commonConfig.js"></script>
-    <script src="app/common/common.js"></script>
-    <script src="app/common/logger.js"></script>
-    <script src="app/common/spinner.js"></script>
 
-    <!-- common.bootstrap Modules -->
-    <script src="app/common/bootstrap/common.bootstapModule.js"></script>
-    <script src="app/common/bootstrap/bootstrap.dialog.js"></script>
 
-    <!-- app -->
-    <script src="app/admin/admin.js"></script>
-    <script src="app/dashboard/dashboardCtrl.js"></script>
-    <script src="app/layout/shellCtrl.js"></script>
-    <script src="app/layout/sidebarCtrl.js"></script>
-    
-    <!-- app Directives -->
-    <script src="app/directives/cc-sidebar.js"></script>
-    <script src="app/directives/cc-spinner.js"></script>
-    <script src="app/directives/cc-widget-header.js"></script>
-    <script src="app/directives/cc-widget-close.js"></script>
-    <script src="app/directives/cc-menu-item-rendered.js"></script>
-    <script src="app/directives/cc-widget-minimize.js"></script>
-    <script src="app/directives/cc-scroll-to-top.js"></script>
-    <script src="app/directives/cc-img-person.js"></script>
+    <script src="bower/scripts.min.js"></script>
+    <!--graphs data-->
+    <script src="../js/morris-data.js"></script>
 
-    <!-- app Services -->
-    <script src="app/services/datacontext.js"></script>
-    <script src="app/services/entityManagerFactory.js"></script>
+
+    <script type="text/javascript">
+
+    var data = [3, 6, 2, 7, 5, 2, 1, 3, 8, 9, 2, 5, 7],
+        w = 300,
+        h = 200,
+        margin = 20,
+        y = d3.scale.linear().domain([0, d3.max(data)]).range([0 + margin, h - margin]),
+        x = d3.scale.linear().domain([0, data.length]).range([0 + margin, w - margin])
+
+    var vis = d3.selectAll(".chart")
+        .append("svg:svg")
+        .attr("width", w)
+        .attr("height", h);
+
+    var g = vis.append("svg:g")
+        .attr("transform", "translate(0, 200)");
+
+    var line = d3.svg.line()
+        .x(function (d, i) { return x(i); })
+        .y(function (d) { return -1 * y(d); })
+
+    g.append("svg:path").attr("d", line(data));
+
+    g.append("svg:line")
+        .attr("x1", x(0))
+        .attr("y1", -1 * y(0))
+        .attr("x2", x(w))
+        .attr("y2", -1 * y(0))
+
+    g.append("svg:line")
+        .attr("x1", x(0))
+        .attr("y1", -1 * y(0))
+        .attr("x2", x(0))
+        .attr("y2", -1 * y(d3.max(data)))
+
+    g.selectAll(".xLabel")
+        .data(x.ticks(5))
+        .enter().append("svg:text")
+        .attr("class", "xLabel")
+        .text(String)
+        .attr("x", function (d) { return x(d) })
+        .attr("y", 0)
+        .attr("text-anchor", "middle")
+
+    g.selectAll(".yLabel")
+        .data(y.ticks(4))
+        .enter().append("svg:text")
+        .attr("class", "yLabel")
+        .text(String)
+        .attr("x", 0)
+        .attr("y", function (d) { return -1 * y(d) })
+        .attr("text-anchor", "right")
+        .attr("dy", 4)
+
+    g.selectAll(".xTicks")
+        .data(x.ticks(5))
+        .enter().append("svg:line")
+        .attr("class", "xTicks")
+        .attr("x1", function (d) { return x(d); })
+        .attr("y1", -1 * y(0))
+        .attr("x2", function (d) { return x(d); })
+        .attr("y2", -1 * y(-0.3))
+
+    g.selectAll(".yTicks")
+        .data(y.ticks(4))
+        .enter().append("svg:line")
+        .attr("class", "yTicks")
+        .attr("y1", function (d) { return -1 * y(d); })
+        .attr("x1", x(-0.3))
+        .attr("y2", function (d) { return -1 * y(d); })
+        .attr("x2", x(0))
+
+    </script>
+    <style type="text/css">
+        path {
+            stroke: steelblue;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        line {
+            stroke: black;
+        }
+
+        text {
+            font-family: Arial;
+            font-size: 9pt;
+        }
+    </style>
+
 </body>
 </html>
