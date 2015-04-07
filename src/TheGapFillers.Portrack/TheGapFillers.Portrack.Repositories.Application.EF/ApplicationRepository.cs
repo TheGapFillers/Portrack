@@ -39,24 +39,32 @@ namespace TheGapFillers.Portrack.Repositories.Application
 		}
 
 
-		public async Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName)
+		public async Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, bool includeHoldings = false, bool includeTransactions = false)
 		{
-			var query = _context.Portfolios
-				.Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
+			IQueryable<Portfolio> query = _context.Portfolios;
+
+			if (includeHoldings) query = query.Include(p => p.Holdings).Include(p => p.Holdings.Select(h => h.Instrument));
+			if (includeTransactions) query = query.Include(p => p.Transactions);
+
+			query = query.Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
 
 			return await query.ToListAsync<Portfolio>();
 		}
 
-		public async Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, IEnumerable<string> portfolioNames)
+		public async Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, IEnumerable<string> portfolioNames, bool includeHoldings = false, bool includeTransactions = false)
 		{
-			var query = _context.Portfolios
-				.Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
+			IQueryable<Portfolio> query = _context.Portfolios;
+
+			if (includeHoldings) query = query.Include(p => p.Holdings).Include(p => p.Holdings.Select(h => h.Instrument));
+			if (includeTransactions) query = query.Include(p => p.Transactions);
+
+			query = query.Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
 				&& portfolioNames.Contains(p.PortfolioName));
 
 			return await query.ToListAsync<Portfolio>();
 		}
 
-		public Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, params string[] portfolioNames)
+		public Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, bool includeHoldings = false, bool includeTransactions = false, params string[] portfolioNames)
 		{
 			return GetPortfoliosAsync(userName, (IEnumerable<string>)portfolioNames);
 		}
@@ -66,7 +74,7 @@ namespace TheGapFillers.Portrack.Repositories.Application
 		{
 			IQueryable<Portfolio> query = _context.Portfolios;
 
-			if (includeHoldings) query = query.Include(p => p.Holdings);
+			if (includeHoldings) query = query.Include(p => p.Holdings).Include(p => p.Holdings.Select(h => h.Instrument));
 			if (includeTransactions) query = query.Include(p => p.Transactions);
 
 			query = query.Where(p => p.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
@@ -139,6 +147,14 @@ namespace TheGapFillers.Portrack.Repositories.Application
 		public async Task<ICollection<Transaction>> GetTransactionsAsync(string userName)
 		{
 			var query = _context.Transactions.Where(t => t.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase));
+
+			return await query.ToListAsync<Transaction>();
+		}
+
+		public async Task<ICollection<Transaction>> GetTransactionsAsync(string userName, IEnumerable<string> portfolioNames)
+		{
+			var query = _context.Transactions.Where(t => t.Portfolio.UserName.Equals(userName, StringComparison.InvariantCultureIgnoreCase)
+				&& portfolioNames.Contains(t.PortfolioName));
 
 			return await query.ToListAsync<Transaction>();
 		}

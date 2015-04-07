@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -37,18 +38,25 @@ namespace TheGapFillers.Portrack.Controllers.Application
 		[HttpGet]
 		public async Task<IHttpActionResult> Get(string portfolioNames = null)
 		{
+            IEnumerable<string> porfolioNameEnum = portfolioNames != null ? portfolioNames.Split(',').Select(s => s.Trim()) : null;
+            ICollection<Portfolio> portfolios;
+
 			if (string.IsNullOrWhiteSpace(portfolioNames))
 			{
-				return Ok(await _repository.GetPortfoliosAsync(User.Identity.Name));
+				portfolios = await _repository.GetPortfoliosAsync(User.Identity.Name, true, true);
+            }
+            else if (porfolioNameEnum.Count() == 1)
+            {
+                Portfolio portfolio = await _repository.GetPortfolioAsync(User.Identity.Name, porfolioNameEnum.First(), true, true);
+                portfolios = new List<Portfolio> { portfolio };
+            }
+            else
+            {
+                portfolios = await _repository.GetPortfoliosAsync(User.Identity.Name, porfolioNameEnum, true, true);
 			}
 
-			IEnumerable<string> porfolioNameEnum = portfolioNames.Split(',').Select(s => s.Trim());
-			if (porfolioNameEnum.Count() == 1)
-			{
-				return Ok(await _repository.GetPortfolioAsync(User.Identity.Name, porfolioNameEnum.First()));
-			}
-
-			return Ok(await _repository.GetPortfoliosAsync(User.Identity.Name, porfolioNameEnum));
+            await ComputePortfolioDataAsync(portfolios);
+            return Ok(portfolios);
 		}
 
 
@@ -119,6 +127,37 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			// Send the changes made in the data layer to the database and return the transaction results.
 			await _repository.SaveAsync();
 			return Ok(portfolioToDelete);
+		}
+
+		/// <summary>
+		/// Populate all the portfolios with their associated calculated portfolio data.
+		/// </summary>
+		/// <param name="portfolios">Portfolios to be populated with portfolio data.</param>
+		private async Task ComputePortfolioDataAsync(ICollection<Portfolio> portfolios)
+		{
+			if (portfolios == null || !portfolios.Any())
+				return;
+
+			// Get the needed quotes
+			List<string> neededTickers = portfolios.SelectMany(p => p.Holdings.Select(h => h.Ticker)).Distinct().ToList();
+			ICollection<Quote> allRequiredQuotes = await _provider.GetQuotesAsync(neededTickers);
+
+			// Get the needed dividends
+			ICollection<Dividend> allRequiredDividends = await _provider.GetHistoricalDividendAsync(
+				neededTickers, portfolios.SelectMany(p => p.Transactions).OrderBy(t => t.Date).First().Date, DateTime.UtcNow);
+
+			// Loop accross all holdings and populate with holding data.
+			foreach (Portfolio portfolio in portfolios)
+			{
+				List<string> portfolioTickers = neededTickers.Where(s => portfolio.Holdings.Select(h => h.Ticker).Contains(s)).ToList();
+				IEnumerable<Quote> quotes = allRequiredQuotes
+					.Where(q => portfolioTickers.Contains(q.Ticker));
+
+				IEnumerable<Dividend> dividends = allRequiredDividends
+					.Where(d => portfolioTickers.Contains(d.Ticker));
+
+				portfolio.SetPortfolioData(portfolio.Transactions, quotes, dividends);
+			}
 		}
 	}
 }

@@ -10,9 +10,9 @@ namespace TheGapFillers.Portrack.Repositories.Application
 		Task<int> SaveAsync();
 
 
-		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName);
-		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, IEnumerable<string> portfolioNames);
-		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, params string[] portfolioNames);
+		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, bool includeHoldings = false, bool includeTransactions = false);
+		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, IEnumerable<string> portfolioNames, bool includeHoldings = false, bool includeTransactions = false);
+		Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, bool includeHoldings = false, bool includeTransactions = false, params string[] portfolioNames);
 		Task<Portfolio> GetPortfolioAsync(string userName, string portfolioName, bool includeHoldings = false, bool includeTransactions = false);
 
 		Task<Portfolio> AddPortfolio(Portfolio portfolio);
@@ -31,6 +31,7 @@ namespace TheGapFillers.Portrack.Repositories.Application
 
 
 		Task<ICollection<Transaction>> GetTransactionsAsync(string userName);
+		Task<ICollection<Transaction>> GetTransactionsAsync(string userName, IEnumerable<string> portfolioNames);
 		Task<ICollection<Transaction>> GetTransactionsAsync(string userName, string portfolioName);
 		Task<ICollection<Transaction>> GetTransactionsAsync(string userName, string portfolioName, IEnumerable<string> tickers);
 		Task<ICollection<Transaction>> GetTransactionsAsync(string userName, string portfolioName, params string[] tickers);

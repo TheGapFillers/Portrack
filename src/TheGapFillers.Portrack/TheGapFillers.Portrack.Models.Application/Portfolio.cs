@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TheGapFillers.MarketData.Models;
 
 namespace TheGapFillers.Portrack.Models.Application
 {
@@ -20,6 +21,24 @@ namespace TheGapFillers.Portrack.Models.Application
 		public ICollection<Transaction> Transactions { get; set; }
 
 		public PortfolioData PortfolioData { get; set; }
+
+		public void SetPortfolioData(IEnumerable<Transaction> transactions, IEnumerable<Quote> quotes, IEnumerable<Dividend> dividends)
+		{
+			PortfolioData = new PortfolioData
+			{
+				CostBasis = transactions.CalculateCostBasis(),
+				MarketValue = CalculatePortfolioMarketValue(quotes),
+				Income = transactions.CalculateDividendIncome(dividends)
+			};
+		}
+
+		private decimal CalculatePortfolioMarketValue(IEnumerable<Quote> quotes)
+		{
+			if (Holdings != null)
+				return Holdings.Sum(h => h.Shares * quotes.Single(q => q.Ticker == h.Ticker).Last);
+			else
+				return 0;
+		}
 
 
 		/// <summary>
@@ -70,15 +89,13 @@ namespace TheGapFillers.Portrack.Models.Application
 
 	public class PortfolioData
 	{
-		public decimal CostBasis { get; set; }
-		public decimal MarketValue { get; set; }
-		public decimal Gain { get { return MarketValue - CostBasis; } }
-		public double GainPercentage { get { return CostBasis != 0 ? (double)(MarketValue / CostBasis) : 0; } }
-		public double OverallReturn { get; set; }
+		public decimal CostBasis { get; set; } // The total cost of all shares of an investment.
+		public decimal MarketValue { get; set; } // Market Value is defined as: The current value of an investment as indicated by the latest trade recorded.
+		public decimal Income { get; set; } // Interest, dividends, and capital gains distributions that you have received for an investment.
+		public decimal PriceAppreciation { get { return MarketValue - CostBasis; } } // How much an investment has appreciated in price.
+		public decimal Gain { get { return PriceAppreciation + Income; } }
+		public double GainPercentage { get { return CostBasis != 0 ? (double)(Gain / CostBasis) : 0; } }
 	}
-
-
-
 
 
 	public class PortfolioException : Exception

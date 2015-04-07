@@ -49,6 +49,15 @@ $transaction ='
 $transaction ='
 {
   "portfolioName":"BambiPortfolio1",
+  "ticker": "goog",
+  "shares": 2,
+  "date":"2014-04-21",
+  "type":"Buy"
+}
+'
+$transaction ='
+{
+  "portfolioName":"BambiPortfolio1",
   "ticker": "msft",
   "shares": 2,
   "date":"2015-02-11",
