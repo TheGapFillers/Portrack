@@ -37,26 +37,20 @@ namespace TheGapFillers.Portrack.Controllers.Application
 		[Route("{portfolioNames?}")]
 		[HttpGet]
 		public async Task<IHttpActionResult> Get(string portfolioNames = null)
-		{
-            IEnumerable<string> porfolioNameEnum = portfolioNames != null ? portfolioNames.Split(',').Select(s => s.Trim()) : null;
-            ICollection<Portfolio> portfolios;
-
+		{	
+			ICollection<Portfolio> portfolios;
 			if (string.IsNullOrWhiteSpace(portfolioNames))
 			{
 				portfolios = await _repository.GetPortfoliosAsync(User.Identity.Name, true, true);
-            }
-            else if (porfolioNameEnum.Count() == 1)
-            {
-                Portfolio portfolio = await _repository.GetPortfolioAsync(User.Identity.Name, porfolioNameEnum.First(), true, true);
-                portfolios = new List<Portfolio> { portfolio };
-            }
-            else
-            {
-                portfolios = await _repository.GetPortfoliosAsync(User.Identity.Name, porfolioNameEnum, true, true);
+			}
+			else
+			{
+				IEnumerable<string> porfolioNameEnum = portfolioNames.Split(',').Select(s => s.Trim());
+				portfolios = await _repository.GetPortfoliosAsync(User.Identity.Name, porfolioNameEnum, true, true);
 			}
 
-            await ComputePortfolioDataAsync(portfolios);
-            return Ok(portfolios);
+			await ComputePortfolioDataAsync(portfolios);
+			return Ok(portfolios);
 		}
 
 
