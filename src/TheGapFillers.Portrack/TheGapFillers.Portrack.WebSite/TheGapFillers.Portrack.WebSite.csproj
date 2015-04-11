@@ -59,17 +59,28 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="app\application\portfolio\fake-portfolio.html" />
+    <Content Include="app\application\leftNavbar\application-left-navbar.html" />
+    <Content Include="documentation\installsnippets.md" />
+    <None Include="documentation\snippets\typescript-controller.snippet" />
+    <Content Include="app\common\layout\navbar.html" />
+    <Content Include="content\home.css" />
+    <Content Include="app\home\home.html" />
     <Content Include="bower.json" />
-    <Content Include="app.html" />
+    <Content Include="app\application\application.html" />
     <Content Include="content\pictures\bambi.jpg" />
     <Content Include="content\pictures\boris.jpg" />
     <Content Include="content\pictures\fillTheGap.jpg" />
     <Content Include="content\pictures\finance2.jpg" />
     <Content Include="content\pictures\miguel2.jpg" />
     <Content Include="content\pictures\valter.jpg" />
+    <Content Include="content\temporary\fake-chart-creator.js" />
+    <Content Include="content\temporary\flot.js" />
     <Content Include="index.html" />
     <Content Include="package.json" />
     <Content Include="readme.md" />
+    <Content Include="tsd.json" />
+    <Content Include="content\application.css" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -85,11 +96,26 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="app\filter\" />
-    <Folder Include="app\groupPortfolios\" />
-    <Folder Include="app\portfolio\" />
-    <Folder Include="app\topbar\" />
-    <Folder Include="app\userPortfolios\" />
+    <Folder Include="app\application\leftNavbar\filter\" />
+    <Folder Include="app\application\portfolio\details\" />
+    <Folder Include="app\blog\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="app\app.ts" />
+    <TypeScriptCompile Include="app\application\application-controller.ts" />
+    <TypeScriptCompile Include="app\application\leftNavbar\application-left-navbar-controller.ts" />
+    <TypeScriptCompile Include="app\application\portfolio\fake-portfolio-controller.ts" />
+    <TypeScriptCompile Include="app\common\layout\navbar-controller.ts" />
+    <TypeScriptCompile Include="typings\angularjs\angular-animate.d.ts" />
+    <TypeScriptCompile Include="typings\angularjs\angular-route.d.ts" />
+    <TypeScriptCompile Include="typings\angularjs\angular.d.ts" />
+    <TypeScriptCompile Include="typings\flot\jquery.flot.d.ts" />
+    <TypeScriptCompile Include="typings\jasmine\jasmine.d.ts" />
+    <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="typings\metisMenu-manually added\jquery.metis.menu.d.ts" />
+    <TypeScriptCompile Include="typings\moment\moment.d.ts" />
+    <TypeScriptCompile Include="typings\sugar\sugar.d.ts" />
+    <TypeScriptCompile Include="typings\tsd.d.ts" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
