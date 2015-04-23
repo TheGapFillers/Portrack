@@ -132,25 +132,32 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			if (portfolios == null || !portfolios.Any())
 				return;
 
-			// Get the needed quotes
+			// Get the needed tickers and the first transaction's date
 			List<string> neededTickers = portfolios.SelectMany(p => p.Holdings.Select(h => h.Ticker)).Distinct().ToList();
+			DateTime firstTransactionDate = portfolios.SelectMany(p => p.Transactions).OrderBy(t => t.Date).First().Date;
+
+			// Get the needed quotes
 			ICollection<Quote> allRequiredQuotes = await _provider.GetQuotesAsync(neededTickers);
+
+			// Get the needed historical prices
+			ICollection<HistoricalPrice> allhistoricalPrices = await _provider.GetHistoricalPricesAsync(
+				neededTickers, firstTransactionDate, DateTime.UtcNow);
 
 			// Get the needed dividends
 			ICollection<Dividend> allRequiredDividends = await _provider.GetHistoricalDividendAsync(
-				neededTickers, portfolios.SelectMany(p => p.Transactions).OrderBy(t => t.Date).First().Date, DateTime.UtcNow);
+				neededTickers, firstTransactionDate, DateTime.UtcNow);
 
 			// Loop accross all holdings and populate with holding data.
 			foreach (Portfolio portfolio in portfolios)
 			{
+				DateTime portfolioFirstTransactionDate = portfolio.Transactions.OrderBy(t => t.Date).First().Date;
 				List<string> portfolioTickers = neededTickers.Where(s => portfolio.Holdings.Select(h => h.Ticker).Contains(s)).ToList();
-				IEnumerable<Quote> quotes = allRequiredQuotes
-					.Where(q => portfolioTickers.Contains(q.Ticker));
 
-				IEnumerable<Dividend> dividends = allRequiredDividends
-					.Where(d => portfolioTickers.Contains(d.Ticker));
+				IEnumerable<Quote> quotes = allRequiredQuotes.Where(q => portfolioTickers.Contains(q.Ticker));
+				IEnumerable<HistoricalPrice> historicalPrices = allhistoricalPrices.Where(q => portfolioTickers.Contains(q.Ticker) && q.Date >= portfolioFirstTransactionDate);
+				IEnumerable<Dividend> dividends = allRequiredDividends.Where(d => portfolioTickers.Contains(d.Ticker) && d.Date >= portfolioFirstTransactionDate);
 
-				portfolio.SetPortfolioData(portfolio.Transactions, quotes, dividends);
+				portfolio.SetPortfolioData(quotes, historicalPrices, dividends);
 			}
 		}
 	}

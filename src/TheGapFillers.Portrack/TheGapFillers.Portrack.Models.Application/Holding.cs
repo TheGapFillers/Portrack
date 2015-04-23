@@ -24,9 +24,10 @@ namespace TheGapFillers.Portrack.Models.Application
         public int HoldingId { get; set; }
         [JsonIgnore]
         public Portfolio Portfolio { get; set; }
-        public Instrument Instrument { get; private set; }
+        public Instrument Instrument { get; set; }
         public string Ticker { get { return Instrument != null ? Instrument.Ticker : string.Empty; } }
         public int Shares { get; set; }
+        public DateTime Date { get; set; }
         public HoldingData HoldingData { get; set; }
 
 
@@ -49,5 +50,7 @@ namespace TheGapFillers.Portrack.Models.Application
         public decimal PriceAppreciation { get { return MarketValue - CostBasis; } } // How much an investment has appreciated in price.
         public decimal Gain { get { return PriceAppreciation + Income; } }
         public double GainPercentage { get { return CostBasis != 0 ? (double)(Gain / CostBasis) : 0; } }
+
+        public List<HistoricalPrice> HistoricalPrices { get; set; }
     }
 }

@@ -2,6 +2,7 @@ using TheGapFillers.Portrack.Models.Application;
 using TheGapFillers.Portrack.Repositories.Application.Mappers;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System;
 
 namespace TheGapFillers.Portrack.Repositories.Application
 {
@@ -33,6 +34,8 @@ namespace TheGapFillers.Portrack.Repositories.Application
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Properties<DateTime>().Configure(c => c.HasColumnType("datetime2")); 
 
             modelBuilder.Configurations.Add(new PortfolioMap());
             modelBuilder.Configurations.Add(new HoldingMap());
