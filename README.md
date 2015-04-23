@@ -1,3 +1,2 @@
 # Portrack
-
-# Financial portfolio simulator and tracker.
+Financial portfolio simulator and tracker.
