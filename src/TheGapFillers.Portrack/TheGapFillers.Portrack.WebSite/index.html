@@ -1,284 +1,38 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<!--[if lt IE 7]>      <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en" ng-app="portTrack" class="no-js">
+<!--<![endif]-->
+
 <head>
-    <meta charset="utf-8" />
-    <meta name="author" content="Script Tutorials" />
-    <title>Bootstrap one-page template with Parallax effect | Script Tutorials</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Portfolio Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- bower components css -->
     <link href="bower/stylesheets.min.css" rel="stylesheet" />
 
-    <style>
-                /* ==============================================================================================
-        This copyright notice must be kept untouched in the stylesheet at all times.
-        The original version of this stylesheet and the associated (x)html
-        is available at http://www.script-tutorials.com/bootstrap-one-page-template-with-parallax-effect/
-        Copyright (c) Script Tutorials. All rights reserved.
-        This stylesheet and the associated (x)html may be modified in any way to fit your requirements.
-        ================================================================================================= */
+    <!--custom css-->
 
-                /* general styles */
-                html, body {
-                    height: 100%;
-                    width: 100%;
-                }
-
-                /* padded section */
-                .pad-section {
-                    padding: 50px 0;
-                }
-
-                    .pad-section img {
-                        width: 100%;
-                    }
-
-                /* vertical-centered text */
-                .text-vcenter {
-                    display: table-cell;
-                    text-align: center;
-                    vertical-align: middle;
-                }
-
-                    .text-vcenter h1 {
-                        font-size: 4.5em;
-                        font-weight: 700;
-                        margin: 0;
-                        padding: 0;
-                    }
-
-                /* additional sections */
-                #home {
-                    background: url(content/pictures/finance2.jpg) no-repeat center center fixed;
-                    display: table;
-                    height: 100%;
-                    position: relative;
-                    width: 100%;
-                    -webkit-background-size: cover;
-                    -moz-background-size: cover;
-                    -o-background-size: cover;
-                    background-size: cover;
-                }
-
-                #about {
-                }
-
-                #services {
-                    background-color: #306d9f;
-                    color: #ffffff;
-                }
-
-                    #services .glyphicon {
-                        border: 2px solid #FFFFFF;
-                        border-radius: 50%;
-                        display: inline-block;
-                        font-size: 60px;
-                        height: 140px;
-                        line-height: 140px;
-                        text-align: center;
-                        vertical-align: middle;
-                        width: 140px;
-                    }
-
-                #information {
-                    background: url(../images/estate.jpg) no-repeat center center fixed;
-                    display: table;
-                    height: 800px;
-                    position: relative;
-                    width: 100%;
-                    -webkit-background-size: cover;
-                    -moz-background-size: cover;
-                    -o-background-size: cover;
-                    background-size: cover;
-                }
-
-                    #information .panel {
-                        opacity: 0.85;
-                    }
-
-                #google_map {
-                    height: 500px;
-                }
-
-                footer {
-                    padding: 20px 0;
-                }
-
-                    footer .glyphicon {
-                        color: #333333;
-                        font-size: 60px;
-                    }
-
-                        footer .glyphicon:hover {
-                            color: #306d9f;
-                        }
-    </style>
+    <link href="content/application.css" rel="stylesheet" />
+    <link href="content/home.css" rel="stylesheet" />
 </head>
 <body>
+    <!--navbar-->
+    <ng-include src="'app/common/layout/navbar.html'"></ng-include>
 
-    <!-- navigation panel -->
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-        <!--<div class="container">-->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="index.html">Portfolio Tracker</a>
-            </div>
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="/index.html">Home</a></li>
-                    <li><a href="app.html">Application</a></li>
-                    <li><a href="#">Blog</a></li>
-                </ul>
-            </div>
-        <!--</div>-->
-    </nav>
+    <!--output from the route config-->
+    <ng-view />
 
-
-
-
-    <!-- first section - Home -->
-    <div id="home" class="home">
-        <div class="text-vcenter" style="color:white">
-            <h1>The Gap Fillers</h1>
-            <h3>This is an open source project</h3>
-            <a href="https://github.com/TheGapFillers/Portrack" class="btn btn-default btn-lg">
-                <i class="fa fa-github fa-fw"></i>
-                GitHub
-            </a>
-        </div>
-    </div>
-    <!-- /first section -->
-    <!-- second section - About -->
-    <div id="about" class="pad-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-6">
-                    <img src="content/pictures/fillTheGap.jpg" alt="" />
-                </div>
-                <div class="col-sm-6 text-center">
-                    <h2>The gaps that we trully want to fill</h2>
-                    <p class="lead">I will let Bambi explain this part, but, basically, lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed interdum metus et ligula venenatis, at rhoncus nisi molestie. Pellentesque porttitor elit suscipit massa laoreet metus.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /second section -->
-    <!-- third section - Services -->
-    <div id="services" class="pad-section">
-        <div class="container">
-            <h2 class="text-center">Our Services</h2> <hr />
-            <div class="row text-center">
-                <div class="col-sm-3 col-xs-6">
-                    <i class="glyphicon glyphicon-cloud"> </i>
-                    <h4>Service 1</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in sem cras amet. Donec in sem cras amet.</p>
-                </div>
-                <div class="col-sm-3 col-xs-6">
-                    <i class="glyphicon glyphicon-leaf"> </i>
-                    <h4>Service 2</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in sem cras amet. Donec in sem cras amet.</p>
-                </div>
-                <div class="col-sm-3 col-xs-6">
-                    <i class="glyphicon glyphicon-phone-alt"> </i>
-                    <h4>Service 3</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in sem cras amet. Donec in sem cras amet.</p>
-                </div>
-                <div class="col-sm-3 col-xs-6">
-                    <i class="glyphicon glyphicon-bullhorn"> </i>
-                    <h4>Service 4</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in sem cras amet. Donec in sem cras amet.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /third section -->
-    <!-- fourth section - Information -->
-    <div id="services" class="pad-section" style="background-color:black">
-        <div class="container">
-            <h2 class="text-center">The Team</h2> <hr />
-            <div class="row text-center">
-                <div class="col-sm-3 col-xs-6">
-                    <img src="content/pictures/bambi.jpg" style="width:200px" alt="Alternate Text" />
-                    <h4>Bambi</h4>
-                    <p>Back-end explorer, he his specialize in everything related to french chiken.</p>
-                </div>
-                <div class="col-sm-3 col-xs-6">
-                    <img src="content/pictures/boris.jpg" style="width:200px" alt="Alternate Text" />
-                    <h4>Boris</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in sem cras amet. Donec in sem cras amet.</p>
-                </div>
-                <div class="col-sm-3 col-xs-6">
-                    <img src="content/pictures/valter.jpg" style="width:200px" alt="Alternate Text" />
-                    <h4>Valter</h4>
-                    <p>Full-Stack engenieering, either back or front he can handle it.</p>
-                </div>
-                <div class="col-sm-3 col-xs-6">
-                    <img src="content/pictures/miguel2.jpg" style="width:200px" alt="Alternate Text" />
-                    <h4>Miguel</h4>
-                    <p>Translator, filling japanase/chinese/portuguese/english gaps since 1894.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- /google map -->
-    <!-- footer -->
-    <!-- /footer -->
-    <!-- attach JavaScripts -->
     <script src="bower/scripts.min.js"></script>
-
-    <script language="javascript">
-        /**
-         *
-         * Bootstrap one-page template with Parallax effect | Script Tutorials
-         * http://www.script-tutorials.com/bootstrap-one-page-template-with-parallax-effect/
-         *
-         * Licensed under the MIT license.
-         * http://www.opensource.org/licenses/mit-license.php
-         *
-         * Copyright 2014, Script Tutorials
-         * http://www.script-tutorials.com/
-         */
-
-        $(document).ready(function () {
-
-            // create a LatLng object containing the coordinate for the center of the map
-            var latlng = new google.maps.LatLng(-33.86455, 151.209);
-
-            // prepare the map properties
-            var options = {
-                zoom: 15,
-                center: latlng,
-                mapTypeId: google.maps.MapTypeId.ROADMAP,
-                navigationControl: true,
-                mapTypeControl: false,
-                scrollwheel: false,
-                disableDoubleClickZoom: true
-            };
-
-            // initialize the map object
-            var map = new google.maps.Map(document.getElementById('google_map'), options);
-
-            // add Marker
-            var marker1 = new google.maps.Marker({
-                position: latlng, map: map
-            });
-
-            // add listener for a click on the pin
-            google.maps.event.addListener(marker1, 'click', function () {
-                infowindow.open(map, marker1);
-            });
-
-            // add information window
-            var infowindow = new google.maps.InfoWindow({
-                content: '<div class="info"><strong>This is my company</strong><br><br>My company address is here<br> 32846 Sydney</div>'
-            });
-        });
-    </script>
-
+    <!--custom scripts-->
+    <script src="app/app.js"></script>
+    <script src="content/temporary/flot.js"></script>
+    <script src="app/application/application-controller.js"></script>
+    <script src="app/application/leftNavbar/application-left-navbar-controller.js"></script>
+    <script src="app/application/portfolio/fake-portfolio-controller.js"></script>
 </body>
 </html>

@@ -1,0 +1,9 @@
+/// <reference path="angularjs/angular.d.ts" />
+/// <reference path="jquery/jquery.d.ts" />
+/// <reference path="moment/moment.d.ts" />
+/// <reference path="jasmine/jasmine.d.ts" />
+/// <reference path="sugar/sugar.d.ts" />
+/// <reference path="angularjs/angular-route.d.ts" />
+/// <reference path="angularjs/angular-animate.d.ts" />
+/// <reference path="flot/jquery.flot.d.ts" />
+/// <reference path="metismenu-manually added/jquery.metis.menu.d.ts" />

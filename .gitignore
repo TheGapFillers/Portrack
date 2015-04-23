@@ -195,3 +195,19 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/application/leftNavbar/application-left-navbar-controller.js
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/application/leftNavbar/application-left-navbar-controller.js.map
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/application/portfolio/fake-chart-service.js
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/application/portfolio/fake-chart-service.js.map
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/application/portfolio/fake-portfolio-controller.js.map
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/application/portfolio/fake-portfolio-controller.js
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/application/application-controller.js
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/application/application-controller.js.map
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/common/layout/navbar-controller.js
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/common/layout/navbar-controller.js.map
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/common/layout/navbar.js
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/common/layout/navbar.js.map
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/common/layout/top-navbar-controller.js
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/common/layout/top-navbar-controller.js.map
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/app.js
+/src/TheGapFillers.Portrack/TheGapFillers.Portrack.WebSite/app/app.js.map

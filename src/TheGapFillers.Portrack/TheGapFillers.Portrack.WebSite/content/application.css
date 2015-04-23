@@ -1,0 +1,69 @@
+﻿/*graph legend*/
+.legendLabel {
+  padding-right: 5px;
+}
+.indiceContainer {
+  float: right;
+  right: 15px;
+  top: 0;
+  position: absolute;
+  height: 57px;
+}
+.indiceContainer button {
+  padding: 0 5px;
+  height: 57px;
+}
+.indiceContainer button span {
+  font-size: 10px;
+  color: gray;
+}
+.indiceContainer button p {
+  clear: both;
+  font-size: 18px;
+  margin-top: 4px;
+  font-weight: bolder;
+}
+.widget {
+  background: white;
+  border: 1px solid #e0e0e0;
+  clear: both;
+  margin-top: 0;
+  margin-bottom: 30px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}
+.widget-header {
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+  background-color: #f2f2f2;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(white), to(#f2f2f2));
+  background-image: -webkit-linear-gradient(top, white, #f2f2f2);
+  background-image: -moz-linear-gradient(top, white, #f2f2f2);
+  background-image: -ms-linear-gradient(top, white, #f2f2f2);
+  background-image: -o-linear-gradient(top, white, #f2f2f2);
+  background-image: linear-gradient(top, white, #f2f2f2);
+  -webkit-border-radius: 3px 3px 0 0;
+  -moz-border-radius: 3px 3px 0 0;
+  border-radius: 3px 3px 0 0;
+  border-bottom: 1px solid #d9d9d9;
+  height: 45px;
+  line-height: 30px;
+  padding: 5px 10px;
+}
+.widget-header .title {
+  color: #4d4d4d;
+  float: left;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 30px;
+}
+.widget-header .title h4 {
+  margin-top: 15px;
+  float: left;
+  font-weight: bold;
+}
+.widget-body {
+  padding: 10px;
+}

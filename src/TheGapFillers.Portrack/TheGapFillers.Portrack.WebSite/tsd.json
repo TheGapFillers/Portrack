@@ -1,0 +1,33 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "angularjs/angular.d.ts": {
+      "commit": "528debd5fd8c31d60385fb0f9e88dca54136b47b"
+    },
+    "jquery/jquery.d.ts": {
+      "commit": "528debd5fd8c31d60385fb0f9e88dca54136b47b"
+    },
+    "moment/moment.d.ts": {
+      "commit": "d5f92f93bdb49f332fa662ff1d0cc8700f02e4dc"
+    },
+    "jasmine/jasmine.d.ts": {
+      "commit": "d5f92f93bdb49f332fa662ff1d0cc8700f02e4dc"
+    },
+    "sugar/sugar.d.ts": {
+      "commit": "d5f92f93bdb49f332fa662ff1d0cc8700f02e4dc"
+    },
+    "angularjs/angular-route.d.ts": {
+      "commit": "528debd5fd8c31d60385fb0f9e88dca54136b47b"
+    },
+    "angularjs/angular-animate.d.ts": {
+      "commit": "528debd5fd8c31d60385fb0f9e88dca54136b47b"
+    },
+    "flot/jquery.flot.d.ts": {
+      "commit": "b04ad99e8b389bf377a2bd3ae582e7ecb553c09a"
+    }
+  }
+}
