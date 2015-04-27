@@ -10,7 +10,6 @@ ${access_token} = $authToken.access_token
 
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
-Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/instruments/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/transactions/ -Headers @{"Authorization"= "${token_type} ${access_token}"}
@@ -34,6 +33,7 @@ Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/portfolios -Body 
 
 
 Invoke-RestMethod -Method Delete -Uri http://localhost:24717/api/portfolios/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
+
 #Then following must return null
 Invoke-RestMethod -Method Get -Uri http://localhost:24717/api/portfolios/BambiPortfolio1 -Headers @{"Authorization"= "${token_type} ${access_token}"}
 

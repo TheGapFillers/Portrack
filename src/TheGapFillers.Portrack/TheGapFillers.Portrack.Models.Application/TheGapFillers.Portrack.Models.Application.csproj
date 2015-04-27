@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Holding.cs" />
+    <Compile Include="HoldingExtensions.cs" />
     <Compile Include="Instrument.cs" />
     <Compile Include="Portfolio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -54,6 +55,10 @@
     <ProjectReference Include="..\..\TheGapFillers.Shared\MarketData\TheGapFillers.MarketData.Models\TheGapFillers.MarketData.Models.csproj">
       <Project>{348d2aae-b48d-4135-9eeb-ae55fd8a9f1c}</Project>
       <Name>TheGapFillers.MarketData.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TheGapFillers.Tools\TheGapFillers.Tools.csproj">
+      <Project>{581fa0cf-fb25-43f9-bd58-4c02be272f4f}</Project>
+      <Name>TheGapFillers.Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

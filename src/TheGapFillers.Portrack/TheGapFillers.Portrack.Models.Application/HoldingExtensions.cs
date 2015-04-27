@@ -1,0 +1,174 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TheGapFillers.MarketData.Models;
+
+namespace TheGapFillers.Portrack.Models.Application
+{
+    public static class HoldingExtensions
+    {
+        /// <summary>
+        /// Calculates the market value of the holding.
+        /// </summary>
+        /// <param name="holding">The holding from which to calculate the market value.</param>
+        /// <param name="quotes">The list of quotes needed to calculate market value.</param>
+        /// <returns>A decimal representing the market value of the holding.</returns>
+        public static decimal CalculateHoldingMarketValue(this Holding holding, IEnumerable<Quote> quotes)
+        {
+            decimal marketValue = 0;
+            foreach (Holding leafHolding in holding.Leaves)
+            {
+                Quote leafHoldingQuote = quotes.SingleOrDefault(q => q.Ticker == leafHolding.Ticker); 
+                if (leafHoldingQuote == null)
+                    throw new Exception(string.Format("The quote for ticker '{0}' is not passed as the parameter", leafHolding.Ticker));
+
+                marketValue += leafHolding.Shares * leafHoldingQuote.Last;
+            }
+
+            return marketValue;
+        }
+
+
+        /// <summary>
+        /// Calculates the historical market values of the holding.
+        /// </summary>
+        /// <param name="holding">The holding for which we are calculating the historical market values.</param>
+        /// <param name="historicalPrices">The list of historical prices needed.</param>
+        /// <returns>A list of historical prices representing the historical market values of the holding.</returns>
+        public static List<HistoricalPrice> CalculateHoldingHistoricalPrices(this Holding holding, IEnumerable<HistoricalPrice> historicalPrices)
+        {
+            var portfolioHistoricalPrices = new List<HistoricalPrice>();
+            List<DateTime> allPricedDates = historicalPrices.Select(p => p.Date.Date).Distinct().OrderBy(p => p.Date).ToList();
+            var historicalHoldings = new List<Holding>();
+            foreach (DateTime date in allPricedDates)
+            {
+                List<Transaction> dailyTransactions = holding.LeafTransactions.Where(t => t.Date == date).ToList();
+                foreach (Transaction dailyTransaction in dailyTransactions)
+                {
+                    Holding leafHolding = historicalHoldings.SingleOrDefault(h => h.Instrument.Ticker == dailyTransaction.Ticker);
+                    if (leafHolding == null)
+                    {
+                        historicalHoldings.Add(new Holding
+                        {
+                            Date = date,
+                            Instrument = new Instrument { Ticker = dailyTransaction.Ticker },
+                            Shares = dailyTransaction.Shares
+                        });
+                    }
+                    else
+                    {
+                        leafHolding.Shares += dailyTransaction.Type == TransactionType.Buy ? dailyTransaction.Shares : -dailyTransaction.Shares;
+                    }
+                }
+
+                List<HistoricalPrice> dailyPrices = historicalPrices.Where(p => p.Date == date).ToList();
+                portfolioHistoricalPrices.Add(new HistoricalPrice
+                {
+                    Ticker = holding.Ticker,
+                    Date = date,
+                    Close = historicalHoldings.Sum(h => h.Shares * dailyPrices.Single(p => p.Ticker == h.Ticker).Close)
+                });
+            }
+
+            return portfolioHistoricalPrices;
+        }
+
+
+        /// <summary>
+        /// Calculate the cost basis of the holding using FIFO method.
+        /// </summary>
+        /// <param name="transactions">All the transaction on that holding.</param>
+        /// <returns>a decimal, the cost basis of the holding.</returns>
+        public static decimal CalculateHoldingCostBasis(this Holding holding)
+        {
+
+            var datedSharesAndPrices = new List<DatedSharesAndPrice>(); // intermediate list to calculate cost basis.
+            foreach (Transaction transaction in holding.LeafTransactions.OrderBy(t => t.Date))
+            {
+                switch (transaction.Type)
+                {
+                    case TransactionType.Buy:
+                        datedSharesAndPrices.Add(new DatedSharesAndPrice
+                        {
+                            Date = transaction.Date.Date,
+                            Shares = transaction.Shares,
+                            PricePerShare = transaction.TotalPrice / transaction.Shares
+                        });
+                        break;
+                    case TransactionType.Sell:
+                        foreach (DatedSharesAndPrice datedSharesAndPrice in datedSharesAndPrices.OrderBy(qd => qd.Date))
+                        {
+                            if (transaction.Shares <= datedSharesAndPrice.Shares)
+                            {
+                                datedSharesAndPrice.Shares -= transaction.Shares;
+                                break;
+                            }
+                            else
+                            {
+                                transaction.Shares -= datedSharesAndPrice.Shares;
+                                datedSharesAndPrice.Shares = 0;
+                                continue;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            return datedSharesAndPrices.Sum(qd => qd.Shares * qd.PricePerShare);
+        }
+
+
+        /// <summary>
+        /// Get the number of shares at the specified date from the specified transactions.
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        private static decimal GetShareCountAtDate(IEnumerable<Transaction> transactions, DateTime dateTime)
+        {
+            int shareNumber = 0;
+            foreach (Transaction transaction in transactions.Where(t => t.Date < dateTime).OrderBy(t => t.Date))
+            {
+                switch (transaction.Type)
+                {
+                    case TransactionType.Buy:
+                        shareNumber += transaction.Shares;
+                        break;
+                    case TransactionType.Sell:
+                        shareNumber -= transaction.Shares;
+                        break;
+                }
+            }
+
+            return shareNumber;
+        }
+
+
+        /// <summary>
+        /// Get the income comming from the dividends.
+        /// </summary>
+        /// <param name="transactions"></param>
+        /// <param name="dividends"></param>
+        /// <returns></returns>
+        public static decimal CalculateHoldingDividendIncome(this Holding holding, IEnumerable<Dividend> dividends)
+        {
+            decimal totalDividendAmount = 0;
+            foreach (Dividend dividend in dividends)
+            {
+                totalDividendAmount += dividend.Amount * GetShareCountAtDate(holding.LeafTransactions, dividend.Date);
+            }
+
+            return totalDividendAmount;
+        }
+
+
+        private class DatedSharesAndPrice
+        {
+            public int Shares { get; set; }
+            public DateTime Date { get; set; }
+            public decimal PricePerShare { get; set; }
+        }
+    }
+}

@@ -77,44 +77,49 @@ namespace TheGapFillers.Portrack.Controllers.Application
             // Check that the date of the transaction is valid.
             var schedule = new UnitedStatesHolidaySchedule(UnitedStatesHolidayScheduleTypes.StockMarket, transaction.Date.Year);
             if (schedule.GetObservedHolidays().Contains(transaction.Date.Date))
-                return Ok(TransactionResult.Failed(null, null, transaction,
-                        string.Format("'{0}' is a market holiday.", transaction.Date.ToString("yyyy-MM-dd"))));
+                return Ok(TransactionResult.Failed(null, transaction,
+                    string.Format("'{0}' is a market holiday.", transaction.Date.ToString("yyyy-MM-dd"))));
 
             if (transaction.Date.IsWeekend())
-                return Ok(TransactionResult.Failed(null, null, transaction,
+                return Ok(TransactionResult.Failed(null, transaction,
                     string.Format("'{0}' is a week end date.", transaction.Date.ToString("yyyy-MM-dd"))));
 
+
             // Get the portfolio represented by the PortfolioName in the posted transaction.
-            Portfolio portfolio = await _repository.GetPortfolioAsync(User.Identity.Name, transaction.PortfolioName, true, true);
+            Portfolio portfolio = await _repository.GetPortfolioAsync(User.Identity.Name, transaction.PortfolioName, includeHoldings: true, includeTransactions: true);
             IHttpActionResult portFolioError;
             if ((portFolioError = CheckForPortfolioError(portfolio, transaction)) != null)
             {
                 return portFolioError;
             }
 
-            // Get the instrument represented by the Ticker in the posted transaction
-            Instrument instrument = await _repository.GetInstrumentAsync(transaction.Ticker);
-            if (instrument == null)
-            {
-                return Ok(TransactionResult.Failed(portfolio, null, transaction,
-                    string.Format("Instrument '{0}' doens't exist.", transaction.Ticker)));
-            }
 
             // Get the holding associated holding if it exists.
-            Holding holding = await _repository.GetHoldingAsync(portfolio.UserName, portfolio.PortfolioName, instrument.Ticker);
+            Holding holding = portfolio.PortfolioHolding.Leaves.SingleOrDefault(h => h.Ticker == transaction.Ticker);
             if (holding == null)
             {
-                holding = new Holding(portfolio, instrument);
-                portfolio.Holdings.Add(holding);
+                // Get the instrument represented by the Ticker in the posted transaction
+                Instrument instrument = await _repository.GetInstrumentAsync(transaction.Ticker);
+                if (instrument == null)
+                {
+                    return Ok(TransactionResult.Failed(null, transaction,
+                        string.Format("Instrument '{0}' doens't exist.", transaction.Ticker)));
+                }
+
+                holding = new Holding { Instrument = instrument };
+                portfolio.PortfolioHolding.Children.Add(holding);
             }
+
 
             // Retrieve transaction price from MarketData provider if price is absent.
             if (transaction.Price == 0)
-                transaction.Price = await RetrieveTransactionPriceAsync(transaction, instrument); 
+                transaction.Price = await RetrieveTransactionPriceAsync(transaction, holding.Instrument); 
             
+
             // Add the transaction and get the transaction result.
-            TransactionResult result = portfolio.AddTransaction(transaction, holding);
+            TransactionResult result = holding.AddTransaction(transaction);
             ClearHoldingIfNoMoreShares(result);
+
 
             // Send the changes made in the data layer to the database and return the transaction results.
             await _repository.SaveAsync();
@@ -126,16 +131,12 @@ namespace TheGapFillers.Portrack.Controllers.Application
             IHttpActionResult retVal = null;
             if (portfolio == null)
             {
-                return Ok(TransactionResult.Failed(null, null, transaction,
+                return Ok(TransactionResult.Failed(null, transaction,
                     string.Format("Portfolio '{0}' | '{1}' not found.", User.Identity.Name, transaction.PortfolioName)));
             }
-            else if (portfolio.Holdings == null)
+            else if (portfolio.PortfolioHolding == null)
             {
                 retVal = InternalServerError(new Exception("Holdings loading for portfolio failed."));
-            }
-            else if (portfolio.Transactions == null)
-            {
-                retVal = InternalServerError(new Exception("Transactions loading for portfolio failed."));
             }
 
             return retVal;

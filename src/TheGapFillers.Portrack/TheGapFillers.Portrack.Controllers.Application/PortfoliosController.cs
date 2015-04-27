@@ -41,32 +41,16 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			ICollection<Portfolio> portfolios;
 			if (string.IsNullOrWhiteSpace(portfolioNames))
 			{
-				portfolios = await _repository.GetPortfoliosAsync(User.Identity.Name, true, true);
+				portfolios = await _repository.GetPortfoliosAsync(User.Identity.Name, includeHoldings: true, includeTransactions: true);
 			}
 			else
 			{
 				IEnumerable<string> porfolioNameEnum = portfolioNames.Split(',').Select(s => s.Trim());
-				portfolios = await _repository.GetPortfoliosAsync(User.Identity.Name, porfolioNameEnum, true, true);
+				portfolios = await _repository.GetPortfoliosAsync(User.Identity.Name, porfolioNameEnum, includeHoldings: true, includeTransactions: true);
 			}
 
-			await ComputePortfolioDataAsync(portfolios);
+			await ComputePortfolioHodlingDataAsync(portfolios.Select(p => p.PortfolioHolding).ToList());
 			return Ok(portfolios);
-		}
-
-
-		/// <summary>
-		/// Get method to get the instruments of the specified portfolio of the current authenticated user.
-		/// </summary>
-		/// <returns>Ok status with a list of instruments.</returns>
-		[Route("instruments/{portfolioName}")]
-		[HttpGet]
-		public async Task<IHttpActionResult> GetInstruments(string portfolioName)
-		{
-			List<Instrument> instruments = (await _repository.GetPortfolioInstrumentsAsync(User.Identity.Name, portfolioName)).ToList();
-			ICollection<Quote> quotes = await _provider.GetQuotesAsync(instruments.Select(i => i.Ticker));
-			instruments.ForEach(i => i.Quote = quotes.SingleOrDefault(q => q.Ticker == i.Ticker));
-
-			return Ok(instruments);
 		}
 
 
@@ -85,7 +69,8 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
 			portfolio.UserName = User.Identity.Name;
-
+			portfolio.PortfolioHolding = new Holding { Shares = 1 };
+		
 			Portfolio createdPortfolio;
 			try
 			{
@@ -127,14 +112,17 @@ namespace TheGapFillers.Portrack.Controllers.Application
 		/// Populate all the portfolios with their associated calculated portfolio data.
 		/// </summary>
 		/// <param name="portfolios">Portfolios to be populated with portfolio data.</param>
-		private async Task ComputePortfolioDataAsync(ICollection<Portfolio> portfolios)
+		private async Task ComputePortfolioHodlingDataAsync(ICollection<Holding> portfolioHoldings)
 		{
-			if (portfolios == null || !portfolios.Any())
+			if (portfolioHoldings == null || !portfolioHoldings.Any())
 				return;
 
 			// Get the needed tickers and the first transaction's date
-			List<string> neededTickers = portfolios.SelectMany(p => p.Holdings.Select(h => h.Ticker)).Distinct().ToList();
-			DateTime firstTransactionDate = portfolios.SelectMany(p => p.Transactions).OrderBy(t => t.Date).First().Date;
+			List<string> neededTickers = portfolioHoldings.SelectMany(ph => ph.Leaves.Select(h => h.Ticker)).Distinct().ToList();
+			if (neededTickers == null || !neededTickers.Any())
+				return;
+
+			DateTime firstTransactionDate = portfolioHoldings.SelectMany(ph => ph.LeafTransactions).OrderBy(t => t.Date).First().Date;
 
 			// Get the needed quotes
 			ICollection<Quote> allRequiredQuotes = await _provider.GetQuotesAsync(neededTickers);
@@ -148,16 +136,16 @@ namespace TheGapFillers.Portrack.Controllers.Application
 				neededTickers, firstTransactionDate, DateTime.UtcNow);
 
 			// Loop accross all holdings and populate with holding data.
-			foreach (Portfolio portfolio in portfolios)
+			foreach (Holding portfolioHolding in portfolioHoldings)
 			{
-				DateTime portfolioFirstTransactionDate = portfolio.Transactions.OrderBy(t => t.Date).First().Date;
-				List<string> portfolioTickers = neededTickers.Where(s => portfolio.Holdings.Select(h => h.Ticker).Contains(s)).ToList();
+				DateTime portfolioFirstTransactionDate = portfolioHolding.LeafTransactions.OrderBy(t => t.Date).First().Date;
+				List<string> portfolioTickers = neededTickers.Where(s => portfolioHolding.Leaves.Select(h => h.Ticker).Contains(s)).ToList();
 
 				IEnumerable<Quote> quotes = allRequiredQuotes.Where(q => portfolioTickers.Contains(q.Ticker));
 				IEnumerable<HistoricalPrice> historicalPrices = allhistoricalPrices.Where(q => portfolioTickers.Contains(q.Ticker) && q.Date >= portfolioFirstTransactionDate);
 				IEnumerable<Dividend> dividends = allRequiredDividends.Where(d => portfolioTickers.Contains(d.Ticker) && d.Date >= portfolioFirstTransactionDate);
 
-				portfolio.SetPortfolioData(quotes, historicalPrices, dividends);
+				portfolioHolding.SetHoldingData(historicalPrices, quotes, dividends);
 			}
 		}
 	}

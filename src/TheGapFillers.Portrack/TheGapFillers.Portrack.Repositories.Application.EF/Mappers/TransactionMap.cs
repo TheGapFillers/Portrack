@@ -12,11 +12,14 @@ namespace TheGapFillers.Portrack.Repositories.Application.Mappers
             HasKey(t => t.TransactionId);
             Property(t => t.TransactionId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
-            HasRequired(t => t.Portfolio);
+            Property(t => t.Ticker).IsRequired();
+            Property(t => t.Date).IsRequired();
+            Property(t => t.Shares).IsRequired();
 
-            Property(i => i.Ticker).IsRequired();
-            Property(i => i.Date).IsRequired();
-            Property(i => i.Shares).IsRequired();
+            HasRequired(t => t.Holding)
+                .WithMany(h => h.Transactions)
+                .Map(t => t.MapKey("HoldingId"))
+                .WillCascadeOnDelete(true);
         }
     }
 }

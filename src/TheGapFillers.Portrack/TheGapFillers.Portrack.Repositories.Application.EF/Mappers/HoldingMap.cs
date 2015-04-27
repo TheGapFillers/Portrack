@@ -9,19 +9,26 @@ namespace TheGapFillers.Portrack.Repositories.Application.Mappers
         public HoldingMap()
         {
             ToTable("Holdings", "Portrack");
-            HasKey(p => p.HoldingId);
-            Property(p => p.HoldingId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            HasKey(h => h.HoldingId);
+            Property(h => h.HoldingId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            Property(h => h.Shares).IsRequired();
+            Ignore(h => h.HoldingData);
+            Ignore(h => h.Leaves);
+            Ignore(h => h.LeafTransactions);
 
-            Property(p => p.Shares).IsRequired();
-
-            HasRequired(t => t.Portfolio);
-
-            Ignore(t => t.HoldingData);
-
-            HasRequired(p => p.Instrument)
+            HasMany(h => h.Children)
             .WithMany()
-            .Map(p => p.MapKey("InstrumentId"))
-            .WillCascadeOnDelete(true);
+            .Map(h =>
+            {
+                h.MapLeftKey("ParentId");
+                h.MapRightKey("ChildId");
+                h.ToTable("HoldingsJunction", "Portrack");
+            });
+
+            HasOptional(h => h.Instrument)
+                .WithMany()
+                .Map(h => h.MapKey("InstrumentId"))
+                .WillCascadeOnDelete(true);
         }
     }
 }

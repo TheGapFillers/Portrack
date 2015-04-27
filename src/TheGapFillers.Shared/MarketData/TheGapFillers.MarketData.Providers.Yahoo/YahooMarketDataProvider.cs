@@ -17,6 +17,9 @@ namespace TheGapFillers.MarketData.Providers.Yahoo
 
 		public async Task<List<Quote>> GetQuotesAsync(IEnumerable<string> tickers)
 		{
+			if (!tickers.Any())
+				return new List<Quote>();
+
 			string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
 
 			YQLQuery = string.Format("select * from yahoo.finance.quotes where symbol in ({0})", formattedTickers);
@@ -75,7 +78,7 @@ namespace TheGapFillers.MarketData.Providers.Yahoo
 			where T : MarketDataBase
 		{
 			if (rootObject.query.results == null)
-				throw new Exception("No data found from provider with those parameters.");
+				return new List<T>();
 
 			var jToken = JToken.Parse(rootObject.query.results.quote.ToString());
 

@@ -13,10 +13,10 @@ namespace TheGapFillers.Portrack.Repositories.Application.Mappers
             Property(p => p.PortfolioId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             Property(p => p.PortfolioName).IsRequired();
 
-            HasMany(p => p.Holdings).WithRequired(h => h.Portfolio).Map(m => m.MapKey("PortfolioId")).WillCascadeOnDelete(true);
-            HasMany(p => p.Transactions).WithRequired(t => t.Portfolio).Map(m => m.MapKey("PortfolioId")).WillCascadeOnDelete(true);
-
-            Ignore(t => t.PortfolioData);
+            HasOptional(p => p.PortfolioHolding)
+                .WithOptionalDependent(h => h.Portfolio)
+                .Map(p => p.MapKey("PortfolioHoldingId"))
+                .WillCascadeOnDelete(false);
         }
     }
 }
