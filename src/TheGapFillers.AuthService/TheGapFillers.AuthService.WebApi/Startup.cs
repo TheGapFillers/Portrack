@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using System;
+using System.Web.Http;
+using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
 using Owin;
-using System;
-using System.Web.Http;
 using TheGapFillers.Auth.Providers;
 using TheGapFillers.Auth.Repositories;
 

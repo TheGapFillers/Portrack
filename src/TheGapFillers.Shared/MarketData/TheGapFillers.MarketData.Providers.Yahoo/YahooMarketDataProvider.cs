@@ -1,19 +1,19 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using TheGapFillers.MarketData.Models;
 
 namespace TheGapFillers.MarketData.Providers.Yahoo
 {
 	public class YahooMarketDataProvider : IMarketDataProvider
 	{
-		private const string YQLUriPrefix = "https://query.yahooapis.com/v1/public/yql?q=";
-		private const string YQLUriSuffix = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
+		private const string YqlUriPrefix = "https://query.yahooapis.com/v1/public/yql?q=";
+		private const string YqlUriSuffix = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
 
-		private string YQLQuery { get; set; }
+		private string YqlQuery { get; set; }
 
 		public async Task<List<Quote>> GetQuotesAsync(IEnumerable<string> tickers)
 		{
@@ -22,29 +22,29 @@ namespace TheGapFillers.MarketData.Providers.Yahoo
 
 			string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
 
-			YQLQuery = string.Format("select * from yahoo.finance.quotes where symbol in ({0})", formattedTickers);
+			YqlQuery = string.Format("select * from yahoo.finance.quotes where symbol in ({0})", formattedTickers);
 
-			return await GetDataFromYQLAsync<Quote>();
+			return await GetDataFromYqlAsync<Quote>();
 		}
 
 		public async Task<List<HistoricalPrice>> GetHistoricalPricesAsync(IEnumerable<string> tickers, DateTime startDate, DateTime endDate)
 		{
 			string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
 
-			YQLQuery = string.Format(@"select * from yahoo.finance.historicaldata where symbol in ({0}) and startDate = ""{1}"" and endDate = ""{2}""",
+			YqlQuery = string.Format(@"select * from yahoo.finance.historicaldata where symbol in ({0}) and startDate = ""{1}"" and endDate = ""{2}""",
 				formattedTickers, startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"));
 
-			return await GetDataFromYQLAsync<HistoricalPrice>();
+			return await GetDataFromYqlAsync<HistoricalPrice>();
 		}
 
 		public async Task<List<Dividend>> GetHistoricalDividendAsync(IEnumerable<string> tickers, DateTime startDate, DateTime endDate)
 		{
 			string formattedTickers = string.Join(",", tickers.Select(t => string.Format(@"""{0}""", t)));
 
-			YQLQuery = string.Format(@"select * from yahoo.finance.dividendhistory where symbol in ({0}) and startDate = ""{1}"" and endDate = ""{2}""",
+			YqlQuery = string.Format(@"select * from yahoo.finance.dividendhistory where symbol in ({0}) and startDate = ""{1}"" and endDate = ""{2}""",
 				formattedTickers, startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"));
 
-			return await GetDataFromYQLAsync<Dividend>();
+			return await GetDataFromYqlAsync<Dividend>();
 		}
 
 		public async Task<List<HistoricalCurrency>> GetHistoricalCurrencyAsync(IEnumerable<string> pairs, DateTime date)
@@ -60,13 +60,13 @@ namespace TheGapFillers.MarketData.Providers.Yahoo
 		}
 
 
-		private async Task<List<T>> GetDataFromYQLAsync<T>()
+		private async Task<List<T>> GetDataFromYqlAsync<T>()
 			where T : MarketDataBase
 		{
 			HttpResponseMessage response;
 			using (var httpClient = new HttpClient())
 			{
-				string uri = string.Format("{0}{1}{2}", YQLUriPrefix, YQLQuery, YQLUriSuffix);
+				string uri = string.Format("{0}{1}{2}", YqlUriPrefix, YqlQuery, YqlUriSuffix);
 				response = await httpClient.GetAsync(uri);
 			}
 
@@ -85,47 +85,36 @@ namespace TheGapFillers.MarketData.Providers.Yahoo
 			if (typeof(T) == typeof(Quote))
 			{
 				List<YahooQuote> yahooQuotes = JTokenToList<YahooQuote>(jToken);
-				List<Quote> quotes = new List<Quote>();
-				foreach (YahooQuote yahooQuote in yahooQuotes)
+
+				List<Quote> quotes = yahooQuotes.Select(q => new Quote
 				{
-					quotes.Add(new Quote
-					{
-						Ticker = yahooQuote.Symbol,
-						Last = Convert.ToDecimal(yahooQuote.LastTradePriceOnly)
-					});
-				}
+					Ticker = q.Symbol, 
+					Last = Convert.ToDecimal(q.LastTradePriceOnly)
+				}).ToList();
 				return quotes.Cast<T>().ToList();
 			}
 
 			else if (typeof(T) == typeof(HistoricalPrice))
 			{
 				List<YahooHistoricalPrice> yahooHistoricalPrices = JTokenToList<YahooHistoricalPrice>(jToken);
-				List<HistoricalPrice> historicalPrices = new List<HistoricalPrice>();
-				foreach (YahooHistoricalPrice yahooHistoricalPrice in yahooHistoricalPrices)
+				List<HistoricalPrice> historicalPrices = yahooHistoricalPrices.Select(p => new HistoricalPrice
 				{
-					historicalPrices.Add(new HistoricalPrice
-					{
-						Ticker = yahooHistoricalPrice.Symbol,
-						Date = Convert.ToDateTime(yahooHistoricalPrice.Date),
-						Close = Convert.ToDecimal(yahooHistoricalPrice.Close)
-					});
-				}
+					Ticker = p.Symbol, 
+					Date = Convert.ToDateTime(p.Date), 
+					Close = Convert.ToDecimal(p.Close)
+				}).ToList();
 				return historicalPrices.Cast<T>().ToList();
 			}
 
 			else if (typeof(T) == typeof(Dividend))
 			{
 				List<YahooDividend> yahooDividends = JTokenToList<YahooDividend>(jToken);
-				List<Dividend> dividends = new List<Dividend>();
-				foreach (YahooDividend yahooDividend in yahooDividends)
+				List<Dividend> dividends = yahooDividends.Select(d => new Dividend
 				{
-					dividends.Add(new Dividend
-					{
-						Ticker = yahooDividend.Symbol,
-						Date = Convert.ToDateTime(yahooDividend.Date),
-						Amount = Convert.ToDecimal(yahooDividend.Dividends)
-					});
-				}
+					Ticker = d.Symbol, 
+					Date = Convert.ToDateTime(d.Date), 
+					Amount = Convert.ToDecimal(d.Dividends)
+				}).ToList();
 				return dividends.Cast<T>().ToList();
 			}
 			else

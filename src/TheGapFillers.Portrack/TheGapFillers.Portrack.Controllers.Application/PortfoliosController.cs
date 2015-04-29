@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using TheGapFillers.MarketData.Models;
 using TheGapFillers.MarketData.Providers;
-using TheGapFillers.Portrack.Controllers.Application.Base;
 using TheGapFillers.Portrack.Models.Application;
 using TheGapFillers.Portrack.Repositories.Application;
 
@@ -111,7 +110,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 		/// <summary>
 		/// Populate all the portfolios with their associated calculated portfolio data.
 		/// </summary>
-		/// <param name="portfolios">Portfolios to be populated with portfolio data.</param>
+		/// <param name="portfolioHoldings">Portfolio holdings to be populated with portfolio data.</param>
 		private async Task ComputePortfolioHodlingDataAsync(ICollection<Holding> portfolioHoldings)
 		{
 			if (portfolioHoldings == null || !portfolioHoldings.Any())
@@ -119,7 +118,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 
 			// Get the needed tickers and the first transaction's date
 			List<string> neededTickers = portfolioHoldings.SelectMany(ph => ph.Leaves.Select(h => h.Ticker)).Distinct().ToList();
-			if (neededTickers == null || !neededTickers.Any())
+			if (!neededTickers.Any())
 				return;
 
 			DateTime firstTransactionDate = portfolioHoldings.SelectMany(ph => ph.LeafTransactions).OrderBy(t => t.Date).First().Date;

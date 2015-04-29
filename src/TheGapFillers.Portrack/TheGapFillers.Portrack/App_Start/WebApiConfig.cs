@@ -1,14 +1,14 @@
-﻿using Autofac;
+﻿using System.Reflection;
+using System.Web.Http;
+using Autofac;
 using Autofac.Integration.WebApi;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
-using System.Reflection;
-using System.Web.Http;
 using TheGapFillers.MarketData.Providers;
 using TheGapFillers.MarketData.Providers.Yahoo;
 using TheGapFillers.Portrack.Controllers.Application;
-using TheGapFillers.Portrack.Controllers.Application.Base;
 using TheGapFillers.Portrack.Repositories.Application;
+using TheGapFillers.Portrack.Repositories.Application.EF;
 
 namespace TheGapFillers.Portrack
 {

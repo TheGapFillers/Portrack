@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TheGapFillers.MarketData.Models;
 
 namespace TheGapFillers.Portrack.Models.Application
@@ -79,7 +77,7 @@ namespace TheGapFillers.Portrack.Models.Application
         /// <summary>
         /// Calculate the cost basis of the holding using FIFO method.
         /// </summary>
-        /// <param name="transactions">All the transaction on that holding.</param>
+        /// <param name="holding">The holding from which to calculate the cost basis.</param>
         /// <returns>a decimal, the cost basis of the holding.</returns>
         public static decimal CalculateHoldingCostBasis(this Holding holding)
         {
@@ -147,20 +145,14 @@ namespace TheGapFillers.Portrack.Models.Application
 
 
         /// <summary>
-        /// Get the income comming from the dividends.
+        /// Get the income coming from the dividends.
         /// </summary>
-        /// <param name="transactions"></param>
+        /// <param name="holding"></param>
         /// <param name="dividends"></param>
         /// <returns></returns>
         public static decimal CalculateHoldingDividendIncome(this Holding holding, IEnumerable<Dividend> dividends)
         {
-            decimal totalDividendAmount = 0;
-            foreach (Dividend dividend in dividends)
-            {
-                totalDividendAmount += dividend.Amount * GetShareCountAtDate(holding.LeafTransactions, dividend.Date);
-            }
-
-            return totalDividendAmount;
+            return dividends.Sum(dividend => dividend.Amount * GetShareCountAtDate(holding.LeafTransactions, dividend.Date));
         }
 
 

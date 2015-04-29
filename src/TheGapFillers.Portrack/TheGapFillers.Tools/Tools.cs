@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace TheGapFillers.Tools
 {
@@ -19,7 +18,10 @@ namespace TheGapFillers.Tools
             {
                 if (recursion(source) != null && recursion(source).Any())
                 {
-                    recursion(source).GetLeaves(recursion);
+                    foreach (var leaf in recursion(source).GetLeaves(recursion))
+                    {
+                        yield return leaf;
+                    }
                 }
                 else
                 {

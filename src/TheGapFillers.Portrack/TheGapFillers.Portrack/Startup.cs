@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Owin;
+﻿using Microsoft.Owin;
 using Owin;
+using TheGapFillers.Portrack;
 
-[assembly: OwinStartup(typeof(TheGapFillers.Portrack.Startup))]
+[assembly: OwinStartup(typeof(Startup))]
 
 namespace TheGapFillers.Portrack
 {

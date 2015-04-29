@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using System;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
+using System.Web;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataHandler.Encoder;
-using System;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using System.Web;
 using TheGapFillers.Auth.Models;
 
 namespace TheGapFillers.Auth.Repositories
@@ -101,7 +101,7 @@ namespace TheGapFillers.Auth.Repositories
         {
             var clientId = Guid.NewGuid();
             var key = new byte[32];
-            RNGCryptoServiceProvider.Create().GetBytes(key);
+            RandomNumberGenerator.Create().GetBytes(key);
             var base64Secret = TextEncodings.Base64Url.Encode(key);
             Audience newAudience = new Audience { AudienceId = clientId, Base64Secret = base64Secret, Name = name };
 

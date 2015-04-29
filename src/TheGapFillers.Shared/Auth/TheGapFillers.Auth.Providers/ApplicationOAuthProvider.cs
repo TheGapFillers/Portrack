@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.OAuth;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.OAuth;
 using TheGapFillers.Auth.Models;
 using TheGapFillers.Auth.Repositories;
 
@@ -26,9 +26,8 @@ namespace TheGapFillers.Auth.Providers
 
 		public async override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
 		{
-			string clientId = string.Empty;
-			string clientSecret = string.Empty;
-			string symmetricKeyAsBase64 = string.Empty;
+			string clientId;
+			string clientSecret;
 
 			if (!context.TryGetBasicCredentials(out clientId, out clientSecret))
 			{
@@ -50,7 +49,6 @@ namespace TheGapFillers.Auth.Providers
 			}
 
 			context.Validated();
-			return;
 		}
 
 		public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)

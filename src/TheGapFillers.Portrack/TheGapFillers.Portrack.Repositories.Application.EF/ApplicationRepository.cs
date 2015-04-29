@@ -1,15 +1,15 @@
-﻿using TheGapFillers.Portrack.Models.Application;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using TheGapFillers.Portrack.Models.Application;
 
-namespace TheGapFillers.Portrack.Repositories.Application
+namespace TheGapFillers.Portrack.Repositories.Application.EF
 {
 	public class ApplicationRepository : IApplicationRepository
 	{
-		private ApplicationDbContext _context;
+		private readonly ApplicationDbContext _context;
 
 
 		public ApplicationRepository(ApplicationDbContext context)
@@ -61,7 +61,7 @@ namespace TheGapFillers.Portrack.Repositories.Application
 			if (portfolioNames != null && portfolioNames.Any())
 				query = query.Where(p => portfolioNames.Contains(p.PortfolioName));
 
-			return await query.ToListAsync<Portfolio>();
+			return await query.ToListAsync();
 		}
 
 		public async Task<Portfolio> GetPortfolioAsync(string userName, string portfolioName, bool includeHoldings = false, bool includeTransactions = false)
@@ -109,7 +109,7 @@ namespace TheGapFillers.Portrack.Repositories.Application
 			if (tickers != null && tickers.Any())
 				query = query.Where(h => tickers.Contains(h.Instrument.Ticker));
 
-			return await query.ToListAsync<Holding>();
+			return await query.ToListAsync();
 		}
 
 		public Holding AddHolding(Holding holding)
@@ -133,7 +133,7 @@ namespace TheGapFillers.Portrack.Repositories.Application
 			if (tickers != null && tickers.Any())
 				query = query.Where(t => tickers.Contains(t.Ticker));
 
-			return await query.ToListAsync<Transaction>();
+			return await query.ToListAsync();
 		}
 
 		public Task<ICollection<Transaction>> GetTransactionsAsync(string userName, string portfolioName, IEnumerable<string> tickers = null)
@@ -151,7 +151,7 @@ namespace TheGapFillers.Portrack.Repositories.Application
 		public async Task<Transaction> RemoveLastTransactionAsync(string userName, string portfolioName)
 		{
 			Transaction transaction = await _context.Transactions.OrderByDescending(t => t.Date)
-				.FirstOrDefaultAsync<Transaction>(t =>
+				.FirstOrDefaultAsync(t =>
 				t.Holding.Portfolio.UserName.Equals(userName)
 				&& t.PortfolioName.Equals(portfolioName));
 
@@ -163,7 +163,7 @@ namespace TheGapFillers.Portrack.Repositories.Application
 		public async Task<Transaction> RemoveLastTransactionAsync(string userName, string portfolioName, string ticker)
 		{
 			Transaction transaction = await _context.Transactions.OrderByDescending(t => t.Date)
-				.FirstOrDefaultAsync<Transaction>(t => 
+				.FirstOrDefaultAsync(t => 
 				t.Holding.Portfolio.UserName.Equals(userName)
 				&& t.PortfolioName.Equals(portfolioName)
 				&& t.Ticker.Equals(ticker));

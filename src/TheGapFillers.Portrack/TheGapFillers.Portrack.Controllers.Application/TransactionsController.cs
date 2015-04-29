@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using TheGapFillers.MarketData.Models;
 using TheGapFillers.MarketData.Providers;
-using TheGapFillers.Portrack.Controllers.Application.Base;
 using TheGapFillers.Portrack.Models.Application;
 using TheGapFillers.Portrack.Repositories.Application;
 
@@ -61,7 +60,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
         /// <summary>
         /// Post method to upload a new transacton for the current authenticated user.
         /// </summary>
-        /// <param name="portfolio">The embodied transaction to upload.</param>
+        /// <param name="transaction">The embodied transaction to upload.</param>
         /// <returns>
         ///     Ok(createdPortfolio) if datalayer accepted transaction.
         ///     BadRequest(ModelState) if modelstate is invalid.
@@ -113,7 +112,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 
             // Retrieve transaction price from MarketData provider if price is absent.
             if (transaction.Price == 0)
-                transaction.Price = await RetrieveTransactionPriceAsync(transaction, holding.Instrument); 
+                transaction.Price = await RetrieveTransactionPriceAsync(transaction); 
             
 
             // Add the transaction and get the transaction result.
@@ -142,7 +141,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
             return retVal;
         }
 
-        private async Task<decimal> RetrieveTransactionPriceAsync(Transaction transaction, Instrument instrument)
+        private async Task<decimal> RetrieveTransactionPriceAsync(Transaction transaction)
         {
             ICollection<HistoricalPrice> price = await _provider.GetHistoricalPricesAsync(new List<String> { transaction.Ticker }, transaction.Date, transaction.Date);
 

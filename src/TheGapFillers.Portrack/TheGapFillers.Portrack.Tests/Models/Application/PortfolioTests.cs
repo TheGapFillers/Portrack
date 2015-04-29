@@ -1,8 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
-using TheGapFillers.Portrack.Models.Application;
-using TheGapFillers.Portrack.Tests.Repositories;
 
 namespace TheGapFillers.Portrack.Tests.Models.Application
 {

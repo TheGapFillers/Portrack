@@ -1,8 +1,8 @@
-﻿using TheGapFillers.Portrack.Models.Application;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
+using TheGapFillers.Portrack.Models.Application;
 
-namespace TheGapFillers.Portrack.Repositories.Application.Mappers
+namespace TheGapFillers.Portrack.Repositories.Application.EF.Mappers
 {
     public class InstrumentMap : EntityTypeConfiguration<Instrument>
     {

@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Web.Http;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using TheGapFillers.Auth.Repositories;
 
 namespace TheGapFillers.AuthService.WebApi.Controllers

@@ -18,7 +18,7 @@ namespace TheGapFillers.AuthService.WebApi.Controllers
 
             Audience newAudience = CustomUserManager.AddAudience(audienceModel.Name);
 
-            return Ok<Audience>(newAudience);
+            return Ok(newAudience);
 
         }
     }

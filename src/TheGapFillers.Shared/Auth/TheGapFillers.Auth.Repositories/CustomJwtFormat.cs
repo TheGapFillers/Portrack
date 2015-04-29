@@ -1,8 +1,8 @@
-﻿using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.DataHandler.Encoder;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.DataHandler.Encoder;
 using TheGapFillers.Auth.Models;
 using Thinktecture.IdentityModel.Tokens;
 
@@ -12,7 +12,7 @@ namespace TheGapFillers.Auth.Repositories
     {
         private const string AudiencePropertyKey = "audienceId";
 
-        private readonly string _issuer = string.Empty;
+        private readonly string _issuer;
 
         public List<Audience> Audiences { get; set; }
 

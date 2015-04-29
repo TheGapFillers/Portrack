@@ -1,9 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using TheGapFillers.MarketData.Models;
+using Newtonsoft.Json;
 
 namespace TheGapFillers.Portrack.Models.Application
 {

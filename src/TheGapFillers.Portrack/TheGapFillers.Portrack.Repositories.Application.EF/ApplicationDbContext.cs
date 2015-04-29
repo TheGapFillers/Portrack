@@ -1,10 +1,10 @@
-using TheGapFillers.Portrack.Models.Application;
-using TheGapFillers.Portrack.Repositories.Application.Mappers;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System;
+using TheGapFillers.Portrack.Models.Application;
+using TheGapFillers.Portrack.Repositories.Application.EF.Mappers;
 
-namespace TheGapFillers.Portrack.Repositories.Application
+namespace TheGapFillers.Portrack.Repositories.Application.EF
 {
     public class ApplicationDbContext : DbContext
     {
@@ -12,7 +12,7 @@ namespace TheGapFillers.Portrack.Repositories.Application
             : base("ApplicationConnection")
         {
             Configuration.LazyLoadingEnabled = false;                                               // Disable lazy loading for all db sets.
-            Database.SetInitializer<ApplicationDbContext>(new ApplicationDbContextInitializer());   // No code first initialisation.
+            Database.SetInitializer(new ApplicationDbContextInitializer());   // No code first initialisation.
         }
         
         public DbSet<Portfolio> Portfolios { get; set; }

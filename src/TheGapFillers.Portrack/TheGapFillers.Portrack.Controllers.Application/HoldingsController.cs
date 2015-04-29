@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using TheGapFillers.MarketData.Models;
 using TheGapFillers.MarketData.Providers;
-using TheGapFillers.Portrack.Controllers.Application.Base;
 using TheGapFillers.Portrack.Models.Application;
 using TheGapFillers.Portrack.Repositories.Application;
 

@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using TheGapFillers.MarketData.Models;
 using TheGapFillers.Tools;
 
@@ -43,10 +43,9 @@ namespace TheGapFillers.Portrack.Models.Application
 
 
         /// <summary>
-        /// Method of the portfolio class to add a transaction.
+        /// Adds a transaction to the Holding.
         /// </summary>
         /// <param name="transaction">The transaction to execute.</param>
-        /// <param name="holding">The current holding against which the transaction will be executed.</param>
         /// <returns>The transaction results.</returns>
         public TransactionResult AddTransaction(Transaction transaction)
         {

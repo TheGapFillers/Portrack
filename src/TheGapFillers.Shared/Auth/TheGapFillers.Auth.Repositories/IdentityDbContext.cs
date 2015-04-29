@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
-using System;
+﻿using System;
 using System.Data.Entity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using TheGapFillers.Auth.Models;
 using TheGapFillers.Auth.Repositories.Mappers;
 
@@ -11,7 +11,7 @@ namespace TheGapFillers.Auth.Repositories
         public CustomIdentityDbContext()
             : base("IdentityConnection", throwIfV1Schema: false)
         {
-            Database.SetInitializer<CustomIdentityDbContext>(new IdentityDbContextInitializer());    // No code first initialisation.
+            Database.SetInitializer(new IdentityDbContextInitializer());    // No code first initialisation.
         }
 
         public DbSet<Audience> Audiences { get; set; }
