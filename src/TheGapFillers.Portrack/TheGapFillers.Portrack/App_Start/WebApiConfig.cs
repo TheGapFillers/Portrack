@@ -9,6 +9,7 @@ using TheGapFillers.MarketData.Providers.Yahoo;
 using TheGapFillers.Portrack.Controllers.Application;
 using TheGapFillers.Portrack.Repositories.Application;
 using TheGapFillers.Portrack.Repositories.Application.EF;
+using TheGapFillers.Portrack.Repositories.Application.EF.Contexts;
 
 namespace TheGapFillers.Portrack
 {
@@ -47,12 +48,12 @@ namespace TheGapFillers.Portrack
             var builder = new ContainerBuilder();
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
             builder.RegisterApiControllers(Assembly.GetAssembly(typeof(ApplicationBaseController)));
-            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(HoldingsController)));
-            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(InstrumentsController)));
-            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(PortfoliosController)));
-            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(TransactionsController)));
+            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(HoldingController)));
+            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(InstrumentController)));
+            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(PortfolioController)));
+            builder.RegisterApiControllers(Assembly.GetAssembly(typeof(TransactionController)));
 
-            builder.RegisterType<ApplicationDbContext>();
+            builder.RegisterType<ApplicationDbContext>().As<IApplicationDbContext>();
             builder.RegisterType<ApplicationRepository>().As<IApplicationRepository>();
             builder.RegisterType<YahooMarketDataProvider>().As<IMarketDataProvider>();
 

@@ -4,15 +4,16 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using TheGapFillers.Portrack.Models.Application;
+using TheGapFillers.Portrack.Repositories.Application.EF.Contexts;
 
 namespace TheGapFillers.Portrack.Repositories.Application.EF
 {
 	public class ApplicationRepository : IApplicationRepository
 	{
-		private readonly ApplicationDbContext _context;
+		private readonly IApplicationDbContext _context;
 
 
-		public ApplicationRepository(ApplicationDbContext context)
+		public ApplicationRepository(IApplicationDbContext context)
 		{
 			_context = context;
 		}
@@ -41,6 +42,7 @@ namespace TheGapFillers.Portrack.Repositories.Application.EF
 
 		public async Task<ICollection<Portfolio>> GetPortfoliosAsync(string userName, IEnumerable<string> portfolioNames = null, bool includeHoldings = false, bool includeTransactions = false)
 		{
+			List<string> portfolioNameList = portfolioNames != null ? portfolioNames.ToList() : null;
 			IQueryable<Portfolio> query = _context.Portfolios;
 
 			if (includeHoldings)
@@ -56,10 +58,10 @@ namespace TheGapFillers.Portrack.Repositories.Application.EF
 					.Include(p => p.PortfolioHolding.Children.Select(h => h.Transactions));
 
 			query = query
-				.Where(p => p.UserName.Equals(userName));
+				.Where(p => p.UserName == userName);
 
-			if (portfolioNames != null && portfolioNames.Any())
-				query = query.Where(p => portfolioNames.Contains(p.PortfolioName));
+			if (portfolioNameList != null && portfolioNameList.Any())
+				query = query.Where(p => portfolioNameList.Contains(p.PortfolioName));
 
 			return await query.ToListAsync();
 		}
@@ -89,6 +91,7 @@ namespace TheGapFillers.Portrack.Repositories.Application.EF
 
 		public async Task<ICollection<Holding>> GetHoldingsAsync(string userName, string portfolioName, IEnumerable<string> tickers = null, bool includeChildren = false, bool includeTransactions = false)
 		{
+			List<string> tickerList = tickers != null ? tickers.ToList() : null;
 			IQueryable<Holding> query = _context.Holdings.Include(h => h.Instrument);
 
 			if (includeChildren)
@@ -106,8 +109,8 @@ namespace TheGapFillers.Portrack.Repositories.Application.EF
 					h.Portfolio.UserName.Equals(userName)
 					&& h.Portfolio.PortfolioName.Equals(portfolioName));
 
-			if (tickers != null && tickers.Any())
-				query = query.Where(h => tickers.Contains(h.Instrument.Ticker));
+			if (tickerList != null && tickerList.Any())
+				query = query.Where(h => tickerList.Contains(h.Instrument.Ticker));
 
 			return await query.ToListAsync();
 		}
@@ -124,14 +127,17 @@ namespace TheGapFillers.Portrack.Repositories.Application.EF
 
 		public async Task<ICollection<Transaction>> GetTransactionsAsync(string userName, IEnumerable<string> portfolioNames = null, IEnumerable<string> tickers = null)
 		{
-			var query = _context.Transactions
+			List<string> portfolioNameList = portfolioNames != null ? portfolioNames.ToList() : null;
+			List<string> tickerList = tickers != null ? tickers.ToList() : null;
+
+			IQueryable<Transaction> query = _context.Transactions
 				.Where(t => t.Holding.Portfolio.UserName.Equals(userName));
 
-			if (portfolioNames != null && portfolioNames.Any())
-				query = query.Where(t => portfolioNames.Contains(t.PortfolioName));
+			if (portfolioNameList != null && portfolioNameList.Any())
+				query = query.Where(t => portfolioNameList.Contains(t.PortfolioName));
 
-			if (tickers != null && tickers.Any())
-				query = query.Where(t => tickers.Contains(t.Ticker));
+			if (tickerList != null && tickerList.Any())
+				query = query.Where(t => tickerList.Contains(t.Ticker));
 
 			return await query.ToListAsync();
 		}
@@ -176,10 +182,12 @@ namespace TheGapFillers.Portrack.Repositories.Application.EF
 
 		public async Task<ICollection<Instrument>> GetInstrumentsAsync(IEnumerable<string> tickers = null)
 		{
+			List<string> tickerList = tickers != null ? tickers.ToList() : null;
+
 			IQueryable<Instrument> query = _context.Instruments;
 
-			if (tickers != null && tickers.Any())
-				query = query.Where(i => tickers.Contains(i.Ticker));
+			if (tickerList != null && tickerList.Any())
+				query = query.Where(i => tickerList.Contains(i.Ticker));
 
 			return await query.ToListAsync();
 		}

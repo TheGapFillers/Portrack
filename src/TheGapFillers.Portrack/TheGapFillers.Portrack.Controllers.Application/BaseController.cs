@@ -10,16 +10,16 @@ namespace TheGapFillers.Portrack.Controllers.Application
     [Authorize]
     public class ApplicationBaseController : ApiController
     {
-        protected readonly IApplicationRepository _repository;
-        protected readonly IMarketDataProvider _provider;
+        protected readonly IApplicationRepository Repository;
+        protected readonly IMarketDataProvider Provider;
 
         // <summary>Class constructor which injected 'IApplicationRepository' dependency.</summary>
         /// <param name="repository">Injected 'IApplicationRepository' dependency.</param>
         /// <param name="provider">Injected 'IMarketDataProvider' dependency.</param>
         public ApplicationBaseController(IApplicationRepository repository, IMarketDataProvider provider)
         {
-            _repository = repository;
-            _provider = provider;
+            Repository = repository;
+            Provider = provider;
         }
     }
 }

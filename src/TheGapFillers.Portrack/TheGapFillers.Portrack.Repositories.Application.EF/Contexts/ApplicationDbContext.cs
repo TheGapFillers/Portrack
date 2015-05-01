@@ -4,9 +4,9 @@ using System.Data.Entity;
 using TheGapFillers.Portrack.Models.Application;
 using TheGapFillers.Portrack.Repositories.Application.EF.Mappers;
 
-namespace TheGapFillers.Portrack.Repositories.Application.EF
+namespace TheGapFillers.Portrack.Repositories.Application.EF.Contexts
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         public ApplicationDbContext()
             : base("ApplicationConnection")
@@ -19,7 +19,7 @@ namespace TheGapFillers.Portrack.Repositories.Application.EF
         public DbSet<Holding> Holdings { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Instrument> Instruments { get; set; }
-
+        
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

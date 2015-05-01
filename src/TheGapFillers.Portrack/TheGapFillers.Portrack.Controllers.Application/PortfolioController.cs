@@ -15,14 +15,14 @@ namespace TheGapFillers.Portrack.Controllers.Application
 	/// All the calls in this class need authorization.
 	/// </summary>
 	[RoutePrefix("api/portfolios")]
-	public class PortfoliosController : ApplicationBaseController
+	public class PortfolioController : ApplicationBaseController
 	{
 		/// <summary>
 		/// Class constructor which injected 'IApplicationRepository' dependency.
 		/// </summary>
 		/// <param name="repository">Injected 'IApplicationRepository' dependency.</param>
 		/// <param name="provider">Injected 'IMarketDataProvider' dependency.</param>
-		public PortfoliosController(IApplicationRepository repository, IMarketDataProvider provider)
+		public PortfolioController(IApplicationRepository repository, IMarketDataProvider provider)
 			: base(repository, provider)
 		{
 		}
@@ -40,12 +40,12 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			ICollection<Portfolio> portfolios;
 			if (string.IsNullOrWhiteSpace(portfolioNames))
 			{
-				portfolios = await _repository.GetPortfoliosAsync(User.Identity.Name, includeHoldings: true, includeTransactions: true);
+				portfolios = await Repository.GetPortfoliosAsync(User.Identity.Name, includeHoldings: true, includeTransactions: true);
 			}
 			else
 			{
 				IEnumerable<string> porfolioNameEnum = portfolioNames.Split(',').Select(s => s.Trim());
-				portfolios = await _repository.GetPortfoliosAsync(User.Identity.Name, porfolioNameEnum, includeHoldings: true, includeTransactions: true);
+				portfolios = await Repository.GetPortfoliosAsync(User.Identity.Name, porfolioNameEnum, includeHoldings: true, includeTransactions: true);
 			}
 
 			await ComputePortfolioHodlingDataAsync(portfolios.Select(p => p.PortfolioHolding).ToList());
@@ -73,7 +73,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			Portfolio createdPortfolio;
 			try
 			{
-				createdPortfolio = await _repository.AddPortfolio(portfolio);
+				createdPortfolio = await Repository.AddPortfolio(portfolio);
 			}
 			catch (PortfolioException ex)
 			{
@@ -81,10 +81,10 @@ namespace TheGapFillers.Portrack.Controllers.Application
 				return BadRequest(ModelState);
 			}
 
-			if (await _repository.SaveAsync() > 0)
-				return Ok(createdPortfolio);
+			if (await Repository.SaveAsync() > 0)
+				return Created(Request.RequestUri, createdPortfolio);
 
-			return Ok();
+			return InternalServerError();
 		}
 
 		[Route("{portfolioName}")]
@@ -94,7 +94,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			Portfolio portfolioToDelete;
 			try
 			{
-				portfolioToDelete = await _repository.DeletePortfolioAsync(User.Identity.Name, portfolioName);
+				portfolioToDelete = await Repository.DeletePortfolioAsync(User.Identity.Name, portfolioName);
 			}
 			catch (PortfolioException ex)
 			{
@@ -103,7 +103,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			}
 
 			// Send the changes made in the data layer to the database and return the transaction results.
-			await _repository.SaveAsync();
+			await Repository.SaveAsync();
 			return Ok(portfolioToDelete);
 		}
 
@@ -124,14 +124,14 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			DateTime firstTransactionDate = portfolioHoldings.SelectMany(ph => ph.LeafTransactions).OrderBy(t => t.Date).First().Date;
 
 			// Get the needed quotes
-			ICollection<Quote> allRequiredQuotes = await _provider.GetQuotesAsync(neededTickers);
+			ICollection<Quote> allRequiredQuotes = await Provider.GetQuotesAsync(neededTickers);
 
 			// Get the needed historical prices
-			ICollection<HistoricalPrice> allhistoricalPrices = await _provider.GetHistoricalPricesAsync(
+			ICollection<HistoricalPrice> allhistoricalPrices = await Provider.GetHistoricalPricesAsync(
 				neededTickers, firstTransactionDate, DateTime.UtcNow);
 
 			// Get the needed dividends
-			ICollection<Dividend> allRequiredDividends = await _provider.GetHistoricalDividendAsync(
+			ICollection<Dividend> allRequiredDividends = await Provider.GetHistoricalDividendAsync(
 				neededTickers, firstTransactionDate, DateTime.UtcNow);
 
 			// Loop accross all holdings and populate with holding data.

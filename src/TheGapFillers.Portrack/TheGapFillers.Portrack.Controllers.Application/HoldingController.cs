@@ -15,14 +15,14 @@ namespace TheGapFillers.Portrack.Controllers.Application
 	/// All the calls in this class need authorization.
 	/// </summary>
 	[RoutePrefix("api/holdings")]
-	public class HoldingsController : ApplicationBaseController
+	public class HoldingController : ApplicationBaseController
 	{
 		/// <summary>
 		/// Class constructor which injected 'IApplicationRepository' dependency.
 		/// </summary>
 		/// <param name="repository">Injected 'IApplicationRepository' dependency.</param>
 		/// <param name="provider">Injected 'IMarketDataProvider' dependency.</param>
-		public HoldingsController(IApplicationRepository repository, IMarketDataProvider provider)
+		public HoldingController(IApplicationRepository repository, IMarketDataProvider provider)
 			: base(repository, provider)
 		{
 		}
@@ -40,12 +40,12 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			ICollection<Holding> holdings;
 			if (string.IsNullOrWhiteSpace(tickers))
 			{
-				holdings = await _repository.GetHoldingsAsync(User.Identity.Name, portfolioName, includeChildren: true);
+				holdings = await Repository.GetHoldingsAsync(User.Identity.Name, portfolioName, includeChildren: true);
 			}
 			else
 			{
 				IEnumerable<string> tickerEnum = tickers.Split(',').Select(s => s.Trim());
-				holdings = await _repository.GetHoldingsAsync(User.Identity.Name, portfolioName, tickerEnum, includeChildren: true);
+				holdings = await Repository.GetHoldingsAsync(User.Identity.Name, portfolioName, tickerEnum, includeChildren: true);
 			}
 
 			// Populate the holding data of all holdings.
@@ -71,14 +71,14 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			DateTime firstTransactionDate = holdings.SelectMany(ph => ph.LeafTransactions).OrderBy(t => t.Date).First().Date;
 
 			// Get the needed quotes
-			ICollection<Quote> allRequiredQuotes = await _provider.GetQuotesAsync(neededTickers);
+			ICollection<Quote> allRequiredQuotes = await Provider.GetQuotesAsync(neededTickers);
 
 			// Get the needed historical prices
-			ICollection<HistoricalPrice> allhistoricalPrices = await _provider.GetHistoricalPricesAsync(
+			ICollection<HistoricalPrice> allhistoricalPrices = await Provider.GetHistoricalPricesAsync(
 				neededTickers, firstTransactionDate, DateTime.UtcNow);
 
 			// Get the needed dividends
-			ICollection<Dividend> allRequiredDividends = await _provider.GetHistoricalDividendAsync(
+			ICollection<Dividend> allRequiredDividends = await Provider.GetHistoricalDividendAsync(
 				neededTickers, firstTransactionDate, DateTime.UtcNow);
 
 			// Loop accross all holdings and populate with holding data.

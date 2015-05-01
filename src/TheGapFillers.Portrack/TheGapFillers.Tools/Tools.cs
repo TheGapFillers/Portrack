@@ -6,13 +6,14 @@ namespace TheGapFillers.Tools
 {
     public static class Tools
     {
-        public static IEnumerable<T> GetDescendants<T, R>(this IEnumerable<T> source, Func<T, R> recursion) where R : IEnumerable<T>
+        public static IEnumerable<T> GetDescendants<T, TR>(this IEnumerable<T> source, Func<T, TR> recursion) where TR : IEnumerable<T>
         {
             return source.SelectMany(x => (recursion(x) != null && recursion(x).Any()) ? recursion(x).GetDescendants(recursion) : null)
                          .Where(x => x != null);
         }
 
-        public static IEnumerable<T> GetLeaves<T, R>(this IEnumerable<T> sources, Func<T, R> recursion) where R : IEnumerable<T>
+        public static IEnumerable<T> GetLeaves<T, TR>(this IEnumerable<T> sources, Func<T, TR> recursion) 
+            where TR : IEnumerable<T>
         {
             foreach (T source in sources)
             {

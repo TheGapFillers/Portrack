@@ -16,14 +16,14 @@ namespace TheGapFillers.Portrack.Controllers.Application
     /// All the calls in this class need authorization.
     /// </summary>
     [RoutePrefix("api/transactions")]
-    public class TransactionsController : ApplicationBaseController
+    public class TransactionController : ApplicationBaseController
     {
         /// <summary>
         /// Class constructor which injected 'IApplicationRepository' dependency.
         /// </summary>
         /// <param name="repository">Injected 'IApplicationRepository' dependency.</param>
         /// <param name="provider">Injected 'IMarketDataProvider' dependency.</param>
-        public TransactionsController(IApplicationRepository repository, IMarketDataProvider provider)
+        public TransactionController(IApplicationRepository repository, IMarketDataProvider provider)
             : base(repository, provider)
         {
         }
@@ -41,18 +41,18 @@ namespace TheGapFillers.Portrack.Controllers.Application
             ICollection<Transaction> transactions;
             if (string.IsNullOrWhiteSpace(portfolioName))
             {
-                transactions = await _repository.GetTransactionsAsync(User.Identity.Name);
+                transactions = await Repository.GetTransactionsAsync(User.Identity.Name);
                 return Ok(transactions);
             }
 
             if (string.IsNullOrWhiteSpace(tickers))
             {
-                transactions = await _repository.GetTransactionsAsync(User.Identity.Name, portfolioName);
+                transactions = await Repository.GetTransactionsAsync(User.Identity.Name, portfolioName);
                 return Ok(transactions);
             }
 
             IEnumerable<string> tickerEnum = tickers.Split(',').Select(s => s.Trim());
-            transactions = await _repository.GetTransactionsAsync(User.Identity.Name, portfolioName, tickerEnum);
+            transactions = await Repository.GetTransactionsAsync(User.Identity.Name, portfolioName, tickerEnum);
             return Ok(transactions);
         }
 
@@ -85,7 +85,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 
 
             // Get the portfolio represented by the PortfolioName in the posted transaction.
-            Portfolio portfolio = await _repository.GetPortfolioAsync(User.Identity.Name, transaction.PortfolioName, includeHoldings: true, includeTransactions: true);
+            Portfolio portfolio = await Repository.GetPortfolioAsync(User.Identity.Name, transaction.PortfolioName, includeHoldings: true, includeTransactions: true);
             IHttpActionResult portFolioError;
             if ((portFolioError = CheckForPortfolioError(portfolio, transaction)) != null)
             {
@@ -98,7 +98,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
             if (holding == null)
             {
                 // Get the instrument represented by the Ticker in the posted transaction
-                Instrument instrument = await _repository.GetInstrumentAsync(transaction.Ticker);
+                Instrument instrument = await Repository.GetInstrumentAsync(transaction.Ticker);
                 if (instrument == null)
                 {
                     return Ok(TransactionResult.Failed(null, transaction,
@@ -121,8 +121,10 @@ namespace TheGapFillers.Portrack.Controllers.Application
 
 
             // Send the changes made in the data layer to the database and return the transaction results.
-            await _repository.SaveAsync();
-            return Ok(result);
+            if (await Repository.SaveAsync() > 0)
+                return Created(Request.RequestUri, result);
+
+            return InternalServerError();
         }
 
         private IHttpActionResult CheckForPortfolioError(Portfolio portfolio, Transaction transaction)
@@ -143,7 +145,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 
         private async Task<decimal> RetrieveTransactionPriceAsync(Transaction transaction)
         {
-            ICollection<HistoricalPrice> price = await _provider.GetHistoricalPricesAsync(new List<String> { transaction.Ticker }, transaction.Date, transaction.Date);
+            ICollection<HistoricalPrice> price = await Provider.GetHistoricalPricesAsync(new List<String> { transaction.Ticker }, transaction.Date, transaction.Date);
 
             return price.SingleOrDefault().Close * transaction.Shares;
         }
@@ -152,7 +154,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
         {
             if (result.IsSuccess && result.Holding.Shares == 0)
             {
-                _repository.DeleteHoldingAsync(result.Holding);
+                Repository.DeleteHoldingAsync(result.Holding);
             }
         }
 

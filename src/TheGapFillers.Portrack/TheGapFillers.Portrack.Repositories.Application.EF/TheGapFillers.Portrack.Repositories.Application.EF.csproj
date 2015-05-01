@@ -48,8 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationDbContext.cs" />
+    <Compile Include="Contexts\ApplicationDbContext.cs" />
     <Compile Include="ApplicationRepository.cs" />
+    <Compile Include="Contexts\IApplicationDbContext.cs" />
     <Compile Include="Mappers\HoldingMap.cs" />
     <Compile Include="Mappers\InstrumentMap.cs" />
     <Compile Include="Mappers\PortfolioMap.cs" />
