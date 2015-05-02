@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.DataHandler.Encoder;
@@ -44,6 +45,8 @@ namespace TheGapFillers.Auth.Repositories
             var issued = data.Properties.IssuedUtc;
             var expires = data.Properties.ExpiresUtc;
 
+            Debug.Assert(issued != null, "issued != null");
+            Debug.Assert(expires != null, "expires != null");
             var token = new JwtSecurityToken(_issuer, audienceId, data.Identity.Claims, issued.Value.UtcDateTime, expires.Value.UtcDateTime, signingKey);
 
             var handler = new JwtSecurityTokenHandler();

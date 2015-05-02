@@ -145,9 +145,12 @@ namespace TheGapFillers.Portrack.Controllers.Application
 
         private async Task<decimal> RetrieveTransactionPriceAsync(Transaction transaction)
         {
-            ICollection<HistoricalPrice> price = await Provider.GetHistoricalPricesAsync(new List<String> { transaction.Ticker }, transaction.Date, transaction.Date);
+            ICollection<HistoricalPrice> prices = await Provider.GetHistoricalPricesAsync(new List<String> { transaction.Ticker }, transaction.Date, transaction.Date);
+            HistoricalPrice historicalPrice = prices.SingleOrDefault();
+            if (historicalPrice == null)
+                throw new Exception(string.Format("The historical price for ticker '{0}' and date '{1}' wasn't found", transaction.Ticker, transaction.Date));
 
-            return price.SingleOrDefault().Close * transaction.Shares;
+            return historicalPrice.Close * transaction.Shares;
         }
 
         private void ClearHoldingIfNoMoreShares(TransactionResult result)
