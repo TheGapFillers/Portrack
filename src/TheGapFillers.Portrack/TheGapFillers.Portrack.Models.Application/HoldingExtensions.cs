@@ -15,10 +15,12 @@ namespace TheGapFillers.Portrack.Models.Application
         /// <returns>A decimal representing the market value of the holding.</returns>
         public static decimal CalculateHoldingMarketValue(this Holding holding, IEnumerable<Quote> quotes)
         {
+            List<Quote> quoteList = quotes.ToList();
+
             decimal marketValue = 0;
             foreach (Holding leafHolding in holding.Leaves)
             {
-                Quote leafHoldingQuote = quotes.SingleOrDefault(q => q.Ticker == leafHolding.Ticker); 
+                Quote leafHoldingQuote = quoteList.SingleOrDefault(q => q.Ticker == leafHolding.Ticker); 
                 if (leafHoldingQuote == null)
                     throw new Exception(string.Format("The quote for ticker '{0}' is not passed as the parameter", leafHolding.Ticker));
 
@@ -37,8 +39,10 @@ namespace TheGapFillers.Portrack.Models.Application
         /// <returns>A list of historical prices representing the historical market values of the holding.</returns>
         public static List<HistoricalPrice> CalculateHoldingHistoricalPrices(this Holding holding, IEnumerable<HistoricalPrice> historicalPrices)
         {
+            List<HistoricalPrice> historicalPriceList = historicalPrices.ToList();
+
             var portfolioHistoricalPrices = new List<HistoricalPrice>();
-            List<DateTime> allPricedDates = historicalPrices.Select(p => p.Date.Date).Distinct().OrderBy(p => p.Date).ToList();
+            List<DateTime> allPricedDates = historicalPriceList.Select(p => p.Date.Date).Distinct().OrderBy(p => p.Date).ToList();
             var historicalHoldings = new List<Holding>();
             foreach (DateTime date in allPricedDates)
             {
@@ -61,7 +65,7 @@ namespace TheGapFillers.Portrack.Models.Application
                     }
                 }
 
-                List<HistoricalPrice> dailyPrices = historicalPrices.Where(p => p.Date == date).ToList();
+                List<HistoricalPrice> dailyPrices = historicalPriceList.Where(p => p.Date == date).ToList();
                 portfolioHistoricalPrices.Add(new HistoricalPrice
                 {
                     Ticker = holding.Ticker,
@@ -95,6 +99,7 @@ namespace TheGapFillers.Portrack.Models.Application
                             PricePerShare = transaction.TotalPrice / transaction.Shares
                         });
                         break;
+
                     case TransactionType.Sell:
                         foreach (DatedSharesAndPrice datedSharesAndPrice in datedSharesAndPrices.OrderBy(qd => qd.Date))
                         {
@@ -103,12 +108,9 @@ namespace TheGapFillers.Portrack.Models.Application
                                 datedSharesAndPrice.Shares -= transaction.Shares;
                                 break;
                             }
-                            else
-                            {
-                                transaction.Shares -= datedSharesAndPrice.Shares;
-                                datedSharesAndPrice.Shares = 0;
-                                continue;
-                            }
+
+                            transaction.Shares -= datedSharesAndPrice.Shares;
+                            datedSharesAndPrice.Shares = 0;
                         }
                         break;
                 }
