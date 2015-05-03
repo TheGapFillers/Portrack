@@ -84,13 +84,16 @@ namespace TheGapFillers.Portrack.Controllers.Application
                     string.Format("'{0}' is a week end date.", transaction.Date.ToString("yyyy-MM-dd"))));
 
 
-            // Get the portfolio represented by the PortfolioName in the posted transaction.
+            // Get the portfolio represented by the PortfolioName in the posted transaction. Check portfolio is valid.
             Portfolio portfolio = await Repository.GetPortfolioAsync(User.Identity.Name, transaction.PortfolioName, includeHoldings: true, includeTransactions: true);
-            IHttpActionResult portFolioError;
-            if ((portFolioError = CheckForPortfolioError(portfolio, transaction)) != null)
-            {
-                return portFolioError;
-            }
+            if (portfolio == null)
+                return Ok(TransactionResult.Failed(null, transaction,
+                    string.Format("Portfolio '{0}' | '{1}' not found.", User.Identity.Name, transaction.PortfolioName)));
+
+
+            // Create portfolio holding if non-existant.
+            if (portfolio.PortfolioHolding == null)
+                portfolio.PortfolioHolding = new Holding { Shares = 1 };
 
 
             // Get the holding associated holding if it exists.
@@ -100,10 +103,8 @@ namespace TheGapFillers.Portrack.Controllers.Application
                 // Get the instrument represented by the Ticker in the posted transaction
                 Instrument instrument = await Repository.GetInstrumentAsync(transaction.Ticker);
                 if (instrument == null)
-                {
                     return Ok(TransactionResult.Failed(null, transaction,
                         string.Format("Instrument '{0}' doens't exist.", transaction.Ticker)));
-                }
 
                 holding = new Holding { Instrument = instrument };
                 portfolio.PortfolioHolding.Children.Add(holding);
@@ -127,28 +128,14 @@ namespace TheGapFillers.Portrack.Controllers.Application
             return InternalServerError();
         }
 
-        private IHttpActionResult CheckForPortfolioError(Portfolio portfolio, Transaction transaction)
-        {
-            IHttpActionResult retVal = null;
-            if (portfolio == null)
-            {
-                return Ok(TransactionResult.Failed(null, transaction,
-                    string.Format("Portfolio '{0}' | '{1}' not found.", User.Identity.Name, transaction.PortfolioName)));
-            }
-            else if (portfolio.PortfolioHolding == null)
-            {
-                retVal = InternalServerError(new Exception("Holdings loading for portfolio failed."));
-            }
-
-            return retVal;
-        }
 
         private async Task<decimal> RetrieveTransactionPriceAsync(Transaction transaction)
         {
             ICollection<HistoricalPrice> prices = await Provider.GetHistoricalPricesAsync(new List<String> { transaction.Ticker }, transaction.Date, transaction.Date);
             HistoricalPrice historicalPrice = prices.SingleOrDefault();
             if (historicalPrice == null)
-                throw new Exception(string.Format("The historical price for ticker '{0}' and date '{1}' wasn't found", transaction.Ticker, transaction.Date));
+                throw new Exception(
+                    string.Format("The historical price for ticker '{0}' and date '{1}' wasn't found", transaction.Ticker, transaction.Date));
 
             return historicalPrice.Close * transaction.Shares;
         }

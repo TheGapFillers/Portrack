@@ -25,9 +25,9 @@ namespace TheGapFillers.Portrack.Models.Application
 
 
         [JsonIgnore]
-        public ICollection<Holding> Leaves { get { return Children != null ? Children.GetLeaves(x => x.Children).ToList() : null; } }
+        public ICollection<Holding> Leaves { get { return Children != null ? Children.GetLeaves(x => x.Children).ToList() : new List<Holding>(); } }
         [JsonIgnore]
-        public ICollection<Transaction> LeafTransactions { get { return Leaves != null ? Leaves.SelectMany(t => t.Transactions).ToList() : null; } }
+        public ICollection<Transaction> LeafTransactions { get { return Leaves != null ? Leaves.SelectMany(t => t.Transactions).ToList() : new List<Transaction>(); } }
 
 
         public void SetHoldingData(IEnumerable<HistoricalPrice> prices, IEnumerable<Quote> quotes, IEnumerable<Dividend> dividends)

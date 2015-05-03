@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using TheGapFillers.MarketData.Models;
 using TheGapFillers.MarketData.Providers;
 using TheGapFillers.Portrack.Models.Application;
 using TheGapFillers.Portrack.Repositories.Application;
@@ -48,7 +46,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 				portfolios = await Repository.GetPortfoliosAsync(User.Identity.Name, porfolioNameEnum, includeHoldings: true, includeTransactions: true);
 			}
 
-			await ComputePortfolioHodlingDataAsync(portfolios.Select(p => p.PortfolioHolding).ToList());
+			await ComputeHoldingDataAsync(portfolios.Select(p => p.PortfolioHolding).ToList());
 			return Ok(portfolios);
 		}
 
@@ -68,7 +66,6 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
 			portfolio.UserName = User.Identity.Name;
-			portfolio.PortfolioHolding = new Holding { Shares = 1 };
 		
 			Portfolio createdPortfolio;
 			try
@@ -87,14 +84,20 @@ namespace TheGapFillers.Portrack.Controllers.Application
 			return InternalServerError();
 		}
 
+
+		/// <summary>
+		/// Deletes the portfolio.
+		/// </summary>
+		/// <param name="portfolioName">Portfolio name of the portfolio to delete.</param>
+		/// <returns></returns>
 		[Route("{portfolioName}")]
 		[HttpDelete]
 		public async Task<IHttpActionResult> Delete(string portfolioName)
 		{
-			Portfolio portfolioToDelete;
+			Portfolio deletedPortfolio;
 			try
 			{
-				portfolioToDelete = await Repository.DeletePortfolioAsync(User.Identity.Name, portfolioName);
+				deletedPortfolio = await Repository.DeletePortfolioAsync(User.Identity.Name, portfolioName);
 			}
 			catch (PortfolioException ex)
 			{
@@ -104,48 +107,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 
 			// Send the changes made in the data layer to the database and return the transaction results.
 			await Repository.SaveAsync();
-			return Ok(portfolioToDelete);
-		}
-
-		/// <summary>
-		/// Populate all the portfolios with their associated calculated portfolio data.
-		/// </summary>
-		/// <param name="portfolioHoldings">Portfolio holdings to be populated with portfolio data.</param>
-		private async Task ComputePortfolioHodlingDataAsync(ICollection<Holding> portfolioHoldings)
-		{
-			if (portfolioHoldings == null || !portfolioHoldings.Any())
-				return;
-
-			// Get the needed tickers and the first transaction's date
-			List<string> neededTickers = portfolioHoldings.SelectMany(ph => ph.Leaves.Select(h => h.Ticker)).Distinct().ToList();
-			if (!neededTickers.Any())
-				return;
-
-			DateTime firstTransactionDate = portfolioHoldings.SelectMany(ph => ph.LeafTransactions).OrderBy(t => t.Date).First().Date;
-
-			// Get the needed quotes
-			ICollection<Quote> allRequiredQuotes = await Provider.GetQuotesAsync(neededTickers);
-
-			// Get the needed historical prices
-			ICollection<HistoricalPrice> allhistoricalPrices = await Provider.GetHistoricalPricesAsync(
-				neededTickers, firstTransactionDate, DateTime.UtcNow);
-
-			// Get the needed dividends
-			ICollection<Dividend> allRequiredDividends = await Provider.GetHistoricalDividendAsync(
-				neededTickers, firstTransactionDate, DateTime.UtcNow);
-
-			// Loop accross all holdings and populate with holding data.
-			foreach (Holding portfolioHolding in portfolioHoldings)
-			{
-				DateTime portfolioFirstTransactionDate = portfolioHolding.LeafTransactions.OrderBy(t => t.Date).First().Date;
-				List<string> portfolioTickers = neededTickers.Where(s => portfolioHolding.Leaves.Select(h => h.Ticker).Contains(s)).ToList();
-
-				IEnumerable<Quote> quotes = allRequiredQuotes.Where(q => portfolioTickers.Contains(q.Ticker));
-				IEnumerable<HistoricalPrice> historicalPrices = allhistoricalPrices.Where(q => portfolioTickers.Contains(q.Ticker) && q.Date >= portfolioFirstTransactionDate);
-				IEnumerable<Dividend> dividends = allRequiredDividends.Where(d => portfolioTickers.Contains(d.Ticker) && d.Date >= portfolioFirstTransactionDate);
-
-				portfolioHolding.SetHoldingData(historicalPrices, quotes, dividends);
-			}
+			return Ok(deletedPortfolio);
 		}
 	}
 }

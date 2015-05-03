@@ -35,6 +35,11 @@ namespace TheGapFillers.Portrack.Tests.Controllers
             Context = new TestApplicationDbContext();
             Repository = new ApplicationRepository(Context);
             Provider = new TestMarketDataProvider();
+
+            // Set the Request, User and controller, ready to proceed to the test.
+            Request = new HttpRequestMessage(HttpMethod.Post, "testUri");
+            User = new ClaimsPrincipal(new GenericPrincipal(new GenericIdentity("UserA"), null));
+            Controller = new PortfolioController(Repository, Provider) { Request = Request, User = User };
         }
 
         /// <summary>
@@ -44,18 +49,29 @@ namespace TheGapFillers.Portrack.Tests.Controllers
         [TestMethod]
         public async Task PostPortfolio_ShouldReturnSamePortfolio()
         {
-            Request = new HttpRequestMessage(HttpMethod.Post, "testUri");
-            User = new ClaimsPrincipal(new GenericPrincipal(new GenericIdentity("UserA"), null));
-            Controller = new PortfolioController(Repository, Provider) { Request = Request, User = User };
-
-            Portfolio portfolioToCreate = new Portfolio { PortfolioName = "TestPortfolioName" };
+            Portfolio portfolioToCreate = new Portfolio { PortfolioName = "PortfolioA" };
             var result = await Controller.Post(portfolioToCreate) as CreatedNegotiatedContentResult<Portfolio>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(Controller.User.Identity.Name, result.Content.UserName);
             Assert.AreEqual(portfolioToCreate.PortfolioName, result.Content.PortfolioName);
-            Assert.IsNotNull(result.Content.PortfolioHolding);
-            Assert.AreEqual(1, result.Content.PortfolioHolding.Shares);
+        }
+
+        /// <summary>
+        /// Test post 1 portfolio.
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task PostAlreadyExistingPortfolio_ShouldReturnBadRequest()
+        {
+            // Add the existing portfolio in the context.
+            Context.Portfolios.Add(new Portfolio { UserName = "UserA", PortfolioName = "PortfolioA" });
+
+            // Create a portfolio with the same portfolio name.
+            Portfolio portfolioToCreate = new Portfolio { PortfolioName = "PortfolioA" };
+            var result = await Controller.Post(portfolioToCreate) as InvalidModelStateResult;
+
+            Assert.IsNotNull(result);
         }
 
         /// <summary>
@@ -65,11 +81,6 @@ namespace TheGapFillers.Portrack.Tests.Controllers
         [TestMethod]
         public async Task GetPortfolio_ShouldReturnExistingPortfolio()
         {
-            // Set the Request, User and controller, ready to proceed to the test.
-            Request = new HttpRequestMessage(HttpMethod.Get, "testUri");
-            User = new ClaimsPrincipal(new GenericPrincipal(new GenericIdentity("UserA"), null));
-            Controller = new PortfolioController(Repository, Provider) { Request = Request, User = User };
-
             // Add a few portfolios to the context.
             Context.Portfolios.Add(new Portfolio { UserName = "UserA", PortfolioName = "PortfolioA" });
             Context.Portfolios.Add(new Portfolio
@@ -97,7 +108,7 @@ namespace TheGapFillers.Portrack.Tests.Controllers
 
             // Get result from controller.
             var result = await Controller.Get("PortfolioB") as OkNegotiatedContentResult<ICollection<Portfolio>>;
-
+            
             // Assert all results.
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Content);
@@ -121,6 +132,40 @@ namespace TheGapFillers.Portrack.Tests.Controllers
             Assert.IsNotNull(portfolio.PortfolioHolding.HoldingData);
         }
 
-        // TODO (Bambi, 2015-05-01): Create Get tests when several portfolios.
+
+        /// <summary>
+        /// Test get all portfolios of a user.
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task GetPortfolios_ShouldReturnAllPortfoliosOfUser()
+        {
+            // Add a few portfolios to the context.
+            Context.Portfolios.Add(new Portfolio { UserName = "UserA", PortfolioName = "PortfolioA" });
+            Context.Portfolios.Add(new Portfolio { UserName = "UserA", PortfolioName = "PortfolioB" });
+            Context.Portfolios.Add(new Portfolio { UserName = "UserB", PortfolioName = "PortfolioA" });
+            Context.Portfolios.Add(new Portfolio { UserName = "UserB", PortfolioName = "PortfolioB" });
+
+            // Add some test data for the market data provider.
+            Provider.Quotes.Add(new Quote { Ticker = "StockA", Last = 100 });
+
+            // Get result from controller.
+            var result = await Controller.Get() as OkNegotiatedContentResult<ICollection<Portfolio>>;
+
+            // Assert all results.
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Content);
+            Assert.AreEqual(2, result.Content.Count);
+
+            Portfolio portfolio1 = result.Content.ElementAtOrDefault(0);
+            Portfolio portfolio2 = result.Content.ElementAtOrDefault(1);
+
+            Assert.IsNotNull(portfolio1);
+            Assert.IsNotNull(portfolio2);
+            Assert.AreEqual(Controller.User.Identity.Name, portfolio1.UserName);
+            Assert.AreEqual(Controller.User.Identity.Name, portfolio2.UserName);
+            Assert.AreEqual("PortfolioA", portfolio1.PortfolioName);
+            Assert.AreEqual("PortfolioB", portfolio2.PortfolioName);
+        }
     }
 }
