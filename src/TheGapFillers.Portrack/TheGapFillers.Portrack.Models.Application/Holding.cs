@@ -18,7 +18,7 @@ namespace TheGapFillers.Portrack.Models.Application
         public ICollection<Transaction> Transactions { get; set; }
 
         public Instrument Instrument { get; set; }
-        public string Ticker { get { return Instrument != null ? Instrument.Ticker : string.Empty; } }
+        public string Ticker { get { return Instrument != null ? Instrument.Ticker : Portfolio.PortfolioName + " Holding"; } }
         public int Shares { get; set; }
         public DateTime Date { get; set; }
         public HoldingData HoldingData { get; set; }
@@ -37,8 +37,10 @@ namespace TheGapFillers.Portrack.Models.Application
                 CostBasis = this.CalculateHoldingCostBasis(),
                 MarketValue = this.CalculateHoldingMarketValue(quotes),
                 Income = this.CalculateHoldingDividendIncome(dividends),
-                HistoricalPrices = this.CalculateHoldingHistoricalPrices(prices)
+                HistoricalPrices = this.CalculateHoldingHistoricalPrices(prices),
             };
+
+            HoldingData.PerformancePrices = this.CalculateModifiedDietzPerformances(HoldingData.HistoricalPrices);
         }
 
 
@@ -85,5 +87,6 @@ namespace TheGapFillers.Portrack.Models.Application
         public double GainPercentage { get { return CostBasis != 0 ? (double)(Gain / CostBasis) : 0; } }
 
         public List<HistoricalPrice> HistoricalPrices { get; set; }
+        public List<HistoricalPrice> PerformancePrices { get; set; }
     }
 }

@@ -79,6 +79,50 @@ namespace TheGapFillers.Portrack.Models.Application
 
 
         /// <summary>
+        /// Calculates the modified Dietz performances
+        /// </summary>
+        /// <param name="holding">The holding for which we are calculating the historical market values.</param>
+        /// <param name="historicalPrices">The list of historical prices needed.</param>
+        /// <returns>A list of modified Dietz returns.</returns>
+        public static List<HistoricalPrice> CalculateModifiedDietzPerformances(this Holding holding, IEnumerable<HistoricalPrice> historicalPrices)
+        {
+            historicalPrices = historicalPrices.OrderBy(p => p.Date).ToList();
+
+            if (historicalPrices == null || !historicalPrices.Any())
+                return null;
+ 
+            HistoricalPrice beginningMarketValue = historicalPrices.First();
+
+            var performances = new List<HistoricalPrice>();
+            foreach (HistoricalPrice price in historicalPrices)
+            {
+                double dayCount = (price.Date - beginningMarketValue.Date).TotalDays;
+
+                List<Transaction> transactions =
+                    holding.LeafTransactions.Where(t => t.Date > beginningMarketValue.Date && t.Date <= price.Date).ToList();
+
+                // calculate total net cash flows and total time weighted cash flows.
+                double tncf = 0;
+                double ttwcf = 0;
+                foreach (Transaction transaction in transactions)
+                {
+                    double dayDiff = (transaction.Date - beginningMarketValue.Date).TotalDays;
+                    double weight = (dayCount - dayDiff)/dayCount;
+                    tncf += (double) transaction.TotalPrice;
+                    ttwcf += (double) transaction.TotalPrice*weight;
+                }
+
+                double md = ((double)price.Close - (double)beginningMarketValue.Close - tncf)
+                            /((double) beginningMarketValue.Close + ttwcf);
+
+                performances.Add(new HistoricalPrice { Date = price.Date, Ticker = holding.Ticker, Close = (decimal)md });
+            }
+
+            return performances;
+        }
+
+
+        /// <summary>
         /// Calculate the cost basis of the holding using FIFO method.
         /// </summary>
         /// <param name="holding">The holding from which to calculate the cost basis.</param>

@@ -7,7 +7,6 @@ namespace TheGapFillers.Portrack.Models.Application
 {
 	public class Transaction
 	{
-		[JsonIgnore]
 		public int TransactionId { get; set; }
 		[JsonIgnore]
 		public Holding Holding { get; set; }
