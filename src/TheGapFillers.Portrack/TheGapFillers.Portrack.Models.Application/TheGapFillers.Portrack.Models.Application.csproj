@@ -37,7 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Holding.cs" />
-    <Compile Include="HoldingExtensions.cs" />
+    <Compile Include="PricingCalculator.cs" />
     <Compile Include="Instrument.cs" />
     <Compile Include="Portfolio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

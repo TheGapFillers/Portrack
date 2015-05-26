@@ -1,12 +1,15 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
 using Microsoft.Owin.Security.OAuth;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using TheGapFillers.MarketData.Providers;
 using TheGapFillers.MarketData.Providers.Yahoo;
 using TheGapFillers.Portrack.Controllers.Application;
+using TheGapFillers.Portrack.Models.Application;
 using TheGapFillers.Portrack.Repositories.Application;
 using TheGapFillers.Portrack.Repositories.Application.EF;
 using TheGapFillers.Portrack.Repositories.Application.EF.Contexts;
@@ -24,6 +27,7 @@ namespace TheGapFillers.Portrack
 
             // Use camel case for JSON data and remove XML support
             config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             config.Formatters.Remove(config.Formatters.XmlFormatter);
 
             // Set dependency injection
@@ -55,10 +59,26 @@ namespace TheGapFillers.Portrack
 
             builder.RegisterType<ApplicationDbContext>().As<IApplicationDbContext>();
             builder.RegisterType<ApplicationRepository>().As<IApplicationRepository>();
-            builder.RegisterType<YahooMarketDataProvider>().As<IMarketDataProvider>();
+
+            builder.RegisterType<YahooMarketDataProvider>().As<IMarketDataProvider>()
+                .WithProperty("ExchangeInstruments", GetExchangeInstruments());
 
             IContainer container = builder.Build();
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
+        }
+
+        private static List<Instrument> GetExchangeInstruments()
+        {
+            var exchangeInstrumentList = new List<Instrument>
+            {
+                new Instrument { Type = InstrumentType.Exchange, Ticker = ""        , Name = "US Exchange"          , Currency = "USD" },
+                new Instrument { Type = InstrumentType.Exchange, Ticker = ".PA"     , Name = "Paris Exchange"       , Currency = "EUR" },
+                new Instrument { Type = InstrumentType.Exchange, Ticker = ".DE"     , Name = "German Exchange"      , Currency = "EUR" },
+                new Instrument { Type = InstrumentType.Exchange, Ticker = ".SH"     , Name = "Shanghai Exchange"    , Currency = "CNY" },
+                new Instrument { Type = InstrumentType.Exchange, Ticker = ".HK"     , Name = "Hong Kong Exchange"   , Currency = "HKD" },
+            };
+
+            return exchangeInstrumentList;
         }
     }
 }

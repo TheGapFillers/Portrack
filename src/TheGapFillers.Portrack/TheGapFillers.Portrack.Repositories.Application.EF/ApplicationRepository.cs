@@ -50,6 +50,7 @@ namespace TheGapFillers.Portrack.Repositories.Application.EF
 					.Include(p => p.PortfolioHolding)
 					.Include(p => p.PortfolioHolding.Instrument)
 					.Include(p => p.PortfolioHolding.Children)
+					.Include(p => p.PortfolioHolding.Children.Select(h => h.Parents))
 					.Include(p => p.PortfolioHolding.Children.Select(h => h.Instrument));
 
 			if (includeTransactions)

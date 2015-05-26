@@ -43,18 +43,26 @@ $transaction ='
   "ticker": "goog",
   "shares": 2,
   "date":"2014-04-18",
-  "type":"Buy"
+  "type":"Buy",
+  "currency":"qsd"
 }
 '
+$updatedPortfolio = Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
+
+
 $transaction ='
 {
   "portfolioName":"BambiPortfolio1",
   "ticker": "goog",
   "shares": 2,
   "date":"2015-04-21",
-  "type":"Buy"
+  "type":"Buy",
 }
 '
+$updatedPortfolio = Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
+
+
+
 $transaction ='
 {
   "portfolioName":"BambiPortfolio1",
@@ -64,6 +72,5 @@ $transaction ='
   "type":"Buy"
 }
 '
-
-Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
+$updatedPortfolio = Invoke-RestMethod -Method Post -Uri http://localhost:24717/api/transactions -Body $transaction -ContentType "application/json" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 

@@ -5,88 +5,92 @@ using Newtonsoft.Json;
 
 namespace TheGapFillers.Portrack.Models.Application
 {
-	public class Transaction
-	{
-		public int TransactionId { get; set; }
-		[JsonIgnore]
-		public Holding Holding { get; set; }
-		[Required]
-		public TransactionType Type { get; set; }
-		[Required]
-		public string PortfolioName { get; set; }
-		[Required]
-		public string Ticker { get; set; }
-		[Required]
-		public DateTime Date { get; set; }
-		[Required]
-		[Range(1, 99999, ErrorMessage = "The shares amount has to be a stricly positive integer.")]
-		public int Shares { get; set; }
-		public decimal Price { get; set; }
-		public decimal Commission { get; set; }
-		public decimal TotalPrice { get { return Price + Commission; } }
-	}
+    public class Transaction
+    {
+        public int TransactionId { get; set; }
 
-	public enum TransactionType
-	{
-		Buy,
-		Sell
-	}
+        [JsonIgnore]
+        public Holding Holding { get; set; }
 
+        [Required]
+        public TransactionSide Side { get; set; }
 
-	/// <summary>
-	/// Class representing the output of a transaction.
-	/// </summary>
-	public class TransactionResult
-	{
-		public Holding Holding { get; private set; }
-		public Transaction Transaction { get; private set; }
+        [Required]
+        public string PortfolioName { get; set; }
 
-		private TransactionResult(Holding holding, Transaction transaction, bool success)
-		{
-			Holding = holding;
-			Transaction = transaction;
+        [Required]
+        public string Ticker { get; set; }
 
-			IsSuccess = success;
-			Errors = new string[0];
-		}
+        public string Currency { get; set; }
 
-		private TransactionResult(Holding holding, Transaction transaction, IEnumerable<string> errors)
-		{
-			Holding = holding;
-			Transaction = transaction;
+        [Range(typeof(DateTime), "1/1/1990", "1/1/2050", ErrorMessage = "Value for {0} must be between {1} and {2}.")]
+        public DateTime Date { get; set; }
 
-			if (errors == null)
-			{
-				errors = new string[] { "Undefined Transaction Error." };
-			}
+        [Range(0, 99999, ErrorMessage = "The shares amount has to be a stricly positive integer.")]
+        public decimal Shares { get; set; }
 
-			IsSuccess = false;
-			Errors = errors;
-		}
+        public decimal Price { get; set; }
+        public decimal Commission { get; set; }
+        public decimal TotalPrice { get { return Price + Commission; } }
+    }
 
-		public TransactionResult(Holding holding, Transaction transaction, params string[] errors) 
-			: this(holding, transaction, (IEnumerable<string>) errors)
-		{            
-		}
-
-		public IEnumerable<string> Errors { get; private set;}
-		public bool IsSuccess { get; private set;}
-
-		public static TransactionResult Succeeded(Holding holding, Transaction transaction)
-		{
-			return new TransactionResult(holding, transaction, true);
-		}
-
-		public static TransactionResult Failed(Holding holding, Transaction transaction, params string[] errors)
-		{
-			return new TransactionResult(holding, transaction, errors);
-		}
-	}
+    public enum TransactionSide
+    {
+        Buy,
+        Sell
+    }
 
 
+    /// <summary>
+    /// Class representing the output of a transaction.
+    /// </summary>
+    public class TransactionResult
+    {
+        public Transaction Transaction { get; private set; }
 
-	public static class TransactionExtensions
-	{
-		
-	}
+        private TransactionResult(Transaction transaction, bool success)
+        {
+            Transaction = transaction;
+
+            IsSuccess = success;
+            Errors = new string[0];
+        }
+
+        private TransactionResult(Transaction transaction, IEnumerable<string> errors)
+        {
+            Transaction = transaction;
+
+            if (errors == null)
+            {
+                errors = new[] { "Undefined Transaction Error." };
+            }
+
+            IsSuccess = false;
+            Errors = errors;
+        }
+
+        public TransactionResult(Transaction transaction, params string[] errors)
+            : this(transaction, (IEnumerable<string>)errors)
+        {
+        }
+
+        public IEnumerable<string> Errors { get; private set; }
+        public bool IsSuccess { get; private set; }
+
+        public static TransactionResult Succeeded(Transaction transaction)
+        {
+            return new TransactionResult(transaction, true);
+        }
+
+        public static TransactionResult Failed(Transaction transaction, params string[] errors)
+        {
+            return new TransactionResult(transaction, errors);
+        }
+    }
+
+    public class TransactionReturn
+    {
+        public TransactionResult Result { get; set; }
+        public Holding PortfolioHolding { get; set; }
+    }
 }

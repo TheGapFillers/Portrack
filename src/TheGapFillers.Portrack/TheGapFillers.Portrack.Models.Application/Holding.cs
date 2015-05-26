@@ -11,36 +11,69 @@ namespace TheGapFillers.Portrack.Models.Application
     {
         [JsonIgnore]
         public int HoldingId { get; set; }
+
         [JsonIgnore]
         public Portfolio Portfolio { get; set; }
+
+        public Holding PortfolioHolding { get { return Portfolio.PortfolioHolding; } }
+
+        [JsonIgnore]
+        public ICollection<Holding> Parents { get; set; }
+
+        [JsonIgnore]
         public ICollection<Holding> Children { get; set; }
+
         [JsonIgnore]
         public ICollection<Transaction> Transactions { get; set; }
 
         public Instrument Instrument { get; set; }
         public string Ticker { get { return Instrument != null ? Instrument.Ticker : Portfolio.PortfolioName + " Holding"; } }
-        public int Shares { get; set; }
+        public string Currency { get { return Instrument != null ? Instrument.Currency : ""; } }
+        public decimal Shares { get; set; }
         public DateTime Date { get; set; }
         public HoldingData HoldingData { get; set; }
 
 
         [JsonIgnore]
         public ICollection<Holding> Leaves { get { return Children != null ? Children.GetLeaves(x => x.Children).ToList() : new List<Holding>(); } }
-        [JsonIgnore]
+
         public ICollection<Transaction> LeafTransactions { get { return Leaves != null ? Leaves.SelectMany(t => t.Transactions).ToList() : new List<Transaction>(); } }
 
 
+        /// <summary>
+        /// Select data to be passed to the pricing calculator and populates holding data.
+        /// </summary>
+        /// <param name="prices"></param>
+        /// <param name="quotes"></param>
+        /// <param name="dividends"></param>
         public void SetHoldingData(IEnumerable<HistoricalPrice> prices, IEnumerable<Quote> quotes, IEnumerable<Dividend> dividends)
         {
+            // Generate dividend transactions.
+            PricingCalculator.PopulateDividendTransaction(Children, dividends);
+
+            // Populate Holding Data.
             HoldingData = new HoldingData
             {
-                CostBasis = this.CalculateHoldingCostBasis(),
-                MarketValue = this.CalculateHoldingMarketValue(quotes),
-                Income = this.CalculateHoldingDividendIncome(dividends),
-                HistoricalPrices = this.CalculateHoldingHistoricalPrices(prices),
+                CostBasis = PricingCalculator.CalculateCostBasis(LeafTransactions),
+                MarketValue = this.CalculateMarketValue(quotes),
+                //Income = PricingCalculator.CalculateDividendIncome(LeafTransactions, dividends),
+                HistoricalPrices = PricingCalculator.CalculateHistoricalPrices(LeafTransactions, prices),
             };
 
-            HoldingData.PerformancePrices = this.CalculateModifiedDietzPerformances(HoldingData.HistoricalPrices);
+            foreach (HistoricalPrice price in HoldingData.HistoricalPrices)
+                price.Ticker = Ticker;
+
+            if (HoldingData.HistoricalPrices.Any())
+            {
+                HistoricalPrice beginningMarketValue = HoldingData.HistoricalPrices.First();
+                HistoricalPrice endingMarketValue = HoldingData.HistoricalPrices.Last();
+                List<Transaction> transactions = LeafTransactions.Where(t =>
+                    t.Date > beginningMarketValue.Date
+                    && t.Date <= endingMarketValue.Date).ToList();
+
+                HoldingData.PerformancePrices = PricingCalculator.CalculateModifiedDietzPerformances(transactions,
+                    HoldingData.HistoricalPrices);
+            }
         }
 
 
@@ -51,29 +84,29 @@ namespace TheGapFillers.Portrack.Models.Application
         /// <returns>The transaction results.</returns>
         public TransactionResult AddTransaction(Transaction transaction)
         {
-            if (transaction.Type == TransactionType.Sell)
+            switch (transaction.Side)
             {
-                if (transaction.Shares > Shares)
-                {
-                    return TransactionResult.Failed(this, transaction, "Not enough shares for this holding. Cannot sell.");
-                }
-                Shares -= transaction.Shares;
-            }
-            else if (transaction.Type == TransactionType.Buy)
-            {
-                Shares += transaction.Shares;
-            }
-            else //Should never happen
-            {
-                return TransactionResult.Failed(this, transaction, "Unknown transaction type.");
-            }
+                case TransactionSide.Sell:
+                    if (transaction.Shares > Shares)
+                        return TransactionResult.Failed(transaction, "Not enough shares for this holding. Cannot sell.");
 
-            transaction.Ticker = transaction.Ticker.ToUpperInvariant();
+                    Shares -= transaction.Shares;
+                    break;
+
+
+                case TransactionSide.Buy:
+                    Shares += transaction.Shares;
+                    break;
+
+
+                default:
+                    return TransactionResult.Failed(transaction, "Unknown transaction type.");
+            }
 
             Transactions = Transactions ?? new List<Transaction>();
             Transactions.Add(transaction);
 
-            return TransactionResult.Succeeded(this, transaction);
+            return TransactionResult.Succeeded(transaction);
         }
     }
 

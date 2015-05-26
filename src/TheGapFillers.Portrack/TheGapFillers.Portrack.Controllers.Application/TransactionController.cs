@@ -64,7 +64,6 @@ namespace TheGapFillers.Portrack.Controllers.Application
         /// <returns>
         ///     Ok(createdPortfolio) if datalayer accepted transaction.
         ///     BadRequest(ModelState) if modelstate is invalid.
-        ///     InternalServerError if DataMarkerProvider's response is invalid
         /// </returns>
         [Route("")]
         [HttpPost]
@@ -74,26 +73,31 @@ namespace TheGapFillers.Portrack.Controllers.Application
                 return BadRequest(ModelState);
 
             // Check that the date of the transaction is valid.
-            var schedule = new UnitedStatesHolidaySchedule(UnitedStatesHolidayScheduleTypes.StockMarket, transaction.Date.Year);
-            if (schedule.GetObservedHolidays().Contains(transaction.Date.Date))
-                return Ok(TransactionResult.Failed(null, transaction,
-                    string.Format("'{0}' is a market holiday.", transaction.Date.ToString("yyyy-MM-dd"))));
-
-            if (transaction.Date.IsWeekend())
-                return Ok(TransactionResult.Failed(null, transaction,
-                    string.Format("'{0}' is a week end date.", transaction.Date.ToString("yyyy-MM-dd"))));
+            IHttpActionResult actionResult;
+            if (!IsTransactionDateValid(transaction, out actionResult))
+                return actionResult;
 
 
             // Get the portfolio represented by the PortfolioName in the posted transaction. Check portfolio is valid.
             Portfolio portfolio = await Repository.GetPortfolioAsync(User.Identity.Name, transaction.PortfolioName, includeHoldings: true, includeTransactions: true);
             if (portfolio == null)
-                return Ok(TransactionResult.Failed(null, transaction,
-                    string.Format("Portfolio '{0}' | '{1}' not found.", User.Identity.Name, transaction.PortfolioName)));
+                return Ok(new TransactionReturn 
+                {
+                    Result = TransactionResult.Failed(transaction,
+                    string.Format("Portfolio '{0}' | '{1}' not found.", User.Identity.Name, transaction.PortfolioName))
+                });
 
 
             // Create portfolio holding if non-existant.
             if (portfolio.PortfolioHolding == null)
-                portfolio.PortfolioHolding = new Holding { Shares = 1 };
+            {
+                portfolio.PortfolioHolding = new Holding
+                {
+                    Portfolio = portfolio,
+                    Shares = 1,
+                    Children = new List<Holding>(),
+                };
+            }
 
 
             // Get the holding associated holding if it exists.
@@ -103,12 +107,20 @@ namespace TheGapFillers.Portrack.Controllers.Application
                 // Get the instrument represented by the Ticker in the posted transaction
                 Instrument instrument = await Repository.GetInstrumentAsync(transaction.Ticker);
                 if (instrument == null)
-                    return Ok(TransactionResult.Failed(null, transaction,
-                        string.Format("Instrument '{0}' doens't exist.", transaction.Ticker)));
+                    return Ok(new TransactionReturn
+                    {
+                        Result = TransactionResult.Failed(transaction,
+                            string.Format("Instrument '{0}' doens't exist.", transaction.Ticker))
+                    });
 
-                holding = new Holding { Instrument = instrument };
+
+                holding = new Holding
+                {
+                    Instrument = instrument,
+                };
                 portfolio.PortfolioHolding.Children.Add(holding);
             }
+            transaction.Currency = holding.Currency;
 
 
             // Retrieve transaction price from MarketData provider if price is absent.
@@ -116,16 +128,49 @@ namespace TheGapFillers.Portrack.Controllers.Application
                 transaction.Price = await RetrieveTransactionPriceAsync(transaction); 
             
 
-            // Add the transaction and get the transaction result.
+            // Save the transaction and compute portfolio and transaction holdings data.     
             TransactionResult result = holding.AddTransaction(transaction);
-            ClearHoldingIfNoMoreShares(result);
+            if (result.IsSuccess)
+            {
+                await Repository.SaveAsync();
+                await ComputeHoldingDataAsync(new List<Holding> { portfolio.PortfolioHolding });
+            }
 
 
-            // Send the changes made in the data layer to the database and return the transaction results.
-            if (await Repository.SaveAsync() > 0)
-                return Created(Request.RequestUri, result);
+            // Return the transaction results.
+            return Created(Request.RequestUri, new TransactionReturn { Result = result, PortfolioHolding = portfolio.PortfolioHolding});
+        }
 
-            return InternalServerError();
+
+        /// <summary>
+        /// Checks that the transaction date is valid.
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        private bool IsTransactionDateValid(Transaction transaction, out IHttpActionResult result)
+        {
+            result = null;
+            var schedule = new UnitedStatesHolidaySchedule(UnitedStatesHolidayScheduleTypes.StockMarket, transaction.Date.Year);
+            if (schedule.GetObservedHolidays().Contains(transaction.Date.Date))
+            {
+                result = Ok(new TransactionReturn
+                {
+                    Result = TransactionResult.Failed(transaction,
+                        string.Format("'{0}' is a market holiday.", transaction.Date.ToString("s")))
+                });
+                return false;
+            }
+            if (transaction.Date.IsWeekend())
+            {
+                result = Ok(new TransactionReturn
+                {
+                    Result = TransactionResult.Failed(transaction,
+                        string.Format("'{0}' is a week end date.", transaction.Date.ToString("s")))
+                });
+                return false;
+            }     
+            return true;
         }
 
 
@@ -139,14 +184,5 @@ namespace TheGapFillers.Portrack.Controllers.Application
 
             return historicalPrice.Close * transaction.Shares;
         }
-
-        private void ClearHoldingIfNoMoreShares(TransactionResult result)
-        {
-            if (result.IsSuccess && result.Holding.Shares == 0)
-            {
-                Repository.DeleteHoldingAsync(result.Holding);
-            }
-        }
-
     }
 }

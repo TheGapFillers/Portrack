@@ -5,7 +5,7 @@ using TheGapFillers.MarketData.Models;
 
 namespace TheGapFillers.Portrack.Models.Application
 {
-    public static class HoldingExtensions
+    public static class PricingCalculator
     {
         /// <summary>
         /// Calculates the market value of the holding.
@@ -13,7 +13,7 @@ namespace TheGapFillers.Portrack.Models.Application
         /// <param name="holding">The holding from which to calculate the market value.</param>
         /// <param name="quotes">The list of quotes needed to calculate market value.</param>
         /// <returns>A decimal representing the market value of the holding.</returns>
-        public static decimal CalculateHoldingMarketValue(this Holding holding, IEnumerable<Quote> quotes)
+        public static decimal CalculateMarketValue(this Holding holding, IEnumerable<Quote> quotes)
         {
             List<Quote> quoteList = quotes.ToList();
 
@@ -34,11 +34,13 @@ namespace TheGapFillers.Portrack.Models.Application
         /// <summary>
         /// Calculates the historical market values of the holding.
         /// </summary>
-        /// <param name="holding">The holding for which we are calculating the historical market values.</param>
+        /// <param name="transactions">The transactions needed to calculate the historical market values.</param>
         /// <param name="historicalPrices">The list of historical prices needed.</param>
         /// <returns>A list of historical prices representing the historical market values of the holding.</returns>
-        public static List<HistoricalPrice> CalculateHoldingHistoricalPrices(this Holding holding, IEnumerable<HistoricalPrice> historicalPrices)
+        public static List<HistoricalPrice> CalculateHistoricalPrices(IEnumerable<Transaction> transactions , IEnumerable<HistoricalPrice> historicalPrices)
         {
+            transactions = transactions.ToList();
+
             List<HistoricalPrice> historicalPriceList = historicalPrices.ToList();
 
             var portfolioHistoricalPrices = new List<HistoricalPrice>();
@@ -46,7 +48,7 @@ namespace TheGapFillers.Portrack.Models.Application
             var historicalHoldings = new List<Holding>();
             foreach (DateTime date in allPricedDates)
             {
-                List<Transaction> dailyTransactions = holding.LeafTransactions.Where(t => t.Date == date).ToList();
+                List<Transaction> dailyTransactions = transactions.Where(t => t.Date == date).ToList();
                 foreach (Transaction dailyTransaction in dailyTransactions)
                 {
                     Holding leafHolding = historicalHoldings.SingleOrDefault(h => h.Instrument.Ticker == dailyTransaction.Ticker);
@@ -61,14 +63,13 @@ namespace TheGapFillers.Portrack.Models.Application
                     }
                     else
                     {
-                        leafHolding.Shares += dailyTransaction.Type == TransactionType.Buy ? dailyTransaction.Shares : -dailyTransaction.Shares;
+                        leafHolding.Shares += dailyTransaction.Side == TransactionSide.Buy ? dailyTransaction.Shares : -dailyTransaction.Shares;
                     }
                 }
 
                 List<HistoricalPrice> dailyPrices = historicalPriceList.Where(p => p.Date == date).ToList();
                 portfolioHistoricalPrices.Add(new HistoricalPrice
                 {
-                    Ticker = holding.Ticker,
                     Date = date,
                     Close = historicalHoldings.Sum(h => h.Shares * dailyPrices.Single(p => p.Ticker == h.Ticker).Close)
                 });
@@ -81,30 +82,30 @@ namespace TheGapFillers.Portrack.Models.Application
         /// <summary>
         /// Calculates the modified Dietz performances
         /// </summary>
-        /// <param name="holding">The holding for which we are calculating the historical market values.</param>
+        /// <param name="transactions">The transactions needed to calculate the modified dietz performances.</param>
         /// <param name="historicalPrices">The list of historical prices needed.</param>
         /// <returns>A list of modified Dietz returns.</returns>
-        public static List<HistoricalPrice> CalculateModifiedDietzPerformances(this Holding holding, IEnumerable<HistoricalPrice> historicalPrices)
+        public static List<HistoricalPrice> CalculateModifiedDietzPerformances(IEnumerable<Transaction> transactions, IEnumerable<HistoricalPrice> historicalPrices)
         {
             historicalPrices = historicalPrices.OrderBy(p => p.Date).ToList();
 
-            if (historicalPrices == null || !historicalPrices.Any())
+            var transactionList = transactions as IList<Transaction> ?? transactions.ToList();
+            if (transactions == null || !transactionList.Any() || historicalPrices == null || !historicalPrices.Any())
                 return null;
  
             HistoricalPrice beginningMarketValue = historicalPrices.First();
 
             var performances = new List<HistoricalPrice>();
+            List<Transaction> requiredTransactionList = transactionList.Where(t => t.Date > beginningMarketValue.Date).ToList();
             foreach (HistoricalPrice price in historicalPrices)
             {
                 double dayCount = (price.Date - beginningMarketValue.Date).TotalDays;
 
-                List<Transaction> transactions =
-                    holding.LeafTransactions.Where(t => t.Date > beginningMarketValue.Date && t.Date <= price.Date).ToList();
-
                 // calculate total net cash flows and total time weighted cash flows.
                 double tncf = 0;
                 double ttwcf = 0;
-                foreach (Transaction transaction in transactions)
+                List<Transaction> neededTransactions = requiredTransactionList.Where(t => t.Date <= price.Date).ToList();
+                foreach (Transaction transaction in neededTransactions)
                 {
                     double dayDiff = (transaction.Date - beginningMarketValue.Date).TotalDays;
                     double weight = (dayCount - dayDiff)/dayCount;
@@ -115,7 +116,7 @@ namespace TheGapFillers.Portrack.Models.Application
                 double md = ((double)price.Close - (double)beginningMarketValue.Close - tncf)
                             /((double) beginningMarketValue.Close + ttwcf);
 
-                performances.Add(new HistoricalPrice { Date = price.Date, Ticker = holding.Ticker, Close = (decimal)md });
+                performances.Add(new HistoricalPrice { Ticker = price.Ticker, Date = price.Date, Close = (decimal)md });
             }
 
             return performances;
@@ -125,17 +126,17 @@ namespace TheGapFillers.Portrack.Models.Application
         /// <summary>
         /// Calculate the cost basis of the holding using FIFO method.
         /// </summary>
-        /// <param name="holding">The holding from which to calculate the cost basis.</param>
+        /// <param name="transactions">The transactions needed to calculate the cost basis.</param>
         /// <returns>a decimal, the cost basis of the holding.</returns>
-        public static decimal CalculateHoldingCostBasis(this Holding holding)
+        public static decimal CalculateCostBasis(IEnumerable<Transaction> transactions)
         {
 
             var datedSharesAndPrices = new List<DatedSharesAndPrice>(); // intermediate list to calculate cost basis.
-            foreach (Transaction transaction in holding.LeafTransactions.OrderBy(t => t.Date))
+            foreach (Transaction transaction in transactions.OrderBy(t => t.Date))
             {
-                switch (transaction.Type)
+                switch (transaction.Side)
                 {
-                    case TransactionType.Buy:
+                    case TransactionSide.Buy:
                         datedSharesAndPrices.Add(new DatedSharesAndPrice
                         {
                             Date = transaction.Date.Date,
@@ -144,7 +145,7 @@ namespace TheGapFillers.Portrack.Models.Application
                         });
                         break;
 
-                    case TransactionType.Sell:
+                    case TransactionSide.Sell:
                         foreach (DatedSharesAndPrice datedSharesAndPrice in datedSharesAndPrices.OrderBy(qd => qd.Date))
                         {
                             if (transaction.Shares <= datedSharesAndPrice.Shares)
@@ -164,6 +165,30 @@ namespace TheGapFillers.Portrack.Models.Application
         }
 
 
+        public static void PopulateDividendTransaction(IEnumerable<Holding> holdings, IEnumerable<Dividend> dividends)
+        {
+            var dividendList = dividends as IList<Dividend> ?? dividends.ToList();
+            foreach (Holding childHolding in holdings)
+            {
+                if (childHolding.Children != null && childHolding.Children.Any())
+                    PopulateDividendTransaction(childHolding.Children, dividendList);
+
+                List<Dividend> holdingDividends = dividendList.Where(d => d.Ticker == childHolding.Ticker).ToList();
+                foreach (Dividend dividend in holdingDividends)
+                {
+                    childHolding.Transactions.Add(new Transaction
+                    {
+                        Ticker = dividend.Ticker,
+                        Holding = childHolding,
+                        Date = dividend.Date,
+                        Currency = dividend.Currency,
+                        Price = dividend.Amount * GetShareCountAtDate(childHolding.Transactions, dividend.Date),
+                        Side = TransactionSide.Sell
+                    });
+                }
+            }
+        }
+
         /// <summary>
         /// Get the number of shares at the specified date from the specified transactions.
         /// </summary>
@@ -172,15 +197,15 @@ namespace TheGapFillers.Portrack.Models.Application
         /// <returns></returns>
         private static decimal GetShareCountAtDate(IEnumerable<Transaction> transactions, DateTime dateTime)
         {
-            int shareNumber = 0;
+            decimal shareNumber = 0;
             foreach (Transaction transaction in transactions.Where(t => t.Date < dateTime).OrderBy(t => t.Date))
             {
-                switch (transaction.Type)
+                switch (transaction.Side)
                 {
-                    case TransactionType.Buy:
+                    case TransactionSide.Buy:
                         shareNumber += transaction.Shares;
                         break;
-                    case TransactionType.Sell:
+                    case TransactionSide.Sell:
                         shareNumber -= transaction.Shares;
                         break;
                 }
@@ -190,21 +215,28 @@ namespace TheGapFillers.Portrack.Models.Application
         }
 
 
-        /// <summary>
-        /// Get the income coming from the dividends.
-        /// </summary>
-        /// <param name="holding"></param>
-        /// <param name="dividends"></param>
-        /// <returns></returns>
-        public static decimal CalculateHoldingDividendIncome(this Holding holding, IEnumerable<Dividend> dividends)
-        {
-            return dividends.Sum(dividend => dividend.Amount * GetShareCountAtDate(holding.LeafTransactions, dividend.Date));
-        }
+        ///// <summary>
+        ///// Get the income coming from the dividends.
+        ///// </summary>
+        ///// <param name="transactions"></param>
+        ///// <param name="dividends"></param>
+        ///// <returns></returns>
+        //public static decimal CalculateDividendIncome(IEnumerable<Transaction> transactions, IEnumerable<Dividend> dividends)
+        //{
+        //    List<Transaction> transactionList = transactions.ToList();
+        //    foreach (Dividend dividend in dividends)
+        //    {
+        //        List<Transaction> neededTransactions = transactionList.Where(t => t.Ticker == dividend.Ticker).ToList();
+        //    }
+
+
+        //    return dividends.Sum(dividend => dividend.Amount * GetShareCountAtDate(enumerable, dividend.Date));
+        //}
 
 
         private class DatedSharesAndPrice
         {
-            public int Shares { get; set; }
+            public decimal Shares { get; set; }
             public DateTime Date { get; set; }
             public decimal PricePerShare { get; set; }
         }

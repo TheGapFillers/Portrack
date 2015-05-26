@@ -12,12 +12,13 @@ namespace TheGapFillers.Portrack.Repositories.Application.EF.Mappers
             HasKey(h => h.HoldingId);
             Property(h => h.HoldingId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             Property(h => h.Shares).IsRequired();
+            Ignore(h => h.PortfolioHolding);
             Ignore(h => h.HoldingData);
             Ignore(h => h.Leaves);
             Ignore(h => h.LeafTransactions);
 
             HasMany(h => h.Children)
-            .WithMany()
+            .WithMany(h => h.Parents)
             .Map(h =>
             {
                 h.MapLeftKey("ParentId");

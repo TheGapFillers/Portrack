@@ -29,6 +29,11 @@ namespace TheGapFillers.Portrack.Tests.Controllers
         protected PortfolioController Controller;
         protected TestApplicationDbContext Context;
 
+
+        /// <summary>
+        /// Initialize context, repository and marketdata provider for the test class.
+        /// Also Initialize Request, User and Controller.
+        /// </summary>
         [TestInitialize]
         public void Initialize()
         {
@@ -41,6 +46,7 @@ namespace TheGapFillers.Portrack.Tests.Controllers
             User = new ClaimsPrincipal(new GenericPrincipal(new GenericIdentity("UserA"), null));
             Controller = new PortfolioController(Repository, Provider) { Request = Request, User = User };
         }
+
 
         /// <summary>
         /// Test post 1 portfolio.
@@ -56,6 +62,7 @@ namespace TheGapFillers.Portrack.Tests.Controllers
             Assert.AreEqual(Controller.User.Identity.Name, result.Content.UserName);
             Assert.AreEqual(portfolioToCreate.PortfolioName, result.Content.PortfolioName);
         }
+
 
         /// <summary>
         /// Test post 1 portfolio.
@@ -73,6 +80,7 @@ namespace TheGapFillers.Portrack.Tests.Controllers
 
             Assert.IsNotNull(result);
         }
+
 
         /// <summary>
         /// Test get 1 portfolio.

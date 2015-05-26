@@ -66,6 +66,9 @@ namespace TheGapFillers.Portrack.Controllers.Application
             // Loop accross all holdings and populate with holding data.
             foreach (Holding portfolioHolding in holdings)
             {
+                if (!portfolioHolding.LeafTransactions.Any())
+                    return;
+
                 DateTime portfolioFirstTransactionDate = portfolioHolding.LeafTransactions.OrderBy(t => t.Date).First().Date;
                 List<string> portfolioTickers = neededTickers.Where(s => portfolioHolding.Leaves.Select(h => h.Ticker).Contains(s)).ToList();
 

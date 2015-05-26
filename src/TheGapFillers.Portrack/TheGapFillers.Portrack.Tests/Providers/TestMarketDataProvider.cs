@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TheGapFillers.MarketData.Models;
 using TheGapFillers.MarketData.Providers;
@@ -26,7 +27,12 @@ namespace TheGapFillers.Portrack.Tests.Providers
 
         public Task<List<HistoricalPrice>> GetHistoricalPricesAsync(IEnumerable<string> tickers, DateTime startDate, DateTime endDate)
         {
-            return Task.FromResult(HistoricalPrices);
+            List<HistoricalPrice> prices = HistoricalPrices.Where(p =>
+                tickers.Contains(p.Ticker)
+                && p.Date >= startDate
+                && p.Date <= endDate).ToList();
+
+            return Task.FromResult(prices);
         }
 
         public Task<List<Dividend>> GetHistoricalDividendAsync(IEnumerable<string> tickers, DateTime startDate, DateTime endDate)
