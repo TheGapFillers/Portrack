@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheGapFillers.MarketData.Providers.Fixerio
+namespace TheGapFillers.MarketData.Providers.FixerIO
 {
 	class FixerIOHistoricalCurrency
 	{

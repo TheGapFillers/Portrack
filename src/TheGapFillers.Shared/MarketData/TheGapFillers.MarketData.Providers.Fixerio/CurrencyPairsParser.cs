@@ -15,7 +15,7 @@ namespace TheGapFillers.MarketData.Models
 		public CurrencyPairsParser(string pair)
 		{
 			string pattern = "([a-zA-Z]{3})([a-zA-Z]{3})(=X)?";
-			var match = Regex.Match(pattern, pair);
+			var match = Regex.Match(pair, pattern);
 			if (match.Success)
 			{
 				baseCurrency = match.Groups[1].ToString();

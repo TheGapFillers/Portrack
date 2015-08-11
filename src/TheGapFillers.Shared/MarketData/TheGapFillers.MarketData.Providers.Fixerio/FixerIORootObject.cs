@@ -4,23 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheGapFillers.MarketData.Providers.Fixerio
+namespace TheGapFillers.MarketData.Providers.FixerIO
 {
-	class FixerIORootObject<T>
+	class FixerIORootObject
 	{
-		public FixerIOQuery<T> query { get; set; }
+		public string baseCurrency  { get; set; }
+		public DateTime date { get; set; }
+		public FixerIORate rates{ get; set; }
+
+		public FixerIORootObject()
+		{
+			this.rates = new FixerIORate();
+		}
 	}
 
-	public class FixerIOQuery<T>
+	public class FixerIORate
 	{
-		public int count { get; set; }
-		public DateTime created { get; set; }
-		public string lang { get; set; }
-		public FixerIOResults<T> results { get; set; }
-	}
-
-	public class FixerIOResults<T>
-	{
-		public T quote { get; set; }
+		public string quote { get; set; }
+		public decimal rate { get; set; }
 	}
 }

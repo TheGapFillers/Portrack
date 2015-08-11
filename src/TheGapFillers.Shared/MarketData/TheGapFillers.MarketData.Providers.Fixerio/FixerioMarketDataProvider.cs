@@ -7,9 +7,9 @@ using Newtonsoft.Json.Linq;
 using TheGapFillers.MarketData.Models;
 using TheGapFillers.Portrack.Models.Application;
 
-namespace TheGapFillers.MarketData.Providers.Fixerio
+namespace TheGapFillers.MarketData.Providers.FixerIO
 {
-	class FixerIOMarketDataProvider : IMarketDataProvider
+	public class FixerIOMarketDataProvider : IMarketDataProvider
 	{
 
 		private const string ApiUriPrefix = "http://api.fixer.io/";
@@ -46,7 +46,13 @@ namespace TheGapFillers.MarketData.Providers.Fixerio
 					response = await httpClient.GetAsync(uri);
 				}
 
-				FixerIORootObject<object> rootObject = await response.Content.ReadAsAsync<FixerIORootObject<object>>();
+				var jToken = JToken.Parse(response.Content.ReadAsStringAsync().Result);
+				var rootObject = new FixerIORootObject();
+				rootObject.baseCurrency = (string) jToken.SelectToken("base");
+				rootObject.date = (DateTime) jToken.SelectToken("date");
+				rootObject.rates.quote = parser.quoteCurrency;
+				rootObject.rates.rate = (decimal )jToken.SelectToken("rates." + parser.quoteCurrency);
+
 				return CreateMarketDataFromFixerIORootObject<HistoricalCurrency>(rootObject);
 			}
 			catch
@@ -57,26 +63,27 @@ namespace TheGapFillers.MarketData.Providers.Fixerio
 			throw new NotImplementedException();
 		}
 
-		private List<T> CreateMarketDataFromFixerIORootObject<T>(FixerIORootObject<object> rootObject)
+		private List<T> CreateMarketDataFromFixerIORootObject<T>(FixerIORootObject rootObject)
 			where T : MarketDataBase
 		{
-			if (rootObject.query.results == null)
-				return new List<T>();
+			return new List<T>();
+			//if (rootObject.query.results == null)
+			//	return new List<T>();
 
-			var jToken = JToken.Parse(rootObject.query.results.quote.ToString());
+			//var jToken = JToken.Parse(rootObject.query.results.quote.ToString());
 
-			if (typeof(T) == typeof(FixerIOHistoricalCurrency))
-			{
-				List<FixerIOHistoricalCurrency> fixerIOHistoricalCurrencies = JTokenToList<FixerIOHistoricalCurrency>(jToken);
+			//if (typeof(T) == typeof(FixerIOHistoricalCurrency))
+			//{
+			//	List<FixerIOHistoricalCurrency> fixerIOHistoricalCurrencies = JTokenToList<FixerIOHistoricalCurrency>(jToken);
 
-				List<HistoricalCurrency> historicalCurrencies = fixerIOHistoricalCurrencies.Select(q => new HistoricalCurrency
-				{
-					Close = q.rate
-				}).ToList();
-				return historicalCurrencies.Cast<T>().ToList();
-			}
+			//	List<HistoricalCurrency> historicalCurrencies = fixerIOHistoricalCurrencies.Select(q => new HistoricalCurrency
+			//	{
+			//		Close = q.rate
+			//	}).ToList();
+			//	return historicalCurrencies.Cast<T>().ToList();
+			//}
 
-			throw new Exception("Unknown YQL type.");
+			//throw new Exception("Unknown YQL type.");
 
 		}
 

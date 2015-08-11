@@ -5,10 +5,10 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TheGapFillers.MarketData.Providers.Fixerio</RootNamespace>
-    <AssemblyName>TheGapFillers.MarketData.Providers.Fixerio</AssemblyName>
+    <RootNamespace>TheGapFillers.MarketData.Providers.FixerIO</RootNamespace>
+    <AssemblyName>TheGapFillers.MarketData.Providers.FixerIO</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,10 +31,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CurrencyPairsParser.cs" />
     <Compile Include="FixerIOHistoricalCurrency.cs" />
     <Compile Include="FixerIOMarketDataProvider.cs" />
     <Compile Include="FixerIORootObject.cs" />

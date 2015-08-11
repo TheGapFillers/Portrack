@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="BaseController.cs" />
     <Compile Include="HoldingController.cs" />
+    <Compile Include="CurrenciesController.cs" />
     <Compile Include="InstrumentController.cs" />
     <Compile Include="PortfolioController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,6 +80,10 @@
     <ProjectReference Include="..\..\TheGapFillers.Shared\MarketData\TheGapFillers.MarketData.Models\TheGapFillers.MarketData.Models.csproj">
       <Project>{348d2aae-b48d-4135-9eeb-ae55fd8a9f1c}</Project>
       <Name>TheGapFillers.MarketData.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TheGapFillers.Shared\MarketData\TheGapFillers.MarketData.Providers.Fixerio\TheGapFillers.MarketData.Providers.FixerIO.csproj">
+      <Project>{b6b902c2-1af3-4ca2-9eee-fb55780074b4}</Project>
+      <Name>TheGapFillers.MarketData.Providers.FixerIO</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\TheGapFillers.Shared\MarketData\TheGapFillers.MarketData.Providers\TheGapFillers.MarketData.Providers.csproj">
       <Project>{8cc792bf-f2b3-4c5b-bb6d-d56f10943159}</Project>

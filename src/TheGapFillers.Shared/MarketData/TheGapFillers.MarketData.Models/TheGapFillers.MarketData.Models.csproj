@@ -37,7 +37,6 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CurrencyPairsParser.cs" />
     <Compile Include="Dividend.cs" />
     <Compile Include="HistoricalCurrency.cs" />
     <Compile Include="HistoricalPrice.cs" />
