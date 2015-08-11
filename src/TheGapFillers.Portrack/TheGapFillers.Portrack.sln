@@ -78,6 +78,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{4B42FA48
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheGapFillers.Tools", "TheGapFillers.Tools\TheGapFillers.Tools.csproj", "{581FA0CF-FB25-43F9-BD58-4C02BE272F4F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheGapFillers.MarketData.Providers.FixerIO", "..\TheGapFillers.Shared\MarketData\TheGapFillers.MarketData.Providers.Fixerio\TheGapFillers.MarketData.Providers.FixerIO.csproj", "{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -270,6 +272,16 @@ Global
 		{581FA0CF-FB25-43F9-BD58-4C02BE272F4F}.Release|ARM.ActiveCfg = Release|Any CPU
 		{581FA0CF-FB25-43F9-BD58-4C02BE272F4F}.Release|x64.ActiveCfg = Release|Any CPU
 		{581FA0CF-FB25-43F9-BD58-4C02BE272F4F}.Release|x86.ActiveCfg = Release|Any CPU
+		{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}.Release|ARM.ActiveCfg = Release|Any CPU
+		{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}.Release|x64.ActiveCfg = Release|Any CPU
+		{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -301,5 +313,6 @@ Global
 		{02FA1F91-F800-43A3-80A5-0EC7E7ACFED4} = {9F6BABB4-514C-4A8D-8CA7-2E8CE954C6F2}
 		{4B42FA48-748E-401A-8AB5-2CA340D6E763} = {BDE056AA-B878-4C05-838A-FF36B4A3B0AD}
 		{581FA0CF-FB25-43F9-BD58-4C02BE272F4F} = {4B42FA48-748E-401A-8AB5-2CA340D6E763}
+		{B6B902C2-1AF3-4CA2-9EEE-FB55780074B4} = {9F6BABB4-514C-4A8D-8CA7-2E8CE954C6F2}
 	EndGlobalSection
 EndGlobal
