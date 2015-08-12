@@ -9,13 +9,13 @@ namespace TheGapFillers.MarketData.Models
 {
 	public class CurrencyPairsParser
 	{
+		private const string CURRENCY_PAIR_REGEX = "^([a-zA-Z]{3})([a-zA-Z]{3})(=X)?$";
 		public string baseCurrency { get; set; }
 		public string quoteCurrency { get; set; }
 
 		public CurrencyPairsParser(string pair)
 		{
-			string pattern = "([a-zA-Z]{3})([a-zA-Z]{3})(=X)?";
-			var match = Regex.Match(pair, pattern);
+			var match = Regex.Match(pair, CURRENCY_PAIR_REGEX);
 			if (match.Success)
 			{
 				baseCurrency = match.Groups[1].ToString();

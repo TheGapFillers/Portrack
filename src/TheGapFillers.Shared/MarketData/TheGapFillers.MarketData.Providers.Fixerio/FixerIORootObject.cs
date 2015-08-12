@@ -16,6 +16,16 @@ namespace TheGapFillers.MarketData.Providers.FixerIO
 		{
 			this.rates = new FixerIORate();
 		}
+
+		public FixerIOHistoricalCurrency toFixerIOHistoricalCurrency()
+		{
+			return new FixerIOHistoricalCurrency() {
+				baseCurrency = this.baseCurrency,
+				quoteCurrency = this.rates.quote,
+				rate = this.rates.rate,
+				date = this.date
+			};
+		}
 	}
 
 	public class FixerIORate

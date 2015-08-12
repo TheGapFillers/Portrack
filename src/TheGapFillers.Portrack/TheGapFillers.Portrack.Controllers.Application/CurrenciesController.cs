@@ -17,7 +17,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 	[RoutePrefix("api/currencies")]
 	public class CurrenciesController : ApplicationBaseController
 	{
-		private IMarketDataProvider Provider2;
+		private IMarketDataProvider TemporaryProvider;
 		/// <summary>
 		/// Class constructor which injected 'IApplicationRepository' dependency.
 		/// </summary>
@@ -26,7 +26,8 @@ namespace TheGapFillers.Portrack.Controllers.Application
 		public CurrenciesController(IApplicationRepository repository, IMarketDataProvider provider)
 			: base(repository, provider)
 		{
-			Provider2 = new TheGapFillers.MarketData.Providers.FixerIO.FixerIOMarketDataProvider();
+			//Please close your eyes for now
+			TemporaryProvider = new TheGapFillers.MarketData.Providers.FixerIO.FixerIOMarketDataProvider();
 		}
 
 
@@ -39,21 +40,21 @@ namespace TheGapFillers.Portrack.Controllers.Application
 		[HttpGet]
 		public async Task<IHttpActionResult> Get(int year, int month, int day, string pairs = null)
 		{
-			var instruments = new List<Instrument>();
 			IEnumerable<string> pairsEnum = null;
 
 			if (pairs == null) 
 			{
 				return NotFound();	
 			}
-				else 
+			else
 			{
+				pairs = pairs.ToUpper();
 				pairsEnum = pairs.Split(',').Select(s => s.Trim()).ToList();
+				ICollection<HistoricalCurrency> historicalCurrencies = await TemporaryProvider.GetHistoricalCurrencyAsync(pairsEnum, new DateTime(year, month, day));
+				return Ok(historicalCurrencies.ToList());
 			}
 
-			ICollection<HistoricalCurrency> historicalCurrencies = await Provider2.GetHistoricalCurrencyAsync(pairsEnum, new DateTime(year, month, day));
 			
-			return Ok(historicalCurrencies.ToList());
 		}
 	}
 }
