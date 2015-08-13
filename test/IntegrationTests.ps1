@@ -25,7 +25,7 @@ Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/instruments/MSFT"
 
 Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/currencies/2015/08/10/EURUSD=X" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/currencies/2015/08/10/EURusd" -Headers @{"Authorization"= "${token_type} ${access_token}"}
-
+Invoke-RestMethod -Method Get -Uri "http://localhost:24717/api/currencies/2015/08/10/EURUSD=X,EURGBP=X" -Headers @{"Authorization"= "${token_type} ${access_token}"}
 
 $portfolio ='
 {

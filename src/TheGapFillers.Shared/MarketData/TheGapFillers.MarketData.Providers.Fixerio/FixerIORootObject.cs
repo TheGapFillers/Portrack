@@ -10,21 +10,24 @@ namespace TheGapFillers.MarketData.Providers.FixerIO
 	{
 		public string baseCurrency  { get; set; }
 		public DateTime date { get; set; }
-		public FixerIORate rates{ get; set; }
+		public List<FixerIORate> rates{ get; set; }
 
 		public FixerIORootObject()
 		{
-			this.rates = new FixerIORate();
+			this.rates = new List<FixerIORate>();
 		}
 
-		public FixerIOHistoricalCurrency toFixerIOHistoricalCurrency()
+		public IEnumerable<FixerIOHistoricalCurrency> toFixerIOHistoricalCurrencies()
 		{
-			return new FixerIOHistoricalCurrency() {
-				baseCurrency = this.baseCurrency,
-				quoteCurrency = this.rates.quote,
-				rate = this.rates.rate,
-				date = this.date
-			};
+			foreach (FixerIORate rate in rates)
+			{
+				yield return new FixerIOHistoricalCurrency() {
+					baseCurrency = baseCurrency,
+					date = date,
+					quoteCurrency = rate.quote,
+					rate = rate.rate
+				};
+			}
 		}
 	}
 

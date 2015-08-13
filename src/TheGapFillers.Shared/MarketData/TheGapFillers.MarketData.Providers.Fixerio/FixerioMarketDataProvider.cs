@@ -35,21 +35,37 @@ namespace TheGapFillers.MarketData.Providers.FixerIO
 		{
 			try
 			{
-				var pairsParser = new CurrencyPairsParser(pairsList.Select(p => p).FirstOrDefault());
-				ApiQuery = String.Format("{0}?base={1}&symbols={2}", date.ToString("yyyy-MM-dd"), pairsParser.baseCurrency, pairsParser.quoteCurrency);
-				HttpResponseMessage response;
-				using (var httpClient = new HttpClient())
+				var rootObject = new FixerIORootObject();
+				var pairsParser = new CurrencyPairsParser(pairsList);
+				foreach (var entry in pairsParser.BaseQuotePairs)
 				{
-					string uri = string.Format("{0}{1}", ApiUriPrefix, ApiQuery);
-					response = await httpClient.GetAsync(uri);
+					ApiQuery = String.Format("{0}?base={1}&symbols={2}", date.ToString("yyyy-MM-dd"), entry.Key, String.Join(",", entry.Value));
+					HttpResponseMessage response;
+					using (var httpClient = new HttpClient())
+					{
+						string uri = string.Format("{0}{1}", ApiUriPrefix, ApiQuery);
+						response = await httpClient.GetAsync(uri);
+					}
+
+					var jToken = JToken.Parse(response.Content.ReadAsStringAsync().Result);
+
+					rootObject.baseCurrency = entry.Key;
+					rootObject.date = (DateTime)jToken.SelectToken("date");
+					foreach (string quoteCCY in entry.Value)
+					{
+						var rate = jToken.SelectToken("rates." + quoteCCY);
+						if (rate != null)
+						{
+							rootObject.rates.Add(new FixerIORate() {quote = quoteCCY, rate = (decimal) rate} );
+						}
+					}
 				}
 
-				var jToken = JToken.Parse(response.Content.ReadAsStringAsync().Result);
-				var rootObject = new FixerIORootObject();
-				rootObject.baseCurrency = (string) pairsParser.baseCurrency;
-				rootObject.date = (DateTime) jToken.SelectToken("date");
-				rootObject.rates.quote = pairsParser.quoteCurrency;
-				rootObject.rates.rate = (decimal )jToken.SelectToken("rates." + pairsParser.quoteCurrency);
+
+
+
+				//rootObject.rates.quote = pairsParser.quoteCurrency;
+				//rootObject.rates.rate = (decimal)jToken.SelectToken("rates." + pairsParser.quoteCurrency);
 
 				return CreateMarketDataFromFixerIORootObject<HistoricalCurrency>(rootObject);
 			}
@@ -68,11 +84,10 @@ namespace TheGapFillers.MarketData.Providers.FixerIO
 			{
 				return new List<T>();
 			}
-				
+
 			if (typeof(T) == typeof(HistoricalCurrency))
 			{
-				var fixerIOHistoricalCurrencies = new List<FixerIOHistoricalCurrency>();
-				fixerIOHistoricalCurrencies.Add(rootObject.toFixerIOHistoricalCurrency());
+				var fixerIOHistoricalCurrencies = rootObject.toFixerIOHistoricalCurrencies();
 
 				List<HistoricalCurrency> historicalCurrencies = fixerIOHistoricalCurrencies.Select(c => new HistoricalCurrency
 				{
@@ -85,6 +100,19 @@ namespace TheGapFillers.MarketData.Providers.FixerIO
 
 			throw new Exception("Unknown type.");
 
+		}
+
+		/// <summary>
+		/// Converts Yahoo's response's quote into a list of T.
+		/// If multiple quotes are received, directly cast to a list
+		/// If a single quote is received, puts it in a list of one element
+		/// </summary>
+		private static List<T> JTokenToList<T>(JToken token)
+		{
+			if (token is JArray)
+				return token.ToObject<List<T>>();
+
+			return new List<T> { token.ToObject<T>() };
 		}
 	}
 }
