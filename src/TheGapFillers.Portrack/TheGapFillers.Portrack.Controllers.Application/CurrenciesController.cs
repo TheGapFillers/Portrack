@@ -36,7 +36,7 @@ namespace TheGapFillers.Portrack.Controllers.Application
 		/// </summary>
 		/// <param name="pairs">Comma-separated string of the tickers.</param>
 		/// <returns>Ok status with a list of instruments.</returns>
-		[Route("{year}/{month}/{day}/{pairs?}")]
+		[Route("{year}-{month}-{day}/{pairs?}")]
 		[HttpGet]
 		public async Task<IHttpActionResult> Get(int year, int month, int day, string pairs = null)
 		{

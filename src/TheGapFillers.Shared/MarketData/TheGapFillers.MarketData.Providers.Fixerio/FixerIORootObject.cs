@@ -8,7 +8,6 @@ namespace TheGapFillers.MarketData.Providers.FixerIO
 {
 	class FixerIORootObject
 	{
-		public string baseCurrency  { get; set; }
 		public DateTime date { get; set; }
 		public List<FixerIORate> rates{ get; set; }
 
@@ -22,9 +21,9 @@ namespace TheGapFillers.MarketData.Providers.FixerIO
 			foreach (FixerIORate rate in rates)
 			{
 				yield return new FixerIOHistoricalCurrency() {
-					baseCurrency = baseCurrency,
 					date = date,
-					quoteCurrency = rate.quote,
+					baseCurrency = rate.baseCurrency,
+					quoteCurrency = rate.quoteCurrency,
 					rate = rate.rate
 				};
 			}
@@ -33,7 +32,8 @@ namespace TheGapFillers.MarketData.Providers.FixerIO
 
 	public class FixerIORate
 	{
-		public string quote { get; set; }
+		public string baseCurrency { get; set; }
+		public string quoteCurrency { get; set; }
 		public decimal rate { get; set; }
 	}
 }

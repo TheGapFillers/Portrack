@@ -12,7 +12,7 @@ namespace TheGapFillers.MarketData.Providers.FixerIO
 	public class FixerIOMarketDataProvider : IMarketDataProvider
 	{
 
-		private const string ApiUriPrefix = "http://api.fixer.io/";
+		private const string ApiUriPrefix = "https://api.fixer.io/";
 		private string ApiQuery { get; set; }
 
 
@@ -49,23 +49,23 @@ namespace TheGapFillers.MarketData.Providers.FixerIO
 
 					var jToken = JToken.Parse(response.Content.ReadAsStringAsync().Result);
 
-					rootObject.baseCurrency = entry.Key;
-					rootObject.date = (DateTime)jToken.SelectToken("date");
-					foreach (string quoteCCY in entry.Value)
+					if (jToken.SelectToken("error") != null)
 					{
-						var rate = jToken.SelectToken("rates." + quoteCCY);
+						throw new ArgumentException("Error while processing request, please double check your parameters");
+						//todo: log API results (located in token's value.
+					}
+
+					rootObject.date = (DateTime)jToken.SelectToken("date");
+					
+					foreach (string quote in entry.Value)
+					{
+						var rate = jToken.SelectToken("rates." + quote);
 						if (rate != null)
 						{
-							rootObject.rates.Add(new FixerIORate() {quote = quoteCCY, rate = (decimal) rate} );
+							rootObject.rates.Add(new FixerIORate() {baseCurrency = entry.Key, quoteCurrency = quote, rate = (decimal) rate} );
 						}
 					}
 				}
-
-
-
-
-				//rootObject.rates.quote = pairsParser.quoteCurrency;
-				//rootObject.rates.rate = (decimal)jToken.SelectToken("rates." + pairsParser.quoteCurrency);
 
 				return CreateMarketDataFromFixerIORootObject<HistoricalCurrency>(rootObject);
 			}
@@ -100,19 +100,6 @@ namespace TheGapFillers.MarketData.Providers.FixerIO
 
 			throw new Exception("Unknown type.");
 
-		}
-
-		/// <summary>
-		/// Converts Yahoo's response's quote into a list of T.
-		/// If multiple quotes are received, directly cast to a list
-		/// If a single quote is received, puts it in a list of one element
-		/// </summary>
-		private static List<T> JTokenToList<T>(JToken token)
-		{
-			if (token is JArray)
-				return token.ToObject<List<T>>();
-
-			return new List<T> { token.ToObject<T>() };
 		}
 	}
 }
